@@ -19,16 +19,43 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // Spring Boot Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
+
+    // Swagger
+    // TODO: Swagger 설정과 함께 적용할 예정
+//    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+
+    // Spring Security
+    // TODO: 인증 기능 구현 후 주석 처리 해제
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Spring Security OAuth 2.0 Client
+    // TODO: Front 개발자분들과 논의해 본 후 사용 여부 결정
+//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Sprint Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Database - H2, MySQL
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
