@@ -1,5 +1,6 @@
 package com.umc.withme.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,15 +11,15 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class TotalPoint {
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private Integer attendanceTotalPoint;
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private Integer passionTotalPoint;
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private Integer contactTotalPoint;
 
