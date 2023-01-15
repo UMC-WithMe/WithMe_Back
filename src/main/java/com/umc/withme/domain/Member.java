@@ -25,13 +25,13 @@ public class Member extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Column(nullable = false)
@@ -46,11 +46,11 @@ public class Member extends BaseTimeEntity {
 
     // Builder & Constructor
     @Builder
-    private Member(Address address, String email, String phoneNumber, String nickname, LocalDate birth, Gender gender) {
+    private Member(Address address, String email, String phoneNumber, LocalDate birth, Gender gender) {
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.nickname = nickname;
+        this.nickname = email;
         this.birth = birth;
         this.gender = gender;
         this.totalPoint = new TotalPoint();
