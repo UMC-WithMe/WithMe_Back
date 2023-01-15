@@ -31,7 +31,6 @@ public class Address {
     // 코드 추가는 여기에
 
     // Equals and HashCode
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
