@@ -1,5 +1,6 @@
 package com.umc.withme.exception;
 
+import com.umc.withme.dto.common.ErrorResponse;
 import com.umc.withme.exception.common.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> applicationExceptionHandle(CustomException e) {
         log.error("Application Custom Exception: {}", String.valueOf(e));
 
-        return ResponseEntity.status(e.getHttpStatus())
+        return ResponseEntity
+                .status(e.getHttpStatus())
                 .body(new ErrorResponse(e.getErrorCode(), e.getErrorMessage()));
     }
 
@@ -31,7 +33,8 @@ public class GlobalExceptionHandler {
         int errorCode = ExceptionType.METHOD_ARGUMENT_NOT_VALID_EXCEPTION.getErrorCode();
         String errorMessage = e.getAllErrors().get(0).getDefaultMessage();
 
-        return ResponseEntity.badRequest()
+        return ResponseEntity
+                .badRequest()
                 .body(new ErrorResponse(errorCode, errorMessage));
     }
 
@@ -44,7 +47,8 @@ public class GlobalExceptionHandler {
         int errorCode = ExceptionType.UNHANDLED_EXCEPTION.getErrorCode();
         String errorMessage = ExceptionType.UNHANDLED_EXCEPTION.getErrorMessage();
 
-        return ResponseEntity.internalServerError()
+        return ResponseEntity
+                .internalServerError()
                 .body(new ErrorResponse(errorCode, errorMessage));
     }
 }
