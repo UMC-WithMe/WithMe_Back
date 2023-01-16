@@ -1,14 +1,15 @@
 package com.umc.withme.repository;
 
 import com.umc.withme.domain.Address;
+import com.umc.withme.exception.address.AddressNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +32,7 @@ class AddressRepositoryTest {
 
         // when
         Address actual = addressRepository.findBySidoAndSgg(sido, sgg)
-                .orElseThrow(EntityNotFoundException::new); // TODO: 추후 Address와 관련된 custom exception으로 변경 고려
+                .orElseThrow(() -> new AddressNotFoundException(sido, sgg));
 
         // then
         assertThat(actual.getId()).isEqualTo(addressId);
