@@ -8,6 +8,7 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.Meet.MeetDto;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @DisplayName("Meet - Service Layer Test")
 @SpringBootTest
@@ -30,6 +34,33 @@ class MeetServiceTest {
     MemberRepository memberRepository;
     @Autowired
     MeetService meetService;
+
+    @Test
+    public void 모임_목록_1개_조회() throws Exception{
+        //given
+        Address address = addressRepository.findBySidoAndSgg("서울특별시", "종로구").get();
+
+        Member member = createMember("1111@naver.com", "010-1111-1111", Gender.FEMALE, address);
+        memberRepository.save(member);
+
+        Meet saveMeet = createMeet(member, "title1", "www.1111.com", "content1");
+        meetService.createMeet(saveMeet);
+
+        //when
+        MeetDto findMeetDto = meetService.findMeetById(saveMeet.getId());
+
+        //then
+        if(findMeetDto == null){
+            fail("모임 DTO가 조회되어야 한다.");
+        }else{
+            MeetDto saveMeetDto = MeetDto.from(saveMeet);
+            assertThat(findMeetDto.getLeader().getNickName()).isEqualTo(saveMeetDto.getLeader().getNickName());
+            assertThat(findMeetDto.getTitle()).isEqualTo(saveMeetDto.getTitle());
+            assertThat(findMeetDto.getLink()).isEqualTo(saveMeetDto.getLink());
+            assertThat(findMeetDto.getContent()).isEqualTo(saveMeetDto.getContent());
+        }
+    }
+
 
     @Test
     void 모임_전체_조회_기능_테스트() {

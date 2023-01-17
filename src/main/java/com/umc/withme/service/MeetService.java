@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +37,20 @@ public class MeetService {
                 .map(m -> MeetDto.from(m))
                 .collect(Collectors.toList());
         return result;
+    }
+
+    /**
+     * id로 모임을 조회해서 DTO로 변환하여 반환한다.
+     * @param 조회할 모임의 id
+     * @return 조회된 모임의 DTO
+     */
+    public MeetDto findMeetById(Long meetId){
+        Optional<Meet> optionalMeet = meetRepository.findById(meetId);
+        if(optionalMeet.isPresent()){
+            Meet findMeet = optionalMeet.get();
+            MeetDto meetDto = MeetDto.from(findMeet);
+            return meetDto;
+        }else return null;
     }
 }
 
