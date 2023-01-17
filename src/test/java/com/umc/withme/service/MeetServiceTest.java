@@ -93,6 +93,36 @@ class MeetServiceTest {
         assertThat(meetDtos.size()).isEqualTo(3);
     }
 
+    @Test
+    public void 제목_으로_모임_리스트_조회() throws Exception{
+        //given
+        Address address1 = addressRepository.findBySidoAndSgg("서울특별시", "종로구").get();
+        Address address2 = addressRepository.findBySidoAndSgg("서울특별시", "강남구").get();
+        Address address3 = addressRepository.findBySidoAndSgg("부산광역시", "해운대구").get();
+
+        Member member1 = createMember("1111@naver.com", "010-1111-1111", Gender.FEMALE, address1);
+        Member member2 = createMember("2222@naver.com", "010-2222-2222", Gender.FEMALE, address2);
+        Member member3 = createMember("3333@naver.com", "010-3333-3333", Gender.MALE, address3);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        Meet meet1 = createMeet(member1, "titleA", "www.1111.com", "content1");
+        Meet meet2 = createMeet(member2, "titleB", "www.2222.com", "content2");
+        Meet meet3 = createMeet(member3, "titleA", "www.3333.com", "content3");
+        meetService.createMeet(meet1);
+        meetService.createMeet(meet2);
+        meetService.createMeet(meet3);
+
+        //when
+        List<MeetDto> findMeetDtos = meetService.findMeetsByTitle("titleA");
+
+        //then
+        assertThat(findMeetDtos.size()).isEqualTo(2);
+        assertThat(findMeetDtos.get(0).getContent()).isEqualTo(meet1.getContent());
+        assertThat(findMeetDtos.get(1).getContent()).isEqualTo(meet3.getContent());
+    }
+
     private static Meet createMeet(Member member1, String title1, String link, String content1) {
         return Meet.builder()
                 .leader(member1)

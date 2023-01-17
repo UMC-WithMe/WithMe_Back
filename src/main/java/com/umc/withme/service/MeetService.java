@@ -52,6 +52,18 @@ public class MeetService {
             return meetDto;
         }else return null;
     }
+
+    /**
+     * 제목으로 모임을 조회해서 해당 제목을 가진 모임 DTO들의 목록을 반환한다.
+     * @param 검색할 제목
+     * @return 해당 제목의 모임 DTO 리스트
+     */
+    public List<MeetDto> findMeetsByTitle(String title){
+        List<Meet> meets = meetRepository.findMeetByTitle(title);
+        return meets.stream()
+                .map(meet -> MeetDto.from(meet))
+                .collect(Collectors.toList());
+    }
 }
 
 
