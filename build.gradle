@@ -26,8 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Swagger
-    // TODO: Swagger 설정과 함께 적용할 예정
-//    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 
     // Spring Security
     // TODO: 인증 기능 구현 후 주석 처리 해제
