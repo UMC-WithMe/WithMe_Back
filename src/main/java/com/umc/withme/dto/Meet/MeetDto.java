@@ -1,7 +1,6 @@
 package com.umc.withme.dto.Meet;
 
 import com.umc.withme.domain.Meet;
-import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;

@@ -5,7 +5,6 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.domain.constant.MeetCategory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

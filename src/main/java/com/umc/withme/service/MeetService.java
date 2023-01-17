@@ -4,7 +4,6 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.dto.Meet.MeetDto;
 import com.umc.withme.repository.MeetRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
