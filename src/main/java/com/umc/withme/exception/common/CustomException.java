@@ -22,6 +22,6 @@ public class CustomException extends RuntimeException {
         ExceptionType exceptionType = ExceptionType.from(this.getClass());
         this.httpStatus = httpStatus;
         this.errorCode = exceptionType.getErrorCode();
-        this.errorMessage = exceptionType.getErrorMessage() + ", " + optionalMessage;
+        this.errorMessage = exceptionType.getErrorMessage() + " " + optionalMessage;
     }
 }

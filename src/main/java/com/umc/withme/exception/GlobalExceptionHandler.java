@@ -15,23 +15,32 @@ import javax.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> applicationExceptionHandle(CustomException e) {
-        log.error("Application Custom Exception: {}", String.valueOf(e));
+    public ResponseEntity<ErrorResponse> customExceptionHandle(CustomException e) {
+        log.error("CustomException: {}", String.valueOf(e));
 
         return ResponseEntity
                 .status(e.getHttpStatus())
                 .body(new ErrorResponse(e.getErrorCode(), e.getErrorMessage()));
     }
 
-    @ExceptionHandler({
-            ConstraintViolationException.class,
-            MethodArgumentNotValidException.class
-    })
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", String.valueOf(e));
 
-        int errorCode = ExceptionType.METHOD_ARGUMENT_NOT_VALID_EXCEPTION.getErrorCode();
-        String errorMessage = e.getAllErrors().get(0).getDefaultMessage();
+        int errorCode = ExceptionType.BAD_REQUEST_EXCEPTION.getErrorCode();
+        String errorMessage = ExceptionType.BAD_REQUEST_EXCEPTION.getErrorMessage() + " " + e.getAllErrors().get(0).getDefaultMessage();
+
+        return ResponseEntity
+                .badRequest()
+                .body(new ErrorResponse(errorCode, errorMessage));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> constraintViolationExceptionHandle(ConstraintViolationException e) {
+        log.error("ConstraintViolationException: {}", String.valueOf(e));
+
+        int errorCode = ExceptionType.BAD_REQUEST_EXCEPTION.getErrorCode();
+        String errorMessage = ExceptionType.BAD_REQUEST_EXCEPTION.getErrorMessage() + " " + e.getLocalizedMessage();
 
         return ResponseEntity
                 .badRequest()
@@ -39,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> runtimeExceptionHandle(Exception e) {
+    public ResponseEntity<ErrorResponse> exceptionHandle(Exception e) {
         StackTraceElement[] stackTrace = e.getStackTrace();
         log.error("UnHandled Exception: {}\n" + "{}:{}:{}", e,
                 stackTrace[0].getClassName(), stackTrace[0].getMethodName(), stackTrace[0].getLineNumber());
