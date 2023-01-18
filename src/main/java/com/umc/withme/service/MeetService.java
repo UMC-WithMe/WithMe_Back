@@ -1,8 +1,12 @@
 package com.umc.withme.service;
 
+import com.umc.withme.domain.Address;
 import com.umc.withme.domain.Meet;
+import com.umc.withme.domain.MeetAddress;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.Meet.MeetDto;
+import com.umc.withme.repository.AddressRepository;
+import com.umc.withme.repository.MeetAddressRepository;
 import com.umc.withme.repository.MeetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +22,18 @@ import java.util.stream.Collectors;
 public class MeetService {
 
     private final MeetRepository meetRepository;
+    private final MeetAddressRepository meetAddressRepository;
+    private final AddressRepository addressRepository;
 
     /**
-     * 새로운 Meet 엔티티를 입력받아 repository에 저장한다.
-     * @param 저장할 Meet Entity
+     * 새로운 Meet 엔티티와 Address를 입력받아 모임 repository에 저장한다.
+     * 그리고 MeetAddress repository에 meet과 address를 연결해 저장한다.
+     * @param Meet Entity와 address Entity
      */
     @Transactional
-    public void createMeet(Meet meet){
+    public void createMeet(Meet meet, Address address){
         meetRepository.save(meet);
+        meetAddressRepository.save(new MeetAddress(meet, address));
     }
 
     /**
@@ -76,6 +84,22 @@ public class MeetService {
         return meets.stream()
                 .map(meet -> MeetDto.from(meet))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 동네로 모임을 조회해서 해당 동네의 모임 DTO 목록을 반환한다.
+     * @param 조회할 동네 address
+     * @return 해당 동네의 모임 DTO 리스트
+     */
+    public List<MeetDto> findMeetsByAddress(Address address){
+        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByAddressId(address.getId());
+        List<Meet> meets = meetAddresses.stream()
+                .map(MeetAddress::getMeet)
+                .collect(Collectors.toList());
+        List<MeetDto> meetDtos = meets.stream()
+                .map(meet -> MeetDto.from(meet))
+                .collect(Collectors.toList());
+        return meetDtos;
     }
 }
 
