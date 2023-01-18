@@ -1,6 +1,7 @@
 package com.umc.withme.dto.Meet;
 
 import com.umc.withme.domain.Meet;
+import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
@@ -8,7 +9,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class MeetDto {
 
     private Long meetId;
@@ -83,5 +84,40 @@ public class MeetDto {
                 .build();
     }
 
-    // of 메소드는 추후에 제작 예정이다.
+    /**
+     * MeetDto를 생성해서 반환해주는 함수이다.
+     * @param meetId
+     * @param leader
+     * @param meetCategory
+     * @param recruitStatus
+     * @param meetStatus
+     * @param title
+     * @param minPeople
+     * @param maxPeople
+     * @param link
+     * @param content
+     * @param startDate
+     * @param endDate
+     * @return 생성된 MeetDto 인스턴스
+     */
+    public static MeetDto of(
+            Long meetId, Member leader, MeetCategory meetCategory,
+            RecruitStatus recruitStatus, MeetStatus meetStatus,
+            String title, int minPeople, int maxPeople, String link,
+            String content, LocalDate startDate, LocalDate endDate){
+        return MeetDto.builder()
+                .meetId(meetId)
+                .leader(MeetLeaderDto.from(leader))
+                .meetCategory(meetCategory)
+                .recruitStatus(recruitStatus)
+                .meetStatus(meetStatus)
+                .title(title)
+                .minPeople(minPeople)
+                .maxPeople(maxPeople)
+                .link(link)
+                .content(content)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+    }
 }

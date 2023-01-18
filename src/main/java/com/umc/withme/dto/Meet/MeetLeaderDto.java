@@ -3,13 +3,14 @@ package com.umc.withme.dto.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.TotalPoint;
 import com.umc.withme.domain.constant.Gender;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
 
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 public class MeetLeaderDto {
 
     private String email;
@@ -48,6 +49,28 @@ public class MeetLeaderDto {
                 .gender(this.getGender())
                 .build();
     }
-    
-    // of 메소드는 추후에 제작 예정
+
+    /**
+     * 입력받은 파라미터를 바탕으로 MeetLeaderDto 인스턴스를 생성해 반환해주는 함수이다.
+     * @param email
+     * @param nickName
+     * @param phoneNumber
+     * @param birth
+     * @param gender
+     * @param totalPoint
+     * @return 생성한 MeetLeaderDto 인스턴스
+     */
+    public static MeetLeaderDto of(
+            String email, String nickName, String phoneNumber,
+            LocalDate birth, Gender gender, TotalPoint totalPoint
+    ){
+        return MeetLeaderDto.builder()
+                .email(email)
+                .nickName(nickName)
+                .phoneNumber(phoneNumber)
+                .birth(birth)
+                .gender(gender)
+                .totalPoint(totalPoint)
+                .build();
+    }
 }
