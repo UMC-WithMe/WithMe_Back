@@ -1,7 +1,11 @@
 package com.umc.withme.repository;
 
 import com.umc.withme.domain.Member;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface MemeberRepository extends JpaRepository<Member, Long> {
 
@@ -12,4 +16,13 @@ public interface MemeberRepository extends JpaRepository<Member, Long> {
      * @return 존재하는 경우 - true, 존재하지 않는 경우 - false
      */
     boolean existsByNickname(String nickname);
+
+    /**
+     * 해당 닉네임을 가진 Member 객체를 조회한다.
+     *
+     * @param nickname
+     * @return Member 객체
+     */
+    @EntityGraph(attributePaths = {"address"})
+    Optional<Member> findByNickname(String nickname);
 }
