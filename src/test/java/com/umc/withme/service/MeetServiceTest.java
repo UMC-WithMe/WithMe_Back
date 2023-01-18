@@ -42,7 +42,7 @@ class MeetServiceTest {
         Address address = addressRepository.findBySidoAndSgg("서울특별시", "종로구").get();
         Member member = createMember("AAAA@naver.com", "010-AAAA-AAAA", Gender.FEMALE, address);
         memberRepository.save(member);
-        Meet saveMeet = createMeet(member, "titleA", "www.AAAA.com", "contentA");
+        Meet saveMeet = createMeet(member,MeetCategory.HOBBY,  "titleA", "www.AAAA.com", "contentA");
         meetService.createMeet(saveMeet);
 
         //when
@@ -88,6 +88,21 @@ class MeetServiceTest {
         assertThat(findMeetDtos.get(1).getContent()).isEqualTo("content3");
     }
 
+    @Test
+    public void 카테고리로_모임_리스트_조회() throws Exception{
+        //given
+
+        //when
+        List<MeetDto> findMeetDtos = meetService.findMeetsByCategory("EXERCISE");
+
+        //then
+        assertThat(findMeetDtos.size()).isEqualTo(2);
+        assertThat(findMeetDtos.get(0).getMeetCategory()).isEqualTo(MeetCategory.EXERCISE);
+        assertThat(findMeetDtos.get(1).getMeetCategory()).isEqualTo(MeetCategory.EXERCISE);
+        assertThat(findMeetDtos.get(0).getContent()).isEqualTo("content1");
+        assertThat(findMeetDtos.get(1).getContent()).isEqualTo("content2");
+    }
+
     @BeforeEach
     public void setUp(){
         Address address1 = addressRepository.findBySidoAndSgg("서울특별시", "종로구").get();
@@ -101,18 +116,18 @@ class MeetServiceTest {
         memberRepository.save(member2);
         memberRepository.save(member3);
 
-        Meet meet1 = createMeet(member1, "titleA", "www.1111.com", "content1");
-        Meet meet2 = createMeet(member2, "titleB", "www.2222.com", "content2");
-        Meet meet3 = createMeet(member3, "titleA", "www.3333.com", "content3");
+        Meet meet1 = createMeet(member1, MeetCategory.EXERCISE, "titleA", "www.1111.com", "content1");
+        Meet meet2 = createMeet(member2, MeetCategory.EXERCISE, "titleB", "www.2222.com", "content2");
+        Meet meet3 = createMeet(member3, MeetCategory.HOBBY, "titleA", "www.3333.com", "content3");
         meetService.createMeet(meet1);
         meetService.createMeet(meet2);
         meetService.createMeet(meet3);
     }
 
-    private static Meet createMeet(Member member1, String title1, String link, String content1) {
+    private static Meet createMeet(Member member1, MeetCategory category, String title1, String link, String content1) {
         return Meet.builder()
                 .leader(member1)
-                .category(MeetCategory.EXERCISE)
+                .category(category)
                 .title(title1)
                 .minPeople(3)
                 .maxPeople(5)

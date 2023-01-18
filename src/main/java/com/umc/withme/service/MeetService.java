@@ -1,6 +1,7 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.Meet;
+import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.Meet.MeetDto;
 import com.umc.withme.repository.MeetRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,19 @@ public class MeetService {
      * @return 해당 제목의 모임 DTO 리스트
      */
     public List<MeetDto> findMeetsByTitle(String title){
-        List<Meet> meets = meetRepository.findMeetByTitle(title);
+        List<Meet> meets = meetRepository.findMeetsByTitle(title);
+        return meets.stream()
+                .map(meet -> MeetDto.from(meet))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 카테고리로 모임을 조회해서 해당 카테고리의 모임 DTO 목록을 반환한다.
+     * @param 조회할 카테고리명
+     * @return 해당 카테고리의 모임 DTO 리스트
+     */
+    public List<MeetDto> findMeetsByCategory(String category){
+        List<Meet> meets = meetRepository.findMeetsByCategory(MeetCategory.valueOf(category));
         return meets.stream()
                 .map(meet -> MeetDto.from(meet))
                 .collect(Collectors.toList());
