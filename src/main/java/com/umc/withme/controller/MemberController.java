@@ -1,7 +1,7 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.dto.member.MemberInfoGetResponse;
 import com.umc.withme.dto.member.NicknameDuplicationCheckResponse;
 import com.umc.withme.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +45,10 @@ public class MemberController {
      */
     @GetMapping("/users")
     public ResponseEntity<DataResponse> getMemberInfo(@RequestParam @NotBlank String nickname) {
-        MemberDto memberDto = memberService.getMemberInfo(nickname);
+        MemberInfoGetResponse response = memberService.getMemberInfo(nickname);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new DataResponse(memberDto));
+                .body(new DataResponse(response));
     }
 }

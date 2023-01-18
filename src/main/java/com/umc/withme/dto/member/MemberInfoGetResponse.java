@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class MemberDto {
+public class MemberInfoGetResponse {
 
     private String nickname;
     private String phoneNumber;
@@ -19,7 +19,7 @@ public class MemberDto {
     private Gender gender;
     private Address address;
 
-    public static MemberDto from(Member member) {
-        return new MemberDto(member.getNickname(), member.getPhoneNumber(), member.getBirth(), member.getGender(), member.getAddress());
+    public static MemberInfoGetResponse from(Member member) {
+        return new MemberInfoGetResponse(member.getNickname(), member.getPhoneNumber(), member.getBirth(), member.getGender(), member.getAddress());
     }
 }
