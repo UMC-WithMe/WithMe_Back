@@ -16,8 +16,7 @@ public enum ExceptionType {
     METHOD_ARGUMENT_NOT_VALID_EXCEPTION(1, "요청 데이터가 잘못되었습니다."),
 
     // Address
-    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.")
-    ;
+    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.");
 
     private final int errorCode;
     private final String errorMessage;
