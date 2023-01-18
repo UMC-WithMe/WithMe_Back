@@ -1,5 +1,8 @@
 package com.umc.withme.service;
 
+import com.umc.withme.domain.Member;
+import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.MemeberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,5 +23,18 @@ public class MemberService {
      */
     public boolean checkNicknameDuplication(String nickname) {
         return memeberRepository.existsByNickname(nickname);
+    }
+
+    /**
+     * 특정 닉네임을 가진 회원 정보를 컨트롤러에게 반환한다.
+     *
+     * @param nickname
+     * @return 회원 정보를 MemberDto 객체로 바꾸어 반환
+     * @throws NicknameNotFoundException 닉네임이 존재하지 않을 경우
+     */
+    public MemberDto getMemberInfo(String nickname) {
+        Member findMember = memeberRepository.findByNickname(nickname)
+                                                .orElseThrow(() -> new NicknameNotFoundException());
+        return MemberDto.from(findMember);
     }
 }
