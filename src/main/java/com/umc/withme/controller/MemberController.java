@@ -1,6 +1,7 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.member.NicknameDuplicationCheckResponse;
 import com.umc.withme.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,11 @@ public class MemberController {
      */
     // TODO: Swagger 문서에 적용
     @GetMapping("/check/duplicate")
-    public ResponseEntity<DataResponse> checkNicknameDuplicate(
-            @RequestParam @NotBlank String nickname
-    ) {
+    public ResponseEntity<DataResponse> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
+        NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new DataResponse(memberService.checkNicknameDuplication(nickname)));
+                .body(new DataResponse(response));
     }
 }
