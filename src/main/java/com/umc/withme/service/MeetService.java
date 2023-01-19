@@ -3,8 +3,6 @@ package com.umc.withme.service;
 import com.umc.withme.domain.Address;
 import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.MeetAddress;
-import com.umc.withme.domain.constant.MeetCategory;
-import com.umc.withme.dto.Meet.MeetDto;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MeetAddressRepository;
 import com.umc.withme.repository.MeetRepository;
@@ -13,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
