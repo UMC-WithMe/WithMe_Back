@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,5 +53,19 @@ public class MemberController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse(response));
+    }
+
+    /**
+     * 전체 회원 조회 API
+     *
+     * @return 회원 목록을 DataResponse에 담아 반환
+     */
+    @GetMapping("/userss")
+    public ResponseEntity<DataResponse> getAllMemberInfo() {
+        List<MemberDto> memberList = memberService.getAllMemberInfo();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse(memberList));
     }
 }

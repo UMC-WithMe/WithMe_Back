@@ -1,12 +1,14 @@
 package com.umc.withme.service;
 
-import com.umc.withme.domain.Member;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,5 +38,17 @@ public class MemberService {
         return memberRepository.findByNickname(nickname)
                 .map(MemberDto::from)
                 .orElseThrow(NicknameNotFoundException::new);
+    }
+
+    /**
+     * DB에서 가져온 Member 객체들을 MemberDto로 변환해 컨트롤러에게 반환한다.
+     *
+     * @return MemberDto 객체 리스트
+     */
+    public List<MemberDto> getAllMemberInfo() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberDto::from)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

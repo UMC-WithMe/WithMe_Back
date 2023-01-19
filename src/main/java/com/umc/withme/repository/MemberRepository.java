@@ -4,6 +4,7 @@ import com.umc.withme.domain.Member;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -24,4 +25,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     @EntityGraph(attributePaths = {"address"})
     Optional<Member> findByNickname(String nickname);
+
+    /**
+     * DB에서 모든 Member 객체들을 조회한다.
+     *
+     * @return Member 객체 리스트
+     */
+    @EntityGraph(attributePaths = {"address"})
+    List<Member> findAll();
 }
