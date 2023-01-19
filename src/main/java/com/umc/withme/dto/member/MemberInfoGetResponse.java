@@ -1,7 +1,6 @@
 package com.umc.withme.dto.member;
 
 import com.umc.withme.domain.Address;
-import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,13 @@ public class MemberInfoGetResponse {
     private Gender gender;
     private Address address;
 
-    public static MemberInfoGetResponse from(Member member) {
-        return new MemberInfoGetResponse(member.getNickname(), member.getPhoneNumber(), member.getBirth(), member.getGender(), member.getAddress());
+    public static MemberInfoGetResponse from(MemberDto dto) {
+        return new MemberInfoGetResponse(
+                dto.getNickname(),
+                dto.getPhoneNumber(),
+                dto.getBirth(),
+                dto.getGender(),
+                dto.getAddress()
+        );
     }
 }
