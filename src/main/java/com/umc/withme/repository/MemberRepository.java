@@ -4,10 +4,9 @@ import com.umc.withme.domain.Member;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface MemeberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /**
      * 닉네임을 전달받아 DB에 존재하는지 확인한다.
