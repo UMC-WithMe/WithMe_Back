@@ -1,6 +1,8 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.dto.member.MemberInfoGetResponse;
 import com.umc.withme.dto.member.NicknameDuplicationCheckResponse;
 import com.umc.withme.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,22 @@ public class MemberController {
     @GetMapping("/check/duplicate")
     public ResponseEntity<DataResponse> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
         NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse(response));
+    }
+
+    /**
+     * 특정 닉네임을 가지는 회원 정보를 조회하는 API
+     *
+     * @param nickname
+     * @return MemberInfoGetResponse에 회원 정보를 담아 DataResponse로 반환
+     */
+    @GetMapping("/users")
+    public ResponseEntity<DataResponse> getMemberInfo(@RequestParam @NotBlank String nickname) {
+        MemberDto memberDto = memberService.getMemberInfo(nickname);
+        MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
