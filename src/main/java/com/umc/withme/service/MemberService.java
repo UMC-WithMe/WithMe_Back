@@ -33,8 +33,8 @@ public class MemberService {
      * @throws NicknameNotFoundException 닉네임이 존재하지 않을 경우
      */
     public MemberDto getMemberInfo(String nickname) {
-        Member findMember = memberRepository.findByNickname(nickname)
-                                    .orElseThrow(() -> new NicknameNotFoundException());
-        return MemberDto.from(findMember);
+        return memberRepository.findByNickname(nickname)
+                .map(MemberDto::from)
+                .orElseThrow(NicknameNotFoundException::new);
     }
 }
