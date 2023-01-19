@@ -71,25 +71,6 @@ public class Meet extends BaseEntity {
 
     // 코드 추가는 여기에
 
-    // Meet 객체 정보를 출력하는 toString 함수
-    @Override
-    public String toString() {
-        return "Meet{" +
-                "id=" + id +
-                ", leaderName=" + leader.getNickname() +
-                ", category=" + category +
-                ", recruitStatus=" + recruitStatus +
-                ", meetStatus=" + meetStatus +
-                ", title='" + title + '\'' +
-                ", minPeople=" + minPeople +
-                ", maxPeople=" + maxPeople +
-                ", link='" + link + '\'' +
-                ", content='" + content + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                '}';
-    }
-
     // Equals and HashCode
     @Override
     public boolean equals(Object o) {

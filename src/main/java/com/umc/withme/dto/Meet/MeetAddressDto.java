@@ -47,12 +47,4 @@ public class MeetAddressDto {
                 .sgg(sgg)
                 .build();
     }
-
-    @Override
-    public String toString() {
-        return "MeetAddressDto{" +
-                "sido='" + sido + '\'' +
-                ", sgg='" + sgg + '\'' +
-                '}';
-    }
 }

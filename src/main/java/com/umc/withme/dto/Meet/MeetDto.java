@@ -37,26 +37,6 @@ public class MeetDto {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @Override
-    public String toString() {
-        String result = "MeetDto{" +
-                "meetId=" + meetId +
-                ", leaderName=" + leader.getNickName() +
-                ", meetCategory=" + meetCategory +
-                ", recruitStatus=" + recruitStatus +
-                ", meetStatus=" + meetStatus +
-                ", title='" + title + '\'' +
-                ", minPeople=" + minPeople +
-                ", maxPeople=" + maxPeople +
-                ", link='" + link + '\'' +
-                ", content='" + content + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                "}\n";
-        result = result + "\n" + printAddress();
-        return result;
-    }
-
     private String printAddress() {
         String result = "";
         if(getAddresses() == null || getAddresses().isEmpty()) return result;
