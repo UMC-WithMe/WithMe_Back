@@ -26,14 +26,16 @@ public class MeetService {
     private final AddressRepository addressRepository;
 
     /**
-     * 새로운 Meet 엔티티와 Address를 입력받아 모임 repository에 저장한다.
+     * 새로운 Meet 엔티티와 Address 목록을 입력받아 모임 repository에 저장한다.
      * 그리고 MeetAddress repository에 meet과 address를 연결해 저장한다.
-     * @param Meet Entity와 address Entity
+     * @param Meet Entity와 address Entity 목록
      */
     @Transactional
-    public void createMeet(Meet meet, Address address){
+    public void createMeet(Meet meet, List<Address> addresses){
         meetRepository.save(meet);
-        meetAddressRepository.save(new MeetAddress(meet, address));
+        for (Address address : addresses) {
+            meetAddressRepository.save(new MeetAddress(meet, address));
+        }
     }
 
     /**
@@ -45,6 +47,13 @@ public class MeetService {
         List<MeetDto> result = meets.stream()
                 .map(m -> MeetDto.from(m))
                 .collect(Collectors.toList());
+        for (MeetDto meetDto : result) {
+            List<MeetAddress> maList = meetAddressRepository.findAllByMeetId(meetDto.getMeetId());
+            List<Address> addresses = maList.stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toList());
+            meetDto.setAddresses(addresses);
+        }
         return result;
     }
 
@@ -58,6 +67,13 @@ public class MeetService {
         if(optionalMeet.isPresent()){
             Meet findMeet = optionalMeet.get();
             MeetDto meetDto = MeetDto.from(findMeet);
+
+            List<MeetAddress> maList = meetAddressRepository.findAllByMeetId(meetDto.getMeetId());
+            List<Address> addresses = maList.stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toList());
+            meetDto.setAddresses(addresses);
+
             return meetDto;
         }else return null;
     }
@@ -69,9 +85,18 @@ public class MeetService {
      */
     public List<MeetDto> findMeetsByTitle(String title){
         List<Meet> meets = meetRepository.findMeetsByTitle(title);
-        return meets.stream()
+        List<MeetDto> result = meets.stream()
                 .map(meet -> MeetDto.from(meet))
                 .collect(Collectors.toList());
+
+        for (MeetDto meetDto : result) {
+            List<MeetAddress> maList = meetAddressRepository.findAllByMeetId(meetDto.getMeetId());
+            List<Address> addresses = maList.stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toList());
+            meetDto.setAddresses(addresses);
+        }
+        return result;
     }
 
     /**
@@ -81,9 +106,17 @@ public class MeetService {
      */
     public List<MeetDto> findMeetsByCategory(String category){
         List<Meet> meets = meetRepository.findMeetsByCategory(MeetCategory.valueOf(category));
-        return meets.stream()
+        List<MeetDto> result = meets.stream()
                 .map(meet -> MeetDto.from(meet))
                 .collect(Collectors.toList());
+        for (MeetDto meetDto : result) {
+            List<MeetAddress> maList = meetAddressRepository.findAllByMeetId(meetDto.getMeetId());
+            List<Address> addresses = maList.stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toList());
+            meetDto.setAddresses(addresses);
+        }
+        return result;
     }
 
     /**
@@ -96,10 +129,17 @@ public class MeetService {
         List<Meet> meets = meetAddresses.stream()
                 .map(MeetAddress::getMeet)
                 .collect(Collectors.toList());
-        List<MeetDto> meetDtos = meets.stream()
+        List<MeetDto> result = meets.stream()
                 .map(meet -> MeetDto.from(meet))
                 .collect(Collectors.toList());
-        return meetDtos;
+        for (MeetDto meetDto : result) {
+            List<MeetAddress> maList = meetAddressRepository.findAllByMeetId(meetDto.getMeetId());
+            List<Address> addresses = maList.stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toList());
+            meetDto.setAddresses(addresses);
+        }
+        return result;
     }
 }
 

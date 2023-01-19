@@ -14,4 +14,11 @@ public interface MeetAddressRepository extends JpaRepository<MeetAddress, Long> 
      */
     List<MeetAddress> findAllByAddressId(Long addressId);
 
+    /**
+     * 해당 모임에 해당하는 MeetAddress 목록을 조회하는 함수
+     * @param meetId
+     * @return 해당 모임의 MeetAddress 리스트
+     */
+    List<MeetAddress> findAllByMeetId(Long meetId);
+
 }

@@ -43,7 +43,7 @@ class MeetServiceTest {
         Member member = createMember("AAAA@naver.com", "010-AAAA-AAAA", Gender.FEMALE, address);
         memberRepository.save(member);
         Meet saveMeet = createMeet(member,MeetCategory.HOBBY,  "titleA", "www.AAAA.com", "contentA");
-        meetService.createMeet(saveMeet, address);
+        meetService.createMeet(saveMeet, List.of(address));
 
         //when
         MeetDto findMeetDto = meetService.findMeetById(saveMeet.getId());
@@ -57,6 +57,8 @@ class MeetServiceTest {
             assertThat(findMeetDto.getTitle()).isEqualTo(saveMeetDto.getTitle());
             assertThat(findMeetDto.getLink()).isEqualTo(saveMeetDto.getLink());
             assertThat(findMeetDto.getContent()).isEqualTo(saveMeetDto.getContent());
+
+            System.out.println("findMeetDto = " + findMeetDto);
         }
     }
 
@@ -132,9 +134,9 @@ class MeetServiceTest {
         Meet meet1 = createMeet(member1, MeetCategory.EXERCISE, "titleA", "www.1111.com", "content1");
         Meet meet2 = createMeet(member2, MeetCategory.EXERCISE, "titleB", "www.2222.com", "content2");
         Meet meet3 = createMeet(member3, MeetCategory.HOBBY, "titleA", "www.3333.com", "content3");
-        meetService.createMeet(meet1, address1);
-        meetService.createMeet(meet2, address2);
-        meetService.createMeet(meet3, address3);
+        meetService.createMeet(meet1, List.of(address1));
+        meetService.createMeet(meet2, List.of(address2));
+        meetService.createMeet(meet3, List.of(address3));
     }
 
     private static Meet createMeet(Member member1, MeetCategory category, String title1, String link, String content1) {
