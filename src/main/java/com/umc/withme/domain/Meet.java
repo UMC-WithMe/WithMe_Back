@@ -56,8 +56,7 @@ public class Meet extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Meet(Member leader, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content,
-                 LocalDate startDate, LocalDate endDate) {
+    private Meet(Member leader, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
         this.leader = leader;
         this.category = category;
         this.recruitStatus = RecruitStatus.PROGRESS;
@@ -66,8 +65,6 @@ public class Meet extends BaseEntity {
         this.maxPeople = maxPeople;
         this.link = link;
         this.content = content;
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     // 코드 추가는 여기에

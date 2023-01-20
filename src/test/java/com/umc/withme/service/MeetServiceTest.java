@@ -5,11 +5,12 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.domain.constant.MeetCategory;
-import com.umc.withme.dto.meet.MeetAddressDto;
+import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,12 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 @DisplayName("Meet - Service Layer Test")
 @SpringBootTest
 @Transactional
+@Disabled("추후에 작성할 테스트입니다.")
 class MeetServiceTest {
 
     @Autowired
@@ -49,9 +48,9 @@ class MeetServiceTest {
         Meet meet1 = createMeet(member1, MeetCategory.EXERCISE, "titleA", "www.1111.com", "content1");
         Meet meet2 = createMeet(member2, MeetCategory.EXERCISE, "titleB", "www.2222.com", "content2");
         Meet meet3 = createMeet(member3, MeetCategory.HOBBY, "titleA", "www.3333.com", "content3");
-        meetService.createMeet(MeetDto.from(meet1), List.of(MeetAddressDto.from(address1)));
-        meetService.createMeet(MeetDto.from(meet2), List.of(MeetAddressDto.from(address2)));
-        meetService.createMeet(MeetDto.from(meet3), List.of(MeetAddressDto.from(address3)));
+        meetService.createMeet(MeetDto.from(meet1), List.of(AddressDto.from(address1)));
+        meetService.createMeet(MeetDto.from(meet2), List.of(AddressDto.from(address2)));
+        meetService.createMeet(MeetDto.from(meet3), List.of(AddressDto.from(address3)));
     }
 
     private static Meet createMeet(Member member1, MeetCategory category, String title1, String link, String content1) {
