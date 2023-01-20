@@ -5,6 +5,8 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.domain.constant.MeetCategory;
+import com.umc.withme.dto.meet.MeetAddressDto;
+import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +49,9 @@ class MeetServiceTest {
         Meet meet1 = createMeet(member1, MeetCategory.EXERCISE, "titleA", "www.1111.com", "content1");
         Meet meet2 = createMeet(member2, MeetCategory.EXERCISE, "titleB", "www.2222.com", "content2");
         Meet meet3 = createMeet(member3, MeetCategory.HOBBY, "titleA", "www.3333.com", "content3");
-        meetService.createMeet(meet1, List.of(address1));
-        meetService.createMeet(meet2, List.of(address2));
-        meetService.createMeet(meet3, List.of(address3));
+        meetService.createMeet(MeetDto.from(meet1), List.of(MeetAddressDto.from(address1)));
+        meetService.createMeet(MeetDto.from(meet2), List.of(MeetAddressDto.from(address2)));
+        meetService.createMeet(MeetDto.from(meet3), List.of(MeetAddressDto.from(address3)));
     }
 
     private static Meet createMeet(Member member1, MeetCategory category, String title1, String link, String content1) {

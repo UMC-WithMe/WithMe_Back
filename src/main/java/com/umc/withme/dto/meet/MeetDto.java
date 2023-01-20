@@ -26,7 +26,7 @@ public class MeetDto {
     private String title;
     private String link;
     private String content;
-    
+
     private Integer minPeople;
     private Integer maxPeople;
     private LocalDate startDate;
@@ -49,16 +49,34 @@ public class MeetDto {
                 .maxPeople(this.getMaxPeople())
                 .link(this.getLink())
                 .content(this.getContent())
+                .startDate(this.startDate)
+                .endDate(this.endDate)
                 .build();
     }
 
     public static MeetDto of(
             Long meetId, Member leader, MeetCategory meetCategory,
             RecruitStatus recruitStatus, MeetStatus meetStatus,
-            String title, int minPeople, int maxPeople, String link,
-            String content, LocalDate startDate, LocalDate endDate,
+            String title, String link, String content,
+            int minPeople, int maxPeople,
+            LocalDate startDate, LocalDate endDate,
             List<Address> addresses){
         MeetDto meetDto = new MeetDto(meetId, MeetLeaderDto.from(leader), new ArrayList<>(),
+                meetCategory, recruitStatus, meetStatus,
+                title, link, content, minPeople, maxPeople,
+                startDate, endDate);
+        meetDto.setAddresses(addresses);
+        return meetDto;
+    }
+
+    public static MeetDto of(
+            Member leader, MeetCategory meetCategory,
+            RecruitStatus recruitStatus, MeetStatus meetStatus,
+            String title, String link, String content,
+            int minPeople, int maxPeople,
+            LocalDate startDate, LocalDate endDate,
+            List<Address> addresses){
+        MeetDto meetDto = new MeetDto(MeetLeaderDto.from(leader), new ArrayList<>(),
                 meetCategory, recruitStatus, meetStatus,
                 title, link, content, minPeople, maxPeople,
                 startDate, endDate);
@@ -74,5 +92,35 @@ public class MeetDto {
         for (Address address : addresses) {
             this.addresses.add(MeetAddressDto.from(address));
         }
+    }
+
+    /**
+     * meetId를 제외한 나머지 값들을 입력받는 생성자
+     * @param leader
+     * @param addresses
+     * @param meetCategory
+     * @param recruitStatus
+     * @param meetStatus
+     * @param title
+     * @param link
+     * @param content
+     * @param minPeople
+     * @param maxPeople
+     * @param startDate
+     * @param endDate
+     */
+    private MeetDto(MeetLeaderDto leader, List<MeetAddressDto> addresses, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, Integer minPeople, Integer maxPeople, LocalDate startDate, LocalDate endDate) {
+        this.leader = leader;
+        this.addresses = addresses;
+        this.meetCategory = meetCategory;
+        this.recruitStatus = recruitStatus;
+        this.meetStatus = meetStatus;
+        this.title = title;
+        this.link = link;
+        this.content = content;
+        this.minPeople = minPeople;
+        this.maxPeople = maxPeople;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

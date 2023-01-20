@@ -4,10 +4,7 @@ import com.umc.withme.domain.common.BaseEntity;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -25,6 +22,7 @@ public class Meet extends BaseEntity {
 
     @JoinColumn(name = "leader_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
+    @Setter
     private Member leader;
 
     @Column(nullable = false)
@@ -58,7 +56,8 @@ public class Meet extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Meet(Member leader, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
+    private Meet(Member leader, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content,
+                 LocalDate startDate, LocalDate endDate) {
         this.leader = leader;
         this.category = category;
         this.recruitStatus = RecruitStatus.PROGRESS;
@@ -67,6 +66,8 @@ public class Meet extends BaseEntity {
         this.maxPeople = maxPeople;
         this.link = link;
         this.content = content;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     // 코드 추가는 여기에

@@ -1,5 +1,6 @@
 package com.umc.withme.dto.meet;
 
+import com.umc.withme.domain.Address;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.TotalPoint;
 import com.umc.withme.domain.constant.Gender;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeetLeaderDto {
-
+    private Address address;
     private String email;
     private String nickName;
     private String phoneNumber;
@@ -21,12 +22,14 @@ public class MeetLeaderDto {
     private TotalPoint totalPoint;
 
     public static MeetLeaderDto from(Member leader){
-        return new MeetLeaderDto(leader.getEmail(), leader.getNickname(), leader.getPhoneNumber(),
+        return new MeetLeaderDto( leader.getAddress(),
+                leader.getEmail(), leader.getNickname(), leader.getPhoneNumber(),
                 leader.getBirth(), leader.getGender(), leader.getTotalPoint());
     }
 
     public Member toEntity(){
         return Member.builder()
+                .address(this.getAddress())
                 .email(this.getEmail())
                 .phoneNumber(this.getPhoneNumber())
                 .birth(this.getBirth())
@@ -35,9 +38,10 @@ public class MeetLeaderDto {
     }
 
     public static MeetLeaderDto of(
+            Address address,
             String email, String nickName, String phoneNumber,
             LocalDate birth, Gender gender, TotalPoint totalPoint
     ){
-        return new MeetLeaderDto(email, nickName, phoneNumber, birth, gender, totalPoint);
+        return new MeetLeaderDto(address, email, nickName, phoneNumber, birth, gender, totalPoint);
     }
 }
