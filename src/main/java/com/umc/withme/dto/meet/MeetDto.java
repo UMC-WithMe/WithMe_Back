@@ -24,17 +24,19 @@ public class MeetDto {
     private MeetStatus meetStatus;
 
     private String title;
-    private Integer minPeople;
-    private Integer maxPeople;
     private String link;
     private String content;
+    
+    private Integer minPeople;
+    private Integer maxPeople;
     private LocalDate startDate;
     private LocalDate endDate;
 
     public static MeetDto from(Meet meet){
         return new MeetDto(meet.getId(), MeetLeaderDto.from(meet.getLeader()), new ArrayList<>(),
                 meet.getCategory(), meet.getRecruitStatus(), meet.getMeetStatus(),
-                meet.getTitle(), meet.getMinPeople(), meet.getMaxPeople(), meet.getLink(), meet.getContent(),
+                meet.getTitle(),  meet.getLink(), meet.getContent(),
+                meet.getMinPeople(), meet.getMaxPeople(),
                 meet.getStartDate(), meet.getEndDate());
     }
 
@@ -58,7 +60,7 @@ public class MeetDto {
             List<Address> addresses){
         MeetDto meetDto = new MeetDto(meetId, MeetLeaderDto.from(leader), new ArrayList<>(),
                 meetCategory, recruitStatus, meetStatus,
-                title, minPeople, maxPeople, link, content,
+                title, link, content, minPeople, maxPeople,
                 startDate, endDate);
         meetDto.setAddresses(addresses);
         return meetDto;
