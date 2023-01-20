@@ -14,7 +14,7 @@ import java.util.Objects;
 public class MeetAddress extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meet_address_id")
     private Long id;
 

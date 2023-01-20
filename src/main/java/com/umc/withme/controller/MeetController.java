@@ -20,10 +20,10 @@ import javax.validation.Valid;
 public class MeetController {
 
     private final MeetService meetService;
-    private final MemberService memberService;
 
     /**
      * 모임글 생성 API
+     *
      * @param meetCreateRequest
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
@@ -31,8 +31,7 @@ public class MeetController {
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
             @Valid @RequestBody MeetCreateRequest meetCreateRequest,
             @RequestParam Long memberId // TODO : 인증기능 구현되면 로그인 사용자 정보 가져오는 걸로 변경
-    ){
-
+    ) {
         Long meetId = meetService.createMeet(meetCreateRequest.toDto(), memberId);
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);

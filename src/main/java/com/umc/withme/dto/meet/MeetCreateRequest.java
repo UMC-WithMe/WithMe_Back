@@ -5,6 +5,7 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
 import com.umc.withme.dto.address.AddressDto;
+import com.umc.withme.dto.address.AddressRequest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,7 +25,7 @@ import java.util.List;
 public class MeetCreateRequest {
 
     @NotEmpty
-    private List<AddressDto> addresses;
+    private List<AddressRequest> addresses;
     private MeetCategory meetCategory;
 
     @NotEmpty
@@ -37,14 +39,14 @@ public class MeetCreateRequest {
     private Integer maxPeople;
 
     public static MeetCreateRequest of(
-            List<AddressDto> addresses, MeetCategory meetCategory,
+            List<AddressRequest> addresses, MeetCategory meetCategory,
             String title, String link, String content,
             Integer minPeople, Integer maxPeople
-    ){
-        return new MeetCreateRequest( addresses, meetCategory, title, link, content, minPeople, maxPeople);
+    ) {
+        return new MeetCreateRequest(addresses, meetCategory, title, link, content, minPeople, maxPeople);
     }
 
-    public MeetDto toDto(){
+    public MeetDto toDto() {
         return MeetDto.of(
                 null,
                 getMeetCategory(),
@@ -53,8 +55,9 @@ public class MeetCreateRequest {
                 getContent(),
                 getMinPeople(),
                 getMaxPeople(),
-                getAddresses());
+                getAddresses().stream()
+                        .map(AddressRequest::toDto)
+                        .collect(Collectors.toUnmodifiableList())
+        );
     }
-
-
 }
