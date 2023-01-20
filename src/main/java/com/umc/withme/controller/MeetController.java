@@ -7,12 +7,10 @@ import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.service.MeetService;
 import com.umc.withme.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -30,17 +28,12 @@ public class MeetController {
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
     @PostMapping("/meet")
-    public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(@Valid @RequestBody MeetCreateRequest meetCreateRequest){
+    public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
+            @Valid @RequestBody MeetCreateRequest meetCreateRequest,
+            @RequestParam Long memberId // TODO : 인증기능 구현되면 로그인 사용자 정보 가져오는 걸로 변경
+    ){
 
-        // 이거 toDto로 해서 한줄로 줄이기
-        MeetDto meetDto = MeetDto.of(memberService.getMemberInfo(meetCreateRequest.getLeaderName()).toEntity(),
-                meetCreateRequest.getMeetCategory(),
-                meetCreateRequest.getTitle(), meetCreateRequest.getLink(), meetCreateRequest.getContent(),
-                meetCreateRequest.getMinPeople(), meetCreateRequest.getMaxPeople(),
-                meetCreateRequest.getAddresses());
-
-
-        Long meetId = meetService.createMeet(meetDto);
+        Long meetId = meetService.createMeet(meetCreateRequest.toDto(), memberId);
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
 

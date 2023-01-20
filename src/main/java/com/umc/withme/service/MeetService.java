@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,11 +37,10 @@ public class MeetService {
      * @param addressDtos
      */
     @Transactional
-//    public MeetDto createMeet(MeetDto meetDto, List<AddressDto> addressDtos){
-    public Long createMeet(MeetDto meetDto){
+    public Long createMeet(MeetDto meetDto, Long leaderId){
         // Member 엔티티인 리더를 찾아온다.
-        Member leader = memberRepository.findByNickname(meetDto.getLeader().getNickname())
-                .orElseThrow(NicknameNotFoundException::new);
+        Member leader = memberRepository.findById(leaderId)
+                .orElseThrow(EntityNotFoundException::new); // TODO : 추후 인증기능 구현되면 exception 교체해야된다.
 
         // meet을 리더를 설정하고 저장한다.
         Meet meet = meetDto.toEntity(leader);

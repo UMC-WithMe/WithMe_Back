@@ -23,8 +23,6 @@ import java.util.List;
 public class MeetCreateRequest {
 
     @NotEmpty
-    private String leaderName;
-    @NotEmpty
     private List<AddressDto> addresses;
     private MeetCategory meetCategory;
 
@@ -39,10 +37,24 @@ public class MeetCreateRequest {
     private Integer maxPeople;
 
     public static MeetCreateRequest of(
-            String leaderName, List<AddressDto> addresses,
-            MeetCategory meetCategory,
-            String title, String link, String content, Integer minPeople, Integer maxPeople
+            List<AddressDto> addresses, MeetCategory meetCategory,
+            String title, String link, String content,
+            Integer minPeople, Integer maxPeople
     ){
-        return new MeetCreateRequest(leaderName, addresses, meetCategory, title, link, content, minPeople, maxPeople);
+        return new MeetCreateRequest( addresses, meetCategory, title, link, content, minPeople, maxPeople);
     }
+
+    public MeetDto toDto(){
+        return MeetDto.of(
+                null,
+                getMeetCategory(),
+                getTitle(),
+                getLink(),
+                getContent(),
+                getMinPeople(),
+                getMaxPeople(),
+                getAddresses());
+    }
+
+
 }

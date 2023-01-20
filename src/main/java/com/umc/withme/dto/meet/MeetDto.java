@@ -54,20 +54,20 @@ public class MeetDto {
     }
 
     public static MeetDto of(
-            Long meetId, Member leader, MeetCategory meetCategory,
+            Long meetId, MemberDto leader, MeetCategory meetCategory,
             RecruitStatus recruitStatus, MeetStatus meetStatus,
             String title, String link, String content,
             int minPeople, int maxPeople,
             LocalDate startDate, LocalDate endDate,
             List<AddressDto> addresses){
-        return new MeetDto(meetId, MemberDto.from(leader), addresses,
+        return new MeetDto(meetId, leader, addresses,
                 meetCategory, recruitStatus, meetStatus,
                 title, link, content, minPeople, maxPeople,
                 startDate, endDate);
     }
 
     public static MeetDto of(
-            Member leader, MeetCategory meetCategory,
+            MemberDto leader, MeetCategory meetCategory,
             String title, String link, String content,
             int minPeople, int maxPeople,
             List<AddressDto> addresses){
