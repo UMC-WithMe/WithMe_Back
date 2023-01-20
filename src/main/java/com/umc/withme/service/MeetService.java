@@ -36,26 +36,19 @@ public class MeetService {
      * @param addressDtos
      */
     @Transactional
-    public MeetDto createMeet(MeetDto meetDto, List<AddressDto> addressDtos){
+//    public MeetDto createMeet(MeetDto meetDto, List<AddressDto> addressDtos){
+    public Long createMeet(MeetDto meetDto){
         // Member 엔티티인 리더를 찾아온다.
         Member leader = memberRepository.findByNickname(meetDto.getLeader().getNickname())
                 .orElseThrow(NicknameNotFoundException::new);
 
         // meet을 리더를 설정하고 저장한다.
-        Meet meet = meetDto.toEntity();
-        meet.setLeader(leader);
+        Meet meet = meetDto.toEntity(leader);
         Meet savedMeet = meetRepository.save(meet);
-        MeetDto savedMeetDto = MeetDto.of(
-                savedMeet.getId(), leader, savedMeet.getCategory(),
-                savedMeet.getRecruitStatus(), savedMeet.getMeetStatus(),
-                savedMeet.getTitle(), savedMeet.getLink(), savedMeet.getContent(),
-                savedMeet.getMinPeople(), savedMeet.getMaxPeople(),
-                savedMeet.getStartDate(), savedMeet.getEndDate(),
-                addressDtos);
 
         // Meet와 Address 목록을 MeetAddress repository에 연결해 저장한다.
         List<Address> addressList = new ArrayList<>();
-        for (AddressDto addressDto : addressDtos) {
+        for (AddressDto addressDto : meetDto.getAddresses()) {
             Optional<Address> optionalAddress = addressRepository.
                     findBySidoAndSgg(addressDto.getSido(), addressDto.getSgg());
             if(optionalAddress.isEmpty()) continue;
@@ -64,7 +57,7 @@ public class MeetService {
             meetAddressRepository.save(new MeetAddress(savedMeet, address));
         }
 
-        return savedMeetDto;
+        return savedMeet.getId();
     }
 }
 

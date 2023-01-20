@@ -22,7 +22,6 @@ public class Meet extends BaseEntity {
 
     @JoinColumn(name = "leader_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
-    @Setter
     private Member leader;
 
     @Column(nullable = false)

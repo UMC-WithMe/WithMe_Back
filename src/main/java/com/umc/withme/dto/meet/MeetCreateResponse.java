@@ -10,7 +10,7 @@ public class MeetCreateResponse {
 
    private Long meetId;
 
-    public static MeetCreateResponse from(MeetDto dto){
-        return new MeetCreateResponse(dto.getMeetId());
+    public static MeetCreateResponse of(Long meetId){
+        return new MeetCreateResponse(meetId);
     }
 }

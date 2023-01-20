@@ -48,9 +48,9 @@ class MeetServiceTest {
         Meet meet1 = createMeet(member1, MeetCategory.EXERCISE, "titleA", "www.1111.com", "content1");
         Meet meet2 = createMeet(member2, MeetCategory.EXERCISE, "titleB", "www.2222.com", "content2");
         Meet meet3 = createMeet(member3, MeetCategory.HOBBY, "titleA", "www.3333.com", "content3");
-        meetService.createMeet(MeetDto.from(meet1), List.of(AddressDto.from(address1)));
-        meetService.createMeet(MeetDto.from(meet2), List.of(AddressDto.from(address2)));
-        meetService.createMeet(MeetDto.from(meet3), List.of(AddressDto.from(address3)));
+        meetService.createMeet(MeetDto.from(meet1));
+        meetService.createMeet(MeetDto.from(meet2));
+        meetService.createMeet(MeetDto.from(meet3));
     }
 
     private static Meet createMeet(Member member1, MeetCategory category, String title1, String link, String content1) {

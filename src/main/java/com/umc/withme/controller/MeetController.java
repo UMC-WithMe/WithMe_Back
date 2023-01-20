@@ -30,20 +30,23 @@ public class MeetController {
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
     @PostMapping("/meet")
-    public ResponseEntity<DataResponse> createMeet(@Valid @RequestBody MeetCreateRequest meetCreateRequest){
+    public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(@Valid @RequestBody MeetCreateRequest meetCreateRequest){
 
+        // 이거 toDto로 해서 한줄로 줄이기
         MeetDto meetDto = MeetDto.of(memberService.getMemberInfo(meetCreateRequest.getLeaderName()).toEntity(),
                 meetCreateRequest.getMeetCategory(),
                 meetCreateRequest.getTitle(), meetCreateRequest.getLink(), meetCreateRequest.getContent(),
                 meetCreateRequest.getMinPeople(), meetCreateRequest.getMaxPeople(),
                 meetCreateRequest.getAddresses());
 
-        MeetDto savedMeetDto = meetService.createMeet(meetDto, meetCreateRequest.getAddresses());
 
-        MeetCreateResponse response = MeetCreateResponse.from(savedMeetDto);
+        Long meetId = meetService.createMeet(meetDto);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new DataResponse(response));
+        MeetCreateResponse response = MeetCreateResponse.of(meetId);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
     }
 }

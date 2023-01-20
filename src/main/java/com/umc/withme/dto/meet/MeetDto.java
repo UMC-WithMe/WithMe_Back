@@ -40,9 +40,10 @@ public class MeetDto {
                 meet.getMinPeople(), meet.getMaxPeople(),
                 meet.getStartDate(), meet.getEndDate());
     }
-    public Meet toEntity(){
+
+    public Meet toEntity(Member leader){
         return Meet.builder()
-                .leader(this.getLeader().toEntity())
+                .leader(leader)
                 .category(this.getMeetCategory())
                 .title(this.getTitle())
                 .minPeople(this.getMinPeople())
