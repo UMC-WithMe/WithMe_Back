@@ -1,6 +1,6 @@
 package com.umc.withme.domain;
 
-import com.umc.withme.domain.common.BaseTimeEntity;
+import com.umc.withme.domain.common.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Review extends BaseTimeEntity {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class Review extends BaseTimeEntity {
 
     // Builder & Constructor
     @Builder
-    public Review(Member sender_id, Member receiver_id, Meet meet, Point point, String content) {
+    private Review(Member sender_id, Member receiver_id, Meet meet, Point point, String content) {
         this.sender_id = sender_id;
         this.receiver_id = receiver_id;
         this.meet = meet;
