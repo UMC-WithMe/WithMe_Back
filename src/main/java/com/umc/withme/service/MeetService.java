@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +51,23 @@ public class MeetService {
     private Address getAddress(AddressDto dto) {
         return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
                 .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
+    }
+
+    /**
+     * 모임 id를 입력받아 모임 DTO를 컨트롤러에게 반환하는 함수이다.
+     * @param meetId
+     * @return
+     */
+    public MeetDto findById(Long meetId) {
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        List<Address> addresses = meetAddressRepository.findByMeet_Id(meetId)
+                .stream()
+                .map(ma -> ma.getAddress())
+                .collect(Collectors.toUnmodifiableList());
+
+        return MeetDto.from(meet, addresses);
     }
 }
 
