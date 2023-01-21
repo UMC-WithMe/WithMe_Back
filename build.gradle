@@ -29,13 +29,13 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 
     // Spring Security
-    // TODO: 인증 기능 구현 후 주석 처리 해제
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
 
-    // Spring Security OAuth 2.0 Client
-    // TODO: Front 개발자분들과 논의해 본 후 사용 여부 결정
-//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // Sprint Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
