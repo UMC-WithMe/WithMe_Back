@@ -26,6 +26,9 @@ spring:
     defer-datasource-initialization: true  # TODO: 배포 시 제거
   sql.init.mode: always # TODO: 배포 시 제거 또는 never로 설정
 
+# JWT
+jwt.secret.key: ${JWT_SECRET_KEY}
+
 ---
 # Settings for test
 spring:
