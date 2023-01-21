@@ -19,13 +19,13 @@ public class Review extends BaseEntity {
     @Column(name = "review_id")
     private Long id;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "sender_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member sender_id;
+    private Member sender;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "receiver_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member receiver_id;
+    private Member receiver;
 
     @JoinColumn(name = "meet_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,9 +40,9 @@ public class Review extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Review(Member sender_id, Member receiver_id, Meet meet, Point point, String content) {
-        this.sender_id = sender_id;
-        this.receiver_id = receiver_id;
+    private Review(Member sender, Member receiver, Meet meet, Point point, String content) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.meet = meet;
         this.point = point;
         this.content = content;
