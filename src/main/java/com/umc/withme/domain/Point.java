@@ -26,14 +26,14 @@ public class Point extends BaseTimeEntity {
     private Integer passion;
 
     @Column(nullable = false)
-    private Integer contact_speed;
+    private Integer contactSpeed;
 
     // Builder & Constructor
     @Builder
-    private Point(Integer attendance, Integer passion, Integer contact_speed) {
+    private Point(Integer attendance, Integer passion, Integer contactSpeed) {
         this.attendance = attendance;
         this.passion = passion;
-        this.contact_speed = contact_speed;
+        this.contactSpeed = contactSpeed;
     }
 
     // 코드 추가는 여기에
