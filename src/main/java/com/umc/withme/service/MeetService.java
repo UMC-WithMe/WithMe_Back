@@ -25,11 +25,11 @@ public class MeetService {
     private final MemberRepository memberRepository;
 
     /**
-     * MeetDto 와 MeetAddressDto 리스트를 입력받아
-     * MeetRepository 및 MeetAddressRepository에 저장한다.
+     * MeetDto와 leaderId를 입력받아 MeetRepository 및 MeetAddressRepository에 저장한다.
      *
      * @param meetDto
-     * @param addressDtos
+     * @param leaderId
+     * @return
      */
     @Transactional
     public Long createMeet(MeetDto meetDto, Long leaderId) {
@@ -55,6 +55,7 @@ public class MeetService {
 
     /**
      * 모임 id를 입력받아 모임 DTO를 컨트롤러에게 반환하는 함수이다.
+     *
      * @param meetId
      * @return
      */

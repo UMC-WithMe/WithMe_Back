@@ -4,12 +4,14 @@ import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.meet.MeetCreateRequest;
 import com.umc.withme.dto.meet.MeetCreateResponse;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetInfoGetResponse;
 import com.umc.withme.service.MeetService;
 import com.umc.withme.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +37,25 @@ public class MeetController {
         Long meetId = meetService.createMeet(meetCreateRequest.toDto(), memberId);
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 모임 단건 조회 API
+     * 모임 id로 모임을 1건 조회한다.
+     *
+     * @param meetId
+     * @return 조회한 모임의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
+     */
+    @GetMapping("/meet")
+    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@RequestParam Long meetId){
+        MeetDto meetDto = meetService.findById(meetId);
+
+        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
