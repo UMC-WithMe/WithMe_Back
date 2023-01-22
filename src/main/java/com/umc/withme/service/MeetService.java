@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +50,27 @@ public class MeetService {
     private Address getAddress(AddressDto dto) {
         return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
                 .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
+    }
+
+    /**
+     * 삭제할 모임의 id를 입력받아 해당 모임이 존재할 경우 삭제한다.
+     * Meet, MeetAddress, MeetMember 테이블에서 삭제가 이루어진다.
+     * @param meetId
+     */
+    @Transactional
+    public void deleteMeetById(Long meetId){
+        meetAddressRepository.findByMeet_Id(meetId)
+                .stream()
+                .forEach(ma -> meetAddressRepository.delete(ma));
+
+        meetMemberRepository.findByMeet_Id(meetId)
+                .stream()
+                .forEach(mm -> meetMemberRepository.delete(mm));
+
+        meetRepository.delete(
+                meetRepository.findById(meetId)
+                        .orElseThrow(EntityNotFoundException::new)
+        );
     }
 }
 

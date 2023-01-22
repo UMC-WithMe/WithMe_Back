@@ -3,6 +3,7 @@ package com.umc.withme.controller;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.meet.MeetCreateRequest;
 import com.umc.withme.dto.meet.MeetCreateResponse;
+import com.umc.withme.dto.meet.MeetDeleteResponse;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.service.MeetService;
 import com.umc.withme.service.MemberService;
@@ -35,6 +36,24 @@ public class MeetController {
         Long meetId = meetService.createMeet(meetCreateRequest.toDto(), memberId);
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 모임글 단건 삭제 API
+     * 모임의 id를 입력받아 해당하는 모임이 있으면 삭제한다.
+     * @param meetId
+     * @return 삭제한 모임의 id를 데이터에 담아서 반환한다.
+     */
+    @DeleteMapping("/meet")
+    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(@RequestParam Long meetId){
+        meetService.deleteMeetById(meetId);
+
+        MeetDeleteResponse response = MeetDeleteResponse.of(meetId);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
