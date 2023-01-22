@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 
@@ -46,7 +49,7 @@ public class MemberController {
      */
     @GetMapping("/users")
     public ResponseEntity<DataResponse> getMemberInfo(@RequestParam @NotBlank String nickname) {
-        MemberDto memberDto = memberService.getMemberInfo(nickname);
+        MemberDto memberDto = memberService.findMemberByNickname(nickname);
         MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
 
         return ResponseEntity
