@@ -22,6 +22,9 @@ dependencies {
     // Spring Boot Actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // Spring AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
