@@ -21,11 +21,11 @@ public enum ExceptionType {
     // Member
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
 
-    // Address
-    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
-
     // Meet
-    MEET_ID_NOT_FOUND_EXCEPTION(4100, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException .class);
+    MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException .class),
+
+    // Address
+    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class);
 
     private final int errorCode;
     private final String errorMessage;
