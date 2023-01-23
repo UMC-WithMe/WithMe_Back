@@ -49,8 +49,8 @@ public class MeetController {
      * @param meetId
      * @return 삭제한 모임의 id를 데이터에 담아서 반환한다.
      */
-    @DeleteMapping("/meet")
-    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(@RequestParam Long meetId){
+    @DeleteMapping("/meet/{meetId}")
+    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(@PathVariable Long meetId){
         meetService.deleteMeetById(meetId);
 
         MeetDeleteResponse response = MeetDeleteResponse.of(meetId);
