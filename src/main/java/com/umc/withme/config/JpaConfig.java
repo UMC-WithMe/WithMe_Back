@@ -31,7 +31,7 @@ public class JpaConfig {
                     // 로그인하지 않은 상황에서 Authentication.getPrincipal()을 사용하면 "anonymousUser"라는 String이 반환된다.
                     // 이 경우, WithMeAppPrinciple로 casting 할 수 없어 ClassCastException이 발생한다.
                     // 이 때문에 Optional.empty()를 반환하도록 구현.
-                    log.error("JpaConfig.auditorAware() ex={}", String.valueOf(e));
+                    log.warn("JpaConfig.auditorAware() ex={}", String.valueOf(e));
                     return Optional.empty();
                 }
             };
