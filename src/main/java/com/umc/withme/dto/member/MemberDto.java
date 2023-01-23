@@ -24,14 +24,14 @@ public class MemberDto {
     private Gender gender;
     private TotalPoint totalPoint;
 
-    public static MemberDto of(Long id, Address address, String email, String phoneNumber, String nickname, LocalDate birth, Gender gender, TotalPoint totalPoint) {
-        return new MemberDto(id, AddressDto.from(address), email, phoneNumber, nickname, birth, gender, totalPoint);
+    public static MemberDto of(Long id, AddressDto address, String email, String phoneNumber, String nickname, LocalDate birth, Gender gender, TotalPoint totalPoint) {
+        return new MemberDto(id, address, email, phoneNumber, nickname, birth, gender, totalPoint);
     }
 
     public static MemberDto from(Member member) {
         return MemberDto.of(
                 member.getId(),
-                member.getAddress(),
+                AddressDto.from(member.getAddress()),
                 member.getEmail(),
                 member.getPhoneNumber(),
                 member.getNickname(),

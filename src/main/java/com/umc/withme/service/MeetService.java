@@ -4,6 +4,7 @@ import com.umc.withme.domain.*;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
+import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,9 +62,9 @@ public class MeetService {
      */
     public MeetDto findById(Long meetId) {
         Meet meet = meetRepository.findById(meetId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        List<Address> addresses = meetAddressRepository.findByMeet_Id(meetId)
+        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
                 .stream()
                 .map(ma -> ma.getAddress())
                 .collect(Collectors.toUnmodifiableList());
