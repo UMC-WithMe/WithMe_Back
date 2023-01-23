@@ -51,8 +51,8 @@ public class MeetController {
      * @param meetId
      * @return 조회한 모임의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
      */
-    @GetMapping("/meet")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@RequestParam Long meetId){
+    @GetMapping("/meet/{meetId}")
+    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId){
         MeetDto meetDto = meetService.findById(meetId);
 
         MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
