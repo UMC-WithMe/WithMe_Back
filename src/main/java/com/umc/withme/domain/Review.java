@@ -40,7 +40,7 @@ public class Review extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Review(Member sender, Member receiver, Meet meet, Point point, String content) {
+    public Review(Member sender, Member receiver, Meet meet, Point point, String content) {
         this.sender = sender;
         this.receiver = receiver;
         this.meet = meet;

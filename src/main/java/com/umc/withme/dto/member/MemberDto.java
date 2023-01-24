@@ -42,11 +42,12 @@ public class MemberDto {
 
     public Member toEntity() {
         return Member.builder()
-                .address(address)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .birth(birth)
-                .gender(gender)
+                .id(this.getId())
+                .address(this.getAddress())
+                .email(this.getEmail())
+                .phoneNumber(this.getPhoneNumber())
+                .birth(this.getBirth())
+                .gender(this.getGender())
                 .build();
     }
 }

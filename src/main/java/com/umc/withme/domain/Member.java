@@ -46,7 +46,8 @@ public class Member extends BaseTimeEntity {
 
     // Builder & Constructor
     @Builder
-    private Member(Address address, String email, String phoneNumber, LocalDate birth, Gender gender) {
+    private Member(Long id, Address address, String email, String phoneNumber, LocalDate birth, Gender gender) {
+        this.id = id;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
