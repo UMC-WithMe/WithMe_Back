@@ -6,6 +6,7 @@ import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
+import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,52 +28,55 @@ import static org.mockito.BDDMockito.then;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
+    private static final String TEST_EMAIL = "test@daum.net";
+    private static final String TEST_PASSWORD = "1234";
+    private static final String TEST_NICKNAME = "Test";
+
     @InjectMocks
     private MemberService sut;
 
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private AddressRepository addressRepository;
 
     @Test
     void 닉네임_중복_여부_확인() {
         // given
-        String nickname = "test";
         boolean expected = true;
-        given(memberRepository.existsByNickname(nickname)).willReturn(expected);
+        given(memberRepository.existsByNickname(MemberServiceTest.TEST_NICKNAME)).willReturn(expected);
 
         // when
-        boolean actual = sut.checkNicknameDuplication(nickname);
+        boolean actual = sut.checkNicknameDuplication(MemberServiceTest.TEST_NICKNAME);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        then(memberRepository).should().existsByNickname(nickname);
+        then(memberRepository).should().existsByNickname(MemberServiceTest.TEST_NICKNAME);
     }
 
     @Test
     void 이메일_존재_여부_확인() {
         // given
-        String email = "test@daum.net";
         boolean expected = true;
-        given(memberRepository.existsByEmail(email)).willReturn(expected);
+        given(memberRepository.existsByEmail(TEST_EMAIL)).willReturn(expected);
 
         // when
-        boolean actual = sut.existsMemberByEmail(email);
+        boolean actual = sut.existsMemberByEmail(TEST_EMAIL);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        then(memberRepository).should().existsByEmail(email);
+        then(memberRepository).should().existsByEmail(TEST_EMAIL);
     }
 
     @Test
     void 주어진_닉네임을_갖는_회원을_조회한다_조회_성공() {
         // given
-        String nickname = "test";
         Member expectedMember = createMemberWithoutPhoneNumberAndAddress();
-        given(memberRepository.findByNickname(nickname))
+        given(memberRepository.findByNickname(MemberServiceTest.TEST_NICKNAME))
                 .willReturn(Optional.of(expectedMember));
 
         // when
-        MemberDto dto = sut.findMemberByNickname(nickname);
+        MemberDto dto = sut.findMemberByNickname(MemberServiceTest.TEST_NICKNAME);
 
         // then
         assertAll(
@@ -81,35 +85,33 @@ class MemberServiceTest {
                 () -> assertThat(dto.getAgeRange()).isEqualTo(expectedMember.getAgeRange()),
                 () -> assertThat(dto.getGender()).isEqualTo(expectedMember.getGender())
         );
-        then(memberRepository).should().findByNickname(nickname);
+        then(memberRepository).should().findByNickname(MemberServiceTest.TEST_NICKNAME);
     }
 
     @Test
     void 주어진_닉네임을_갖는_회원을_조회한다_조회_실패() {
         // given
-        String nickname = "test";
-        given(memberRepository.findByNickname(nickname))
+        given(memberRepository.findByNickname(MemberServiceTest.TEST_NICKNAME))
                 .willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findMemberByNickname(nickname));
+        Throwable t = catchThrowable(() -> sut.findMemberByNickname(MemberServiceTest.TEST_NICKNAME));
 
         // then
         assertThat(t)
                 .isInstanceOf(NicknameNotFoundException.class);
-        then(memberRepository).should().findByNickname(nickname);
+        then(memberRepository).should().findByNickname(MemberServiceTest.TEST_NICKNAME);
     }
 
     @Test
     void 주어진_이메일을_갖는_회원을_조회한다_조회_성공() {
         // given
-        String email = "test@daum.net";
         Member expectedMember = createMemberWithoutPhoneNumberAndAddress();
-        given(memberRepository.findByEmail(email))
+        given(memberRepository.findByEmail(TEST_EMAIL))
                 .willReturn(Optional.of(expectedMember));
 
         // when
-        MemberDto dto = sut.findMemberByEmail(email);
+        MemberDto dto = sut.findMemberByEmail(TEST_EMAIL);
 
         // then
         assertAll(
@@ -118,77 +120,112 @@ class MemberServiceTest {
                 () -> assertThat(dto.getAgeRange()).isEqualTo(expectedMember.getAgeRange()),
                 () -> assertThat(dto.getGender()).isEqualTo(expectedMember.getGender())
         );
-        then(memberRepository).should().findByEmail(email);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
     }
 
     @Test
     void 주어진_이메일을_갖는_회원을_조회한다_조회_실패() {
         // given
-        String email = "test@daum.net";
-        given(memberRepository.findByEmail(email))
+        given(memberRepository.findByEmail(TEST_EMAIL))
                 .willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findMemberByEmail(email));
+        Throwable t = catchThrowable(() -> sut.findMemberByEmail(TEST_EMAIL));
 
         // then
         assertThat(t)
                 .isInstanceOf(EmailNotFoundException.class);
-        then(memberRepository).should().findByEmail(email);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
     }
 
     @Test
     void 주어진_이메일을_갖는_회원의_주소_정보_존재_여부_확인_없는_경우() {
         // given
-        String email = "test@daum.net";
         boolean expected = false;
-        given(memberRepository.findByEmail(email))
+        given(memberRepository.findByEmail(TEST_EMAIL))
                 .willReturn(Optional.of(createMemberWithoutPhoneNumberAndAddress()));
 
         // when
-        boolean actual = sut.checkExistenceMemberAddressByEmail(email);
+        boolean actual = sut.checkExistenceMemberAddressByEmail(TEST_EMAIL);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        then(memberRepository).should().findByEmail(email);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
     }
 
     @Test
     void 주어진_이메일을_갖는_회원의_주소_정보_존재_여부_확인_있는_경우() {
         // given
-        String email = "test@daum.net";
         boolean expected = true;
-        given(memberRepository.findByEmail(email))
+        given(memberRepository.findByEmail(TEST_EMAIL))
                 .willReturn(Optional.of(createMember()));
 
         // when
-        boolean actual = sut.checkExistenceMemberAddressByEmail(email);
+        boolean actual = sut.checkExistenceMemberAddressByEmail(TEST_EMAIL);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        then(memberRepository).should().findByEmail(email);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
     }
 
     @Test
     void 주어진_이메일을_갖는_회원의_폰_번호_존재_여부_확인_있는_경우() {
         // given
-        String email = "test@daum.net";
         boolean expected = true;
-        given(memberRepository.findByEmail(email))
+        given(memberRepository.findByEmail(TEST_EMAIL))
                 .willReturn(Optional.of(createMember()));
 
         // when
-        boolean actual = sut.checkExistenceMemberPhoneNumberByEmail(email);
+        boolean actual = sut.checkExistenceMemberPhoneNumberByEmail(TEST_EMAIL);
 
         // then
         assertThat(actual).isEqualTo(expected);
-        then(memberRepository).should().findByEmail(email);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
+    }
+
+    @Test
+    void 회원_이메일과_폰_번호가_주어지면_회원의_폰_번호를_업데이트한다() {
+        // given
+        Member member = createMember();
+        String newPhoneNumber = "010-1234-5678";
+        given(memberRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(member));
+
+        // when
+        sut.updateMemberPhoneNumber(TEST_EMAIL, newPhoneNumber);
+
+        // then
+        assertThat(member)
+                .hasFieldOrPropertyWithValue("phoneNumber", newPhoneNumber);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
+    }
+
+    @Test
+    void 회원_이메일과_주소_정보가_주어지면_회원의_주소_정보를_업데이트한다() {
+        // given
+        Member member = createMember();
+        String sido = "제주특별자치도";
+        String sgg = "제주시";
+        given(memberRepository.findByEmail(TEST_EMAIL))
+                .willReturn(Optional.of(member));
+        given(addressRepository.findBySidoAndSgg(sido, sgg))
+                .willReturn(Optional.of(createAddress(sido, sgg)));
+
+        // when
+        sut.updateMemberAddress(TEST_EMAIL, sido, sgg);
+
+        // then
+        assertAll(
+                () -> assertThat(member.getAddress().getSido()).isEqualTo(sido),
+                () -> assertThat(member.getAddress().getSgg()).isEqualTo(sgg)
+        );
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
+        then(addressRepository).should().findBySidoAndSgg(sido, sgg);
     }
 
     private MemberDto createMemberDto() {
         return MemberDto.of(
-                "test@daum.net",
-                "1234",
+                TEST_EMAIL,
+                TEST_PASSWORD,
                 20,
                 Gender.MALE
         );
@@ -207,5 +244,12 @@ class MemberServiceTest {
         ReflectionTestUtils.setField(member, "id", 1L);
 
         return member;
+    }
+
+    private Address createAddress(String sido, String sgg) {
+        Address address = new Address(sido, sgg);
+        ReflectionTestUtils.setField(address, "id", 1L);
+
+        return address;
     }
 }

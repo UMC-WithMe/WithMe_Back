@@ -1,8 +1,12 @@
 package com.umc.withme.service;
 
+import com.umc.withme.domain.Address;
+import com.umc.withme.domain.Member;
 import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
+import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final AddressRepository addressRepository;
 
     /**
      * DB에서 닉네임 중복 여부 확인 후 결과를 반환한다.
@@ -56,9 +61,7 @@ public class MemberService {
      * @throws EmailNotFoundException   해당 email을 갖는 회원이 존재하지 않는 경우
      */
     public MemberDto findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .map(MemberDto::from)
-                .orElseThrow(EmailNotFoundException::new);
+        return MemberDto.from(getMemberByEmail(email));
     }
 
     /**
@@ -79,5 +82,43 @@ public class MemberService {
      */
     public boolean checkExistenceMemberPhoneNumberByEmail(String email) {
         return findMemberByEmail(email).getPhoneNumber() != null;
+    }
+
+    /**
+     * memberId에 해당하는 회원 entity의 폰 번호를 phoneNumber로 설정한다.
+     *
+     * @param email 폰 번호를 설정할 회원의 email
+     * @param phoneNumber   설정할 폰 번호
+     */
+    @Transactional
+    public void updateMemberPhoneNumber(String email, String phoneNumber) {
+        Member member = getMemberByEmail(email);
+        member.setPhoneNumber(phoneNumber);
+    }
+
+    /**
+     * email에 해당하는 회원 entity의 주소 정보를 sido, sgg와 일치하는 주소로 설정한다.
+     *
+     * @param email 주소를 설정할 회원의 email
+     * @param sido  시/도
+     * @param sgg   시/군/구
+     */
+    @Transactional
+    public void updateMemberAddress(String email, String sido, String sgg) {
+        Member member = getMemberByEmail(email);
+        Address address = addressRepository.findBySidoAndSgg(sido, sgg)
+                .orElseThrow(() -> new AddressNotFoundException(sido, sgg));
+        member.setAddress(address);
+    }
+
+    /**
+     * email에 해당하는 회원 entity를 조회하여 반환한다.
+     *
+     * @param email 조회할 회원의 email
+     * @return  조회한 회원 entity 객체
+     */
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(EmailNotFoundException::new);
     }
 }

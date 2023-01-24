@@ -3,10 +3,7 @@ package com.umc.withme.domain;
 import com.umc.withme.domain.common.BaseTimeEntity;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.domain.constant.RoleType;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -21,6 +18,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @Setter
     @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
@@ -35,6 +33,7 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true, nullable = false)
     private String password;
 
+    @Setter
     @Column(unique = true)
     private String phoneNumber;
 
