@@ -16,6 +16,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     boolean existsByNickname(String nickname);
 
+    boolean existsByEmail(String email);
+
     /**
      * 해당 닉네임을 가진 Member 객체를 조회한다.
      *
@@ -24,4 +26,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      */
     @EntityGraph(attributePaths = {"address"})
     Optional<Member> findByNickname(String nickname);
+
+    Optional<Member> findByEmail(String email);
 }

@@ -1,8 +1,10 @@
 package com.umc.withme.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,16 @@ public class SwaggerConfig {
                         new ExternalDocumentation()
                                 .description("Team WithMe GitHub Organization")
                                 .url("https://github.com/UMC-WithMe")
+                )
+                .components(
+                        new Components()
+                                .addSecuritySchemes(
+                                        "access-token",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
                 );
     }
 }

@@ -2,7 +2,9 @@ package com.umc.withme.repository;
 
 import com.umc.withme.domain.Address;
 import com.umc.withme.exception.address.AddressNotFoundException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,13 +14,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@DisplayName("Address - Repository Layer Test")
+@Disabled("Spring Data JPA가 만들어주는 기능은 테스트 할 필요가 없다.")
+@DisplayName("[Repository] Address")
 @DataJpaTest
 class AddressRepositoryTest {
 
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
 
     public AddressRepositoryTest(@Autowired AddressRepository addressRepository) {
         this.addressRepository = addressRepository;
@@ -35,6 +39,23 @@ class AddressRepositoryTest {
 
         // then
         assertThat(actual.getId()).isEqualTo(addressId);
+    }
+
+    @Test
+    void 잘못된_정보로_주소를_조회하면_예외가_발생한다() {
+        // given
+        String sido = "시도";
+        String sgg = "시군구";
+
+        // when
+        Throwable t = catchThrowable(() ->
+                addressRepository.findBySidoAndSgg(sido, sgg)
+                        .orElseThrow(() -> new AddressNotFoundException(sido, sgg))
+        );
+
+        // then
+        assertThat(t)
+                .isInstanceOf(AddressNotFoundException.class);
     }
 
     static Stream<Arguments> sggTestData() {
