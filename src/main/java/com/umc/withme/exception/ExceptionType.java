@@ -1,6 +1,7 @@
 package com.umc.withme.exception;
 
 import com.umc.withme.exception.address.AddressNotFoundException;
+import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
 import com.umc.withme.exception.common.CustomException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
@@ -31,11 +32,12 @@ public enum ExceptionType {
     ACCESS_DENIED_EXCEPTION(2, "권한이 유효하지 않습니다.", null),
     AUTHENTICATION_EXCEPTION(3, "인증 과정에서 문제가 발생했습니다.", null),
 
-    // JWT
+    // Auth
     JWT_INVALID_SIGNATURE_EXCEPTION(100, "Token의 서명이 잘못되었습니다.", SignatureException.class),
     JWT_EXPIRED_EXCEPTION(101, "Token이 만료되었습니다.", ExpiredJwtException.class),
     JWT_MALFORMED_EXCEPTION(102, "유효하지 않은 token입니다.", MalformedJwtException.class),
     JWT_UNSUPPORTED_EXCEPTION(103, "처리할 수 없는 token입니다.", UnsupportedJwtException.class),
+    KAKAO_OAUTH_UNAUTHORIZED_EXCEPTION(104, "카카오 인증 과정에서 문제가 발생했습니다. Kakao access token이 만료되지는 않았는지 확인해주세요.", KakaoOAuthUnauthorizedException.class),
 
     // Member
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
