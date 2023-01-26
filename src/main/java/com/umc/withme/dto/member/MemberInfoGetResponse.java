@@ -6,15 +6,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDate;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class MemberInfoGetResponse {
 
     private String nickname;
     private String phoneNumber;
-    private LocalDate birth;
+    private Integer ageRange;
     private Gender gender;
     private AddressDto address;
 
@@ -22,7 +20,7 @@ public class MemberInfoGetResponse {
         return new MemberInfoGetResponse(
                 dto.getNickname(),
                 dto.getPhoneNumber(),
-                dto.getBirth(),
+                dto.getAgeRange(),
                 dto.getGender(),
                 dto.getAddress()
         );

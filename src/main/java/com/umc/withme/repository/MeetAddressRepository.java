@@ -7,6 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MeetAddressRepository extends JpaRepository<MeetAddress, Long> {
-
-    List<MeetAddress> findByMeet_Id(Long meetId);
+    List<MeetAddress> findAllByMeet_Id(Long meetId);
 }
