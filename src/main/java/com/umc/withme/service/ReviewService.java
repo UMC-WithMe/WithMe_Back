@@ -1,21 +1,14 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
-import com.umc.withme.dto.address.AddressDto;
-import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.member.MemberDto;
-import com.umc.withme.dto.point.PointDto;
 import com.umc.withme.dto.review.ReviewCreateRequest;
-import com.umc.withme.dto.review.ReviewDto;
-import com.umc.withme.exception.address.AddressNotFoundException;
+import com.umc.withme.exception.common.UnauthorizedException;
+import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,52 +19,36 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final MeetRepository meetRepository;
     private final PointRepository pointRepository;
-    private final MeetAddressRepository meetAddressRepository;
-    private final AddressRepository addressRepository;
 
     /**
-     * 입력 받은 값을 회원, 모임, 별점 DTO로 변환하고 여기에 리뷰 내용을 가지는 ReviewDto를 만든다.
-     * 만든 PointDto와 ReviewDto를 엔티티로 바꾼 후 Point와 Review 테이블에 저장한다.
+     * Point와 Review 엔티티에 필요한 값들을 입력받아 DB에 저장
      *
      * @param senderId
      * @param receiverId
      * @param meetId
      * @param requestDto
-     * @return 작성된 리뷰 글의 아이디
+     * @return DB에 저장된 후기 아이디
      */
     @Transactional
     public Long create(Long senderId, Long receiverId, Long meetId, ReviewCreateRequest requestDto) {
 
-        MemberDto senderDto = memberRepository.findById(senderId) // TODO: 로그인한 사용자 정보로 변경
-                                                .map(MemberDto::from)
-                                                .orElseThrow(EntityNotFoundException::new);
 
-        MemberDto receiverDto = memberRepository.findById(receiverId)
-                                                .map(MemberDto::from)
-                                                .orElseThrow(EntityNotFoundException::new);
+        Member sender = memberRepository.findById(senderId).orElseThrow(UnauthorizedException::new);
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(MemberIdNotFoundException::new);
+        Meet meet = meetRepository.findById(meetId).orElseThrow(MeetIdNotFoundException::new);
 
-        Meet meet = meetRepository.findById(meetId).orElseThrow(EntityNotFoundException::new);
+        Point point = pointRepository.save(requestDto.getPoint().toDto().toEntity());
 
-        List<Address> addresses = meetAddressRepository.findByMeet_Id(meetId)
-                .stream()
-                .map(ma -> ma.getAddress())
-                .collect(Collectors.toUnmodifiableList());
+        Review review = Review.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .meet(meet)
+                .point(point)
+                .content(requestDto.getContent())
+                .build();
 
-        MeetDto meetDto = MeetDto.from(meet, addresses);
+        Review saveReview = reviewRepository.save(review);
 
-        PointDto pointDto = requestDto.getPoint().toDto();
-
-        ReviewDto reviewDto = ReviewDto.of(senderDto, receiverDto, meetDto, pointDto, requestDto.getContent());
-
-        Point point = pointRepository.save(pointDto.toEntity());
-
-        Review review = reviewRepository.save(reviewDto.toEntity(senderDto.toEntity(), receiverDto.toEntity(), meet, point));
-
-        return review.getId();
-    }
-
-    private Address getAddress(AddressDto dto) {
-        return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
-                .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
+        return saveReview.getId();
     }
 }

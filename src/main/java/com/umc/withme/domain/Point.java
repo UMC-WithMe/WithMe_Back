@@ -30,7 +30,7 @@ public class Point extends BaseTimeEntity {
 
     // Builder & Constructor
     @Builder
-    public Point(Integer attendance, Integer passion, Integer contactSpeed) {
+    private Point(Integer attendance, Integer passion, Integer contactSpeed) {
         this.attendance = attendance;
         this.passion = passion;
         this.contactSpeed = contactSpeed;
