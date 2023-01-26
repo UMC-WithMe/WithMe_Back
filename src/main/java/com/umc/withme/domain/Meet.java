@@ -4,7 +4,10 @@ import com.umc.withme.domain.common.BaseEntity;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -19,10 +22,6 @@ public class Meet extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meet_id")
     private Long id;
-
-    @JoinColumn(name = "leader_id", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    private Member leader;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -55,8 +54,9 @@ public class Meet extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Meet(Member leader, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
-        this.leader = leader;
+    private Meet(Member member, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
+        this.createdBy = member.getId();
+        this.modifiedBy = member.getId();
         this.category = category;
         this.recruitStatus = RecruitStatus.PROGRESS;
         this.title = title;
@@ -67,6 +67,23 @@ public class Meet extends BaseEntity {
     }
 
     // 코드 추가는 여기에
+
+    @Override
+    public String toString() {
+        return "Meet{" +
+                "id=" + id +
+                ", category=" + category +
+                ", recruitStatus=" + recruitStatus +
+                ", meetStatus=" + meetStatus +
+                ", title='" + title + '\'' +
+                ", minPeople=" + minPeople +
+                ", maxPeople=" + maxPeople +
+                ", link='" + link + '\'' +
+                ", content='" + content + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 
     // Equals and HashCode
     @Override

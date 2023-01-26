@@ -5,13 +5,18 @@ import com.umc.withme.dto.meet.MeetCreateRequest;
 import com.umc.withme.dto.meet.MeetCreateResponse;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.meet.MeetInfoGetResponse;
+import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
-import com.umc.withme.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,12 +34,21 @@ public class MeetController {
      * @param meetCreateRequest
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
+    @Operation(
+            summary = "모임 모집글 생성",
+            description = "<p>request body 에 입력된 정보를 바탕으로 모임 모집글을 1개 생성합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+    })
     @PostMapping("/meet")
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
             @Valid @RequestBody MeetCreateRequest meetCreateRequest,
-            @RequestParam Long memberId // TODO : 인증기능 구현되면 로그인 사용자 정보 가져오는 걸로 변경
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        Long meetId = meetService.createMeet(meetCreateRequest.toDto(), memberId);
+        Long meetId = meetService.createMeet(meetCreateRequest.toDto(), principle.getUsername());
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
 
@@ -48,11 +62,20 @@ public class MeetController {
      * 모임 단건 조회 API
      * 모임 id로 모임을 1건 조회한다.
      *
-     * @param meetId
+     * @param meetId 조회하려는 모임의 id
      * @return 조회한 모임의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
      */
+    @Operation(
+            summary = "모임 모집글 1개 조회 API",
+            description = "<p><code>meetId</code>에 해당하는 모임의의 정보를 request body 에 넣어 전달합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+    })
     @GetMapping("/meet/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId){
+    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
 
         MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
