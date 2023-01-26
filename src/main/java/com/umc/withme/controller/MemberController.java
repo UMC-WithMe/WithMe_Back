@@ -38,7 +38,7 @@ public class MemberController {
      * @throws ConstraintViolationException 닉네임이 공백인 경우
      */
     // TODO: Swagger 문서에 적용
-    @GetMapping("/check/duplicate")
+    @GetMapping("/members/check")
     public ResponseEntity<DataResponse<NicknameDuplicationCheckResponse>> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
         NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
 
@@ -53,7 +53,7 @@ public class MemberController {
      * @param nickname
      * @return {@link MemberInfoGetResponse}에 회원 정보를 담아 {@link DataResponse}로 반환
      */
-    @GetMapping("/users")
+    @GetMapping("/members")
     public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
         MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
