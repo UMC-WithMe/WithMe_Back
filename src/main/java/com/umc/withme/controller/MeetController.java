@@ -30,8 +30,8 @@ public class MeetController {
 
     /**
      * 모임글 생성 API
-     *
-     * @param meetCreateRequest
+     * @param meetFormRequest 생성하려는 모임 모집글 데이터
+     * @param principle
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
     @Operation(
