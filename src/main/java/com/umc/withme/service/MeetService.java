@@ -6,11 +6,13 @@ import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,6 +77,63 @@ public class MeetService {
                 .orElseThrow(UnauthorizedException::new);
 
         return MeetDto.from(meet, addresses, member);
+    }
+
+    /**
+     * 모임을 meetDto 를 바탕으로 수정한다.
+     * 수정하려는 사용자가 기존 모임의 리더(주인)과 동일해야 모임을 수정할 수 있다.
+     *
+     * @param meetId     수정하려는 모임의 id
+     * @param memberName 수정하려는 사용자
+     * @param meetDto    수정하려는 정보가 담긴 dto
+     * @return 수정된 모임 DTO
+     */
+    @Transactional
+    public MeetDto updateById(Long meetId, String memberName, MeetDto meetDto) {
+        // 수정하려는 모임 조회
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
+
+        // 모임의 리더
+        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
+                .orElseThrow(UnauthorizedException::new);
+
+        // 수정을 시도하는 사용자
+        Member member = memberRepository.findByNickname(memberName)
+                .orElseThrow(NicknameNotFoundException::new);
+
+        // 수정하고자 하는 모임의 주인과 사용자가 일치하는지 확인인하고 모임 수정
+        if (meetLeader.equals(member)) {
+            // 모임의 MeetAddress 모두 삭제 후 meetDto에 따라 다시 생성
+            updateMeetAddress(meetId, meetDto, meet);
+
+            // 모임 엔티티 수정
+            meet.update(meetDto);
+
+            // 수정된 모임의 주소 리스트 받아오기
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
+                    .stream()
+                    .map(MeetAddress::getAddress)
+                    .collect(Collectors.toList());
+
+            // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
+            return MeetDto.from(
+                    meet,
+                    addresses,
+                    member);
+        } else
+            throw new EntityNotFoundException();
+    }
+
+    private void updateMeetAddress(Long meetId, MeetDto meetDto, Meet meet) {
+        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByMeet_Id(meetId);
+        for (MeetAddress meetAddress : meetAddresses) {
+            meetAddressRepository.delete(meetAddress);
+        }
+        meetDto.getAddresses().forEach(addressDto -> {
+            Address address = getAddress(addressDto);
+            meetAddressRepository.save(new MeetAddress(meet, address));
+        });
     }
 }
 

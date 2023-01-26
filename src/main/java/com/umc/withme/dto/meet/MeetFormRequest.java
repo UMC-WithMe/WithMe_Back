@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MeetCreateRequest {
+public class MeetFormRequest {
 
     @NotEmpty
     private List<AddressRequest> addresses;
@@ -38,12 +38,12 @@ public class MeetCreateRequest {
     @NotNull
     private Integer maxPeople;
 
-    public static MeetCreateRequest of(
+    public static MeetFormRequest of(
             List<AddressRequest> addresses, MeetCategory meetCategory,
             String title, String link, String content,
             Integer minPeople, Integer maxPeople
     ) {
-        return new MeetCreateRequest(addresses, meetCategory, title, link, content, minPeople, maxPeople);
+        return new MeetFormRequest(addresses, meetCategory, title, link, content, minPeople, maxPeople);
     }
 
     public MeetDto toDto() {
