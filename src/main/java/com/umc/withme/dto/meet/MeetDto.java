@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,12 +39,11 @@ public class MeetDto {
 
     public static MeetDto from(
             Meet meet,
-            List<Address> addresses, // meet에 등록된 모든 Address Entity List
-            Member leader           // meet의 리더 멤버
+            List<Address> addresses // meet에 등록된 모든 Address Entity List
     ) {
         return new MeetDto(
                 meet.getId(),
-                MemberDto.from(leader),
+                MemberDto.from(meet.getLeader()),
                 addresses.stream()
                         .map(AddressDto::from)
                         .collect(Collectors.toUnmodifiableList()),
@@ -59,17 +59,9 @@ public class MeetDto {
                 meet.getEndDate());
     }
 
-    public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
-        return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate);
-    }
-
-    public static MeetDto of(MemberDto leader, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
-        return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
-    }
-
     public Meet toEntity(Member leader) {
         return Meet.builder()
-                .member(leader)
+                .leader(leader)
                 .category(this.getMeetCategory())
                 .title(this.getTitle())
                 .minPeople(this.getMinPeople())
@@ -77,5 +69,13 @@ public class MeetDto {
                 .link(this.getLink())
                 .content(this.getContent())
                 .build();
+    }
+
+    public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
+        return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate);
+    }
+
+    public static MeetDto of(MemberDto leader, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
+        return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
     }
 }
