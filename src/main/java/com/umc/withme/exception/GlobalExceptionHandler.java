@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> exceptionHandle(Exception e) {
         StackTraceElement[] stackTrace = e.getStackTrace();
-        log.error("UnHandled Exception: {}\n" + "{}:{}:{}", e,
+        log.error("UnHandled Exception: {} info=" + "{}:{}:{}", e,
                 stackTrace[0].getClassName(), stackTrace[0].getMethodName(), stackTrace[0].getLineNumber());
 
         int errorCode = ExceptionType.UNHANDLED_EXCEPTION.getErrorCode();

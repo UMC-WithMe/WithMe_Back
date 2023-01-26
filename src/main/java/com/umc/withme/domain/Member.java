@@ -2,13 +2,10 @@ package com.umc.withme.domain;
 
 import com.umc.withme.domain.common.BaseTimeEntity;
 import com.umc.withme.domain.constant.Gender;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.umc.withme.domain.constant.RoleType;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,21 +18,30 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @JoinColumn(name = "address_id", nullable = false)
+    @Setter
+    @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
 
     @Column(unique = true, nullable = false)
     private String email;
 
+    /**
+     * <p> 일반 로그인 - 암호화된 password
+     * <p> Kakao 로그인 - 회원번호
+     */
     @Column(unique = true, nullable = false)
+    private String password;
+
+    @Setter
+    @Column(unique = true)
     private String phoneNumber;
 
     @Column(unique = true, nullable = false)
     private String nickname;
 
     @Column(nullable = false)
-    private LocalDate birth;
+    private Integer ageRange;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -44,17 +50,19 @@ public class Member extends BaseTimeEntity {
     @Embedded
     private TotalPoint totalPoint;
 
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
+
     // Builder & Constructor
     @Builder
-    private Member(Long id, Address address, String email, String phoneNumber, LocalDate birth, Gender gender) {
-        this.id = id;
-        this.address = address;
+    private Member(String email, String password, Integer ageRange, Gender gender) {
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.password = password;
         this.nickname = email;
-        this.birth = birth;
+        this.ageRange = ageRange;
         this.gender = gender;
         this.totalPoint = new TotalPoint();
+        this.roleType = RoleType.USER;
     }
 
     // 코드 추가는 여기에
