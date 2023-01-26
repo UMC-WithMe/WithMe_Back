@@ -52,7 +52,7 @@ public class MemberDto {
         );
     }
 
-    public Member toEntity(Address address) {
+    public Member toEntity() {
         return Member.builder()
                 .email(this.email)
                 .password(this.password)

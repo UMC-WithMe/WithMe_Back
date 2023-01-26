@@ -28,7 +28,7 @@ public class MeetController {
     /**
      * 모임글 생성 API
      *
-     * @param meetCreateRequest
+     * @param meetCreateRequest 생성하려는 모임 모집글 form 데이터
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
     @Operation(
@@ -64,7 +64,7 @@ public class MeetController {
      */
     @Operation(
             summary = "모임 모집글 1개 조회 API",
-            description = "<p><code>meetId</code>에 해당하는 모임의의 정보를 request body 에 넣어 전달합니다.</p>",
+            description = "<p><code>meetId</code>에 해당하는 모임의의 정보를 response body 에 넣어 전달합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -87,12 +87,24 @@ public class MeetController {
      * 모임글 단건 삭제 API
      * 모임의 id를 입력받아 해당하는 모임이 있으면 삭제한다.
      *
-     * @param meetId
+     * @param meetId 삭제하려는 모임의 id
      * @return 삭제한 모임의 id를 데이터에 담아서 반환한다.
      */
+    @Operation(
+            summary = "모임 모집글 1개 삭제 API",
+            description = "<p><code>meetId</code>에 해당하는 모임을 삭제하고 삭제한 <code>meetId</code>를 response body에 넣어 전달합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+    })
     @DeleteMapping("/meet/{meetId}")
-    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(@PathVariable Long meetId) {
-        meetService.deleteMeetById(meetId);
+    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(
+            @PathVariable Long meetId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        meetService.deleteMeetById(meetId, principle.getUsername());
 
         MeetDeleteResponse response = MeetDeleteResponse.of(meetId);
 

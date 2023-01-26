@@ -5,7 +5,9 @@ import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
+import com.umc.withme.exception.meet.DeleteBadRequestException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -89,19 +91,35 @@ public class MeetService {
      * @param meetId
      */
     @Transactional
-    public void deleteMeetById(Long meetId) {
-        meetAddressRepository.findAllByMeet_Id(meetId)
-                .stream()
-                .forEach(ma -> meetAddressRepository.delete(ma));
+    public void deleteMeetById(Long meetId, String memberName) {
+        // 모임을 삭제하려고 하는 사용자
+        Member member = memberRepository.findByNickname(memberName)
+                .orElseThrow(NicknameNotFoundException::new);
 
-        meetMemberRepository.findByMeet_Id(meetId)
-                .stream()
-                .forEach(mm -> meetMemberRepository.delete(mm));
+        // 삭제하려는 모임
+        Meet meet = meetRepository.findById(meetId)
+                .orElseGet(null);
 
-        meetRepository.delete(
-                meetRepository.findById(meetId)
-                        .orElseThrow(EntityNotFoundException::new)
-        );
+        // 모임의 주인
+        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
+                .orElseThrow(UnauthorizedException::new);
+
+        // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
+        if(meetLeader.equals(member)){
+            meetAddressRepository.findAllByMeet_Id(meetId)
+                    .stream()
+                    .forEach(ma -> meetAddressRepository.delete(ma));
+
+            meetMemberRepository.findByMeet_Id(meetId)
+                    .stream()
+                    .forEach(mm -> meetMemberRepository.delete(mm));
+
+            meetRepository.delete(
+                    meetRepository.findById(meetId)
+                            .orElseThrow(EntityNotFoundException::new)
+            );
+        }else
+            throw new DeleteBadRequestException(meet.getId(), memberName);
     }
 }
 
