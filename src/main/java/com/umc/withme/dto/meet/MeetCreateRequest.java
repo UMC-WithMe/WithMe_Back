@@ -18,12 +18,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetCreateRequest {
 
-    @Schema(
-            example = "{" +
-                    "{sido='서울특별시', sgg='강남구'}, " +
-                    "{sido='서울특별시', sgg='노원구'}" +
-                    "}",
-            description = "모임에 설정된 주소(동네) 목록")
     @NotEmpty
     private List<AddressRequest> addresses;
 

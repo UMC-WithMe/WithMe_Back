@@ -23,12 +23,6 @@ public class MeetInfoGetResponse {
     @Schema(example = "", description = "모임을 생성한 사용자 정보 (모임의 리더 정보)")
     private MemberInfoGetResponse leader;  // 이 모임의 리더
 
-    @Schema(
-            example = "{" +
-                    "{sido='서울특별시', sgg='강남구'}, " +
-                    "{sido='서울특별시', sgg='노원구'}" +
-                    "}",
-            description = "모임에 설정된 주소(동네) 목록")
     private List<AddressDto> addresses;  // 이 모임에 설정된 동네 리스트
 
     @Schema(example = "STUDY", description = "모임의 카테고리")
