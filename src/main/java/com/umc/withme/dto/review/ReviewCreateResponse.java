@@ -1,5 +1,6 @@
 package com.umc.withme.dto.review;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Getter;
 @Getter
 public class ReviewCreateResponse {
 
+    @Schema(example = "5", description = "작성 완료된 후기 아이디")
     private Long reviewId;
 
     public static ReviewCreateResponse of(Long reviewId){
