@@ -7,6 +7,7 @@ import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.DeleteBadRequestException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -31,18 +32,16 @@ public class MeetService {
     /**
      * MeetDto와 leaderName 입력받아 MeetRepository 및 MeetAddressRepository에 저장한다.
      *
-     * @param meetDto    생성하고자 하는 모임 모집글 정보
-     * @param leaderName 생성하고자 하는 모임 모집글의 글쓴이 (현재 로그인한 사용자)
+     * @param meetDto     생성하고자 하는 모임 모집글 정보
+     * @param leaderEmail 생성하고자 하는 모임 모집글의 글쓴이 이메일 (현재 로그인한 사용자의 이메일)
      * @return 생성한 모임의 id
      */
     @Transactional
-    public Long createMeet(MeetDto meetDto, String leaderName) {
-        Member leader = memberRepository.findByNickname(leaderName)
-                .orElseThrow(UnauthorizedException::new);
+    public Long createMeet(MeetDto meetDto, String leaderEmail) {
+        Member leader = memberRepository.findByEmail(leaderEmail)
+                .orElseThrow(EmailNotFoundException::new);
 
-        Meet meet1 = meetDto.toEntity(leader);
-
-        Meet meet = meetRepository.save(meet1);
+        Meet meet = meetRepository.save(meetDto.toEntity());
 
         meetMemberRepository.save(new MeetMember(leader, meet));
 
@@ -122,5 +121,3 @@ public class MeetService {
             throw new DeleteBadRequestException(meet.getId(), memberName);
     }
 }
-
-

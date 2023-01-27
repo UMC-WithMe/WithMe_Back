@@ -6,7 +6,6 @@ import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,9 +37,8 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
     })
-    @PostMapping("/meet")
+    @PostMapping("/meets")
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
             @Valid @RequestBody MeetCreateRequest meetCreateRequest,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
@@ -64,14 +62,13 @@ public class MeetController {
      */
     @Operation(
             summary = "모임 모집글 1개 조회 API",
-            description = "<p><code>meetId</code>에 해당하는 모임의의 정보를 response body 에 넣어 전달합니다.</p>",
+            description = "<p><code>meetId</code>에 해당하는 모임의 정보를 response body 에 넣어 전달합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
     })
-    @GetMapping("/meet/{meetId}")
+    @GetMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
 
@@ -96,10 +93,9 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Success")
     })
-    @DeleteMapping("/meet/{meetId}")
+    @DeleteMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
