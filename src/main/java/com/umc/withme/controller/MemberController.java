@@ -32,7 +32,7 @@ public class MemberController {
 
     @Operation(
             summary = "닉네임 중복 조회",
-            description = "<p>해당 <code>nickname</code>이 다른 사용자가 사용 중인지 확인한다." +
+            description = "<p>해당 <code>nickname</code>이 다른 사용자가 사용 중인지 확인한다. " +
                     "반환 값이 true이면 이미 사용 중인 닉네임이고, false이면 사용 중이지 않는 닉네임이다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
