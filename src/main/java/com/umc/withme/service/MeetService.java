@@ -6,6 +6,7 @@ import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,14 +29,14 @@ public class MeetService {
     /**
      * MeetDto와 leaderName 입력받아 MeetRepository 및 MeetAddressRepository에 저장한다.
      *
-     * @param meetDto    생성하고자 하는 모임 모집글 정보
+     * @param meetDto     생성하고자 하는 모임 모집글 정보
      * @param leaderEmail 생성하고자 하는 모임 모집글의 글쓴이 이메일 (현재 로그인한 사용자의 이메일)
      * @return 생성한 모임의 id
      */
     @Transactional
     public Long createMeet(MeetDto meetDto, String leaderEmail) {
         Member leader = memberRepository.findByEmail(leaderEmail)
-                .orElseThrow(UnauthorizedException::new);
+                .orElseThrow(EmailNotFoundException::new);
 
         Meet meet = meetRepository.save(meetDto.toEntity());
 
