@@ -4,17 +4,19 @@ import com.umc.withme.dto.point.PointRequest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ReviewCreateRequest {
 
-    @NotNull
+    @Valid
     private PointRequest point;
 
     @NotBlank
+    @Length(max = 250)
     private String content;
 }
