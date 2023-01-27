@@ -10,10 +10,10 @@ import lombok.Getter;
 @Getter
 public class AddressDto {
 
-    @Schema(example = "서울특별시", description = "주소의 시/도 정보")
+    @Schema(example = "서울특별시", description = "회원 주소의 광역시·도")
     private String sido;
+    @Schema(example = "강남구", description = "회원 주소의 시·군·자치구")
 
-    @Schema(example = "강남구", description = "주소의 시/군/구 정보")
     private String sgg;
 
     public static AddressDto of(String sido, String sgg) {
