@@ -44,10 +44,10 @@ public enum ExceptionType {
     // Member
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
     EMAIL_NOT_FOUND_EXCEPTION(1401, "해당 이메일을 갖는 회원을 찾을 수 없습니다.", EmailNotFoundException.class),
-    MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 아이디를 가지는 회원이 없습니다.", MemberIdNotFoundException.class),
+    MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 아이디(PK)를 가지는 회원이 없습니다.", MemberIdNotFoundException.class),
 
     // Meet
-    MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 아이디를 가지는 모임이 없습니다.", MeetIdNotFoundException.class),
+    MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 아이디(PK)를 가지는 모임이 없습니다.", MeetIdNotFoundException.class),
 
     // Address
     ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class);

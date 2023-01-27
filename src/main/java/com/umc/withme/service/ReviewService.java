@@ -2,7 +2,6 @@ package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.review.ReviewCreateRequest;
-import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
@@ -32,8 +31,7 @@ public class ReviewService {
     @Transactional
     public Long create(Long senderId, Long receiverId, Long meetId, ReviewCreateRequest requestDto) {
 
-
-        Member sender = memberRepository.findById(senderId).orElseThrow(UnauthorizedException::new);
+        Member sender = memberRepository.findById(senderId).orElseThrow(MemberIdNotFoundException::new);
         Member receiver = memberRepository.findById(receiverId).orElseThrow(MemberIdNotFoundException::new);
         Meet meet = meetRepository.findById(meetId).orElseThrow(MeetIdNotFoundException::new);
 
