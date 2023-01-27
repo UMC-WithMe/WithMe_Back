@@ -67,9 +67,8 @@ public class MeetDto {
         return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
     }
 
-    public Meet toEntity(Member leader) {
+    public Meet toEntity() {
         return Meet.builder()
-                .member(leader)
                 .category(this.getMeetCategory())
                 .title(this.getTitle())
                 .minPeople(this.getMinPeople())

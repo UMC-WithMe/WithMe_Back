@@ -55,9 +55,7 @@ public class Meet extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Meet(Member member, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
-        this.createdBy = member.getId();
-        this.modifiedBy = member.getId();
+    private Meet(MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
         this.category = category;
         this.recruitStatus = RecruitStatus.PROGRESS;
         this.title = title;
