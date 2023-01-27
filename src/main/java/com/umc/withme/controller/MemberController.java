@@ -30,15 +30,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    /**
-     * 닉네임 중복 조회를 하는 API
-     *
-     * @param nickname
-     * @return 중복 여부를 {@link NicknameDuplicationCheckResponse}에 담아 {@link DataResponse}로 반환
-     * @throws ConstraintViolationException 닉네임이 공백인 경우
-     */
-    // TODO: Swagger 문서에 적용
-    @GetMapping("/check/duplicate")
+    @Operation(
+            summary = "닉네임 중복 조회",
+            description = "<p>해당 <code>nickname</code>이 다른 사용자가 사용 중인지 확인한다. " +
+                    "반환 값이 true이면 이미 사용 중인 닉네임이고, false이면 사용 중이지 않는 닉네임이다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/members/check")
     public ResponseEntity<DataResponse<NicknameDuplicationCheckResponse>> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
         NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
 
@@ -47,13 +45,16 @@ public class MemberController {
                 .body(new DataResponse<>(response));
     }
 
-    /**
-     * 특정 닉네임을 가지는 회원 정보를 조회하는 API
-     *
-     * @param nickname
-     * @return {@link MemberInfoGetResponse}에 회원 정보를 담아 {@link DataResponse}로 반환
-     */
-    @GetMapping("/users")
+    @Operation(
+            summary = "특정 닉네임을 가지는 회원 정보 조회",
+            description = "<p>해당 <code>nickname</code>을 가지는 사용자의 정보를 조회한다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
+    })
+    @GetMapping("/members")
     public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
         MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
