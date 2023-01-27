@@ -32,8 +32,7 @@ public class ReviewController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "1402: <code>id</code>에 해당하는 회원이 없는 경우 \t\n 2400: <code>id</code>에 해당하는 모임이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Success")
     })
     @PostMapping("/review")
     public ResponseEntity<DataResponse<ReviewCreateResponse>> createReview(
