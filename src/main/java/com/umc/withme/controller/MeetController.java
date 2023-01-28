@@ -1,7 +1,11 @@
 package com.umc.withme.controller;
 
+import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.meet.*;
+import com.umc.withme.dto.meet.MeetCreateRequest;
+import com.umc.withme.dto.meet.MeetCreateResponse;
+import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetInfoGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Tag(name = "MeetController", description = "모임 API Controller 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -65,7 +71,7 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "2400: <code>id</code>에 해당하는 모임이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @GetMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
@@ -93,19 +99,17 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "2400: <code>id</code>에 해당하는 모임이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @DeleteMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(
+    public ResponseEntity<BaseResponse> deleteMeet(
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         meetService.deleteMeetById(meetId, principle.getUsername());
 
-        MeetDeleteResponse response = MeetDeleteResponse.of(meetId);
-
         return new ResponseEntity<>(
-                new DataResponse<>(response),
+                new BaseResponse(true),
                 HttpStatus.OK
         );
     }

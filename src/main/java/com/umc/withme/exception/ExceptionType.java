@@ -3,6 +3,7 @@ package com.umc.withme.exception;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
 import com.umc.withme.exception.common.CustomException;
+import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
@@ -47,7 +48,7 @@ public enum ExceptionType {
     MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 id를 갖는 회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
 
     // Meet
-    MEET_DELETE_UNAUTHORIZED_EXCEPTION(2100, "해당 모임을 삭제할 권한이 없습니다.", MeetIdNotFoundException.class),
+    MEET_DELETE_FORBIDDEN_EXCEPTION(2300, "해당 모임을 삭제할 권한이 없습니다.", MeetDeleteForbiddenException.class),
     MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException.class),
 
     // Address

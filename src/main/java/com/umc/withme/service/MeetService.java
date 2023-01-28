@@ -5,11 +5,10 @@ import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
-import com.umc.withme.exception.meet.MeetDeleteUnauthorizedException;
+import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
-import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -95,7 +94,7 @@ public class MeetService {
     public void deleteMeetById(Long meetId, String memberEmail) {
         // 모임을 삭제하려고 하는 사용자
         Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(NicknameNotFoundException::new);
+                .orElseThrow(EmailNotFoundException::new);
 
         // 삭제하려는 모임
         Meet meet = meetRepository.findById(meetId)
@@ -107,7 +106,7 @@ public class MeetService {
 
         // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
         if (!meetLeader.equals(member))
-            throw new MeetDeleteUnauthorizedException(meet.getId(), memberEmail);
+            throw new MeetDeleteForbiddenException(meet.getId(), memberEmail);
 
         meetAddressRepository.findAllByMeet_Id(meetId)
                 .forEach(ma -> meetAddressRepository.delete(ma));

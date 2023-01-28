@@ -1,8 +1,8 @@
 package com.umc.withme.exception.meet;
 
-import com.umc.withme.exception.common.UnauthorizedException;
+import com.umc.withme.exception.common.ForbiddenException;
 
-public class MeetDeleteUnauthorizedException extends UnauthorizedException {
+public class MeetDeleteForbiddenException extends ForbiddenException {
 
     /**
      * 모임의 리더가 아닌 사용자가 모임을 삭제하려고 시도했을 때 발생하는 예외이다.
@@ -11,7 +11,7 @@ public class MeetDeleteUnauthorizedException extends UnauthorizedException {
      * @param meetId      삭제하려는 모임의 id
      * @param memberEmail 삭제하려는 사용자
      */
-    public MeetDeleteUnauthorizedException(Long meetId, String memberEmail) {
+    public MeetDeleteForbiddenException(Long meetId, String memberEmail) {
         super("meetId=" + meetId + " memberEmail=" + memberEmail);
     }
 }
