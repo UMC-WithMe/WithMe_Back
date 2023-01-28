@@ -5,16 +5,16 @@ import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
-import com.umc.withme.exception.meet.DeleteBadRequestException;
+import com.umc.withme.exception.meet.MeetDeleteUnauthorizedException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +55,7 @@ public class MeetService {
 
     /**
      * AddressDto를 Address Entity로 변환해 반환해준다.
+     *
      * @param dto 변환할 AddressDto
      * @return 변환된 Address Entity
      */
@@ -87,37 +88,33 @@ public class MeetService {
     /**
      * 삭제할 모임의 id를 입력받아 해당 모임이 존재할 경우 삭제한다.
      * Meet, MeetAddress, MeetMember 테이블에서 삭제가 이루어진다.
+     *
      * @param meetId
      */
     @Transactional
-    public void deleteMeetById(Long meetId, String memberName) {
+    public void deleteMeetById(Long meetId, String memberEmail) {
         // 모임을 삭제하려고 하는 사용자
-        Member member = memberRepository.findByNickname(memberName)
+        Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(NicknameNotFoundException::new);
 
         // 삭제하려는 모임
         Meet meet = meetRepository.findById(meetId)
-                .orElseGet(null);
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
         // 모임의 주인
         Member meetLeader = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(UnauthorizedException::new);
+                .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
         // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
-        if(meetLeader.equals(member)){
-            meetAddressRepository.findAllByMeet_Id(meetId)
-                    .stream()
-                    .forEach(ma -> meetAddressRepository.delete(ma));
+        if (!meetLeader.equals(member))
+            throw new MeetDeleteUnauthorizedException(meet.getId(), memberEmail);
 
-            meetMemberRepository.findByMeet_Id(meetId)
-                    .stream()
-                    .forEach(mm -> meetMemberRepository.delete(mm));
+        meetAddressRepository.findAllByMeet_Id(meetId)
+                .forEach(ma -> meetAddressRepository.delete(ma));
 
-            meetRepository.delete(
-                    meetRepository.findById(meetId)
-                            .orElseThrow(EntityNotFoundException::new)
-            );
-        }else
-            throw new DeleteBadRequestException(meet.getId(), memberName);
+        meetMemberRepository.findAllByMeet_Id(meetId)
+                .forEach(mm -> meetMemberRepository.delete(mm));
+
+        meetRepository.delete(meet);
     }
 }

@@ -6,6 +6,7 @@ import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,9 +36,6 @@ public class MeetController {
             description = "<p>request body 에 입력된 정보를 바탕으로 모임 모집글을 1개 생성합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-    })
     @PostMapping("/meets")
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
             @Valid @RequestBody MeetCreateRequest meetCreateRequest,
@@ -67,6 +65,7 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "2400: <code>id</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @GetMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
@@ -93,7 +92,8 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success")
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "2400: <code>id</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @DeleteMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetDeleteResponse>> deleteMeet(

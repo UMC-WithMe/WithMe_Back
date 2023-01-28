@@ -5,6 +5,7 @@ import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
 import com.umc.withme.exception.common.CustomException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -43,8 +44,10 @@ public enum ExceptionType {
     // Member
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
     EMAIL_NOT_FOUND_EXCEPTION(1401, "해당 이메일을 갖는 회원을 찾을 수 없습니다.", EmailNotFoundException.class),
+    MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 id를 갖는 회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
 
     // Meet
+    MEET_DELETE_UNAUTHORIZED_EXCEPTION(2100, "해당 모임을 삭제할 권한이 없습니다.", MeetIdNotFoundException.class),
     MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException.class),
 
     // Address
