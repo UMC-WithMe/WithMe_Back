@@ -23,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/members")
 @Validated
 public class MemberController {
 
@@ -35,7 +35,7 @@ public class MemberController {
                     "반환 값이 true이면 이미 사용 중인 닉네임이고, false이면 사용 중이지 않는 닉네임이다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/members/check")
+    @GetMapping("/check")
     public ResponseEntity<DataResponse<NicknameDuplicationCheckResponse>> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
         NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
 
@@ -53,7 +53,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
     })
-    @GetMapping("/members")
+    @GetMapping
     public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
         MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
@@ -68,7 +68,7 @@ public class MemberController {
             description = "<p>로그인 중인 회원의 폰 번호를 request body의 <code>phoneNumber</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PatchMapping("/user/phone-number")
+    @PatchMapping("/phone-number")
     public ResponseEntity<BaseResponse> updateMemberPhoneNumber(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
             @Valid @RequestBody MemberPhoneNumberUpdateRequest request
@@ -85,7 +85,7 @@ public class MemberController {
             description = "<p>로그인 중인 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PatchMapping("/user/address")
+    @PatchMapping("/address")
     public ResponseEntity<BaseResponse> updateMemberAddress(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
             @Valid @RequestBody MemberAddressUpdateRequest request
