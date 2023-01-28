@@ -5,6 +5,7 @@ import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
@@ -197,6 +198,40 @@ class MemberServiceTest {
         assertThat(member)
                 .hasFieldOrPropertyWithValue("phoneNumber", newPhoneNumber);
         then(memberRepository).should().findByEmail(TEST_EMAIL);
+    }
+
+    @Test
+    void 회원_이메일과_닉네임이_주어지면_회원의_닉네임을_업데이트한다_정상호출() {
+        // given
+        Member member = createMember();
+        String newNickname = "new";
+        given(memberRepository.existsByNickname(newNickname)).willReturn(false);
+        given(memberRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(member));
+
+        // when
+        sut.updateMemberNickname(TEST_EMAIL, newNickname);
+
+        // then
+        assertThat(member)
+                .hasFieldOrPropertyWithValue("nickname", newNickname);
+        then(memberRepository).should().existsByNickname(newNickname);
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
+    }
+
+    @Test
+    void 회원_이메일과_닉네임이_주어지면_회원의_닉네임을_업데이트한다_닉네임_중복() {
+        // given
+        Member member = createMember();
+        String newNickname = "new";
+        given(memberRepository.existsByNickname(newNickname)).willReturn(true);
+
+        // when
+        Throwable t = catchThrowable(() -> sut.updateMemberNickname(TEST_EMAIL, newNickname));
+
+        // then
+        assertThat(t).isInstanceOf(NicknameDuplicateException.class);
+        then(memberRepository).should().existsByNickname(newNickname);
+        then(memberRepository).shouldHaveNoMoreInteractions();
     }
 
     @Test

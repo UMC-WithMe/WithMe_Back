@@ -81,6 +81,27 @@ public class MemberController {
     }
 
     @Operation(
+            summary = "회원 닉네임 설정/재설정",
+            description = "<p>로그인 중인 회원의 닉네임을 request body의 <code>nickname</code>로 설정합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "409", description = "1402: 이미 사용중인 닉네임인 경우(닉네임 중복)", content = @Content)
+    })
+    @PatchMapping("/nickname")
+    public ResponseEntity<BaseResponse> updateMemberNickname(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @Valid @RequestBody MemberNicknameUpdateRequest request
+    ) {
+        memberService.updateMemberNickname(principle.getUsername(), request.getNickname());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new BaseResponse(true));
+    }
+
+    @Operation(
             summary = "회원 주소 설정/재설정",
             description = "<p>로그인 중인 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
