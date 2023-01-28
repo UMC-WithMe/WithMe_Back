@@ -18,7 +18,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -66,13 +65,9 @@ public class MemberController {
 
     @Operation(
             summary = "회원 폰 번호 설정/재설정",
-            description = "<p><code>memberId</code>에 해당하는 회원의 폰 번호를 request body의 <code>phoneNumber</code>로 설정합니다.</p>",
+            description = "<p>로그인 중인 회원의 폰 번호를 request body의 <code>phoneNumber</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
-    })
     @PatchMapping("/user/phone-number")
     public ResponseEntity<BaseResponse> updateMemberPhoneNumber(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
@@ -87,13 +82,9 @@ public class MemberController {
 
     @Operation(
             summary = "회원 주소 설정/재설정",
-            description = "<p><code>memberId</code>에 해당하는 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
+            description = "<p>로그인 중인 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
-    })
     @PatchMapping("/user/address")
     public ResponseEntity<BaseResponse> updateMemberAddress(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
