@@ -5,6 +5,8 @@ import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +18,24 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Tag(name = "쪽지", description = "쪽지 관련 api 입니다.")
 public class MessageController {
 
     private final MessageService messageService;
 
+    /**
+     * 쪽지 생성 API
+     *
+     * @param messageCreateRequest 쪽지 생성 요청 데이터 (쪽지 내용)
+     * @param principle
+     * @param receiverId 쪽지 받는 회원 id(pk)
+     * @param meetId 관련 모집글 id(pk)
+     * @return 쪽지 생성 응답 데이터 (생성된 쪽지 아이디)
+     */
+
+    @Operation(summary = "쪽지 생성",
+               description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
+                             "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용" )
     @PostMapping("/messages")
     public ResponseEntity<DataResponse<MessageCreateResponse>> createMessage(
             @Valid@RequestBody MessageCreateRequest messageCreateRequest,
