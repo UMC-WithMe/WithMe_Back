@@ -88,7 +88,7 @@ public class MeetService {
      * 삭제할 모임의 id를 입력받아 해당 모임이 존재할 경우 삭제한다.
      * Meet, MeetAddress, MeetMember 테이블에서 삭제가 이루어진다.
      *
-     * @param meetId
+     * @param meetId 삭제할 모임의 id
      */
     @Transactional
     public void deleteMeetById(Long meetId, String memberEmail) {
