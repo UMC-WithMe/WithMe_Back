@@ -29,10 +29,10 @@ public class MessageService {
     @Transactional
     public Long createMessage(Long senderId, Long receiverId, Long meetId, MessageCreateRequest messageCreateRequest){
 
-        Member sender = memberRepository.findById(senderId).orElseThrow(MemberIdNotFoundException::new);
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(MemberIdNotFoundException::new);
+        Member sender = memberRepository.findById(senderId).orElseThrow();
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(()-> new MemberIdNotFoundException(senderId));
 
-        Meet meet = meetRepository.findById(meetId).orElseThrow(MeetIdNotFoundException::new);
+        Meet meet = meetRepository.findById(meetId).orElseThrow(()-> new MeetIdNotFoundException(meetId));
 
         Message newMessage = Message.builder()
                 .sender(sender)
