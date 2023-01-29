@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Tag(name = "후기 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -31,9 +33,6 @@ public class ReviewController {
             description = "<p>request param과 request body로 받은 데이터를 사용해 회원에 대한 후기 글을 생성합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success")
-    })
     @PostMapping("/review")
     public ResponseEntity<DataResponse<ReviewCreateResponse>> createReview(
             @Valid @RequestBody ReviewCreateRequest reviewCreateRequest,
