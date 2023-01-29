@@ -3,7 +3,9 @@ package com.umc.withme.service;
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
+import com.umc.withme.exception.common.NotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,5 +77,30 @@ public class MeetService {
                 .orElseThrow(UnauthorizedException::new);
 
         return MeetDto.from(meet, addresses, member);
+    }
+
+    /**
+     * 조건에 해당하는 모임을 조회하고 모임 DTO 목록을 반환한다.
+     * @param meetSearch 모임 목록 검색 조건(카테고리, 동네, 제목)이 담긴 DTO
+     * @return 조회한 모임 DTO 목록
+     */
+    public List<MeetDto> findAll(MeetSearch meetSearch) {
+        // 카테고리 및 동네로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.takeAll(meetSearch);
+
+        // 모임 리스트를 주소 및 리더 정보를 포함한 DTO 리스트로 변환해서 반환한다.
+        List<MeetDto> meetDtos = new ArrayList<>();
+        for (Meet meet : meets) {
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toUnmodifiableList());
+
+            Member leader = memberRepository.findById(meet.getCreatedBy())
+                    .orElseThrow(NotFoundException::new);   // TODO : 모임삭제 merge 되면 exception 변경 필요
+
+            meetDtos.add(MeetDto.from(meet, addresses, leader));
+        }
+        return meetDtos;
     }
 }
