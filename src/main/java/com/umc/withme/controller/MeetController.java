@@ -33,6 +33,7 @@ public class MeetController {
 
     /**
      * 모임글 생성 API
+     *
      * @param meetFormRequest 생성하려는 모임 모집글 데이터
      * @param principle
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
@@ -90,7 +91,6 @@ public class MeetController {
      *
      * @param meetId          수정하려는 모집글의 id
      * @param meetFormRequest 수정하려는 정보가 담긴 요청 DTO
-     * @param principle       사용자 정보
      * @return 수정된 모임 모집글의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
      */
     @Operation(
@@ -101,14 +101,14 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
-    @PutMapping("/meet/{meetId}")
+    @PutMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeet(
             @PathVariable Long meetId,
             @Valid @RequestBody MeetFormRequest meetFormRequest,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
-        MeetDto meetDto = meetService.updateById(meetId, principle.getUsername(), meetFormRequest.toDto());
+        MeetDto meetDto = meetService.updateById(meetId, principle.getMemberId(), meetFormRequest.toDto());
 
         MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
 
@@ -132,8 +132,8 @@ public class MeetController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-    })
             @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
+    })
     @DeleteMapping("/meets/{meetId}")
     public ResponseEntity<BaseResponse> deleteMeet(
             @PathVariable Long meetId,

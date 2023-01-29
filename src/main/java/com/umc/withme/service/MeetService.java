@@ -7,14 +7,14 @@ import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
-import com.umc.withme.exception.member.NicknameNotFoundException;
+import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,50 +89,55 @@ public class MeetService {
      * 모임을 meetDto 를 바탕으로 수정한다.
      * 수정하려는 사용자가 기존 모임의 리더(주인)과 동일해야 모임을 수정할 수 있다.
      *
-     * @param meetId     수정하려는 모임의 id
-     * @param memberName 수정하려는 사용자
-     * @param meetDto    수정하려는 정보가 담긴 dto
+     * @param meetId        수정하려는 모임의 id
+     * @param loginMemberId 수정하려는 사용자의 id (현재 로그인한 사용자 pk)
+     * @param meetDto       수정하려는 정보가 담긴 dto
      * @return 수정된 모임 DTO
      */
     @Transactional
-    public MeetDto updateById(Long meetId, String memberName, MeetDto meetDto) {
-        // 수정하려는 모임 조회
+    public MeetDto updateById(Long meetId, Long loginMemberId, MeetDto meetDto) {
+        // 수정하려는 모임 엔티티 조회
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        // 모임의 리더
-        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(UnauthorizedException::new);
+        // 모임의 리더 id
+        Long meetLeaderId = meet.getCreatedBy();
 
-        // 수정을 시도하는 사용자
-        Member member = memberRepository.findByNickname(memberName)
-                .orElseThrow(NicknameNotFoundException::new);
+        // 수정하고자 하는 모임의 주인과 사용자의 pk를 비교하고 일치하지 않으면 예외 처리
+        if (!meetLeaderId.equals(loginMemberId))
+            throw new MeetUpdateForbiddenException(meetId, loginMemberId);
 
-        // 수정하고자 하는 모임의 주인과 사용자가 일치하는지 확인인하고 모임 수정
-        if (meetLeader.equals(member)) {
-            // 모임의 MeetAddress 모두 삭제 후 meetDto에 따라 다시 생성
-            updateMeetAddress(meetId, meetDto, meet);
+        // 모임의 MeetAddress 모두 삭제 후 meetDto에 따라 다시 생성
+        updateMeetAddress(meet, meetDto);
 
-            // 모임 엔티티 수정
-            meet.update(meetDto);
+        // 모임 엔티티 수정
+        meet.update(meetDto);
 
-            // 수정된 모임의 주소 리스트 받아오기
-            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
-                    .stream()
-                    .map(MeetAddress::getAddress)
-                    .collect(Collectors.toList());
+        // 수정된 모임의 주소 리스트 받아오기
+        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
+                .stream()
+                .map(MeetAddress::getAddress)
+                .collect(Collectors.toList());
 
-            // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
-            return MeetDto.from(
-                    meet,
-                    addresses,
-                    member);
-        } else
-            throw new EntityNotFoundException();
+        // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
+        return MeetDto.from(
+                meet,
+                addresses,
+                memberRepository.findById(meetLeaderId)
+                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)));
     }
 
-    private void updateMeetAddress(Long meetId, MeetDto meetDto, Meet meet) {
-        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByMeet_Id(meetId);
+    /**
+     * MeetService 내에서만 접근할 수 있는 메소드로 updateById 메소드 내에서 사용된다.
+     * <p>
+     * meetId에 해당하는 MeetAddress 모두 삭제 후,
+     * meetDto 내용을 바탕으로 MeetAddress 데이터를 생성한다.
+     *
+     * @param meet    수정할 모임 엔티티
+     * @param meetDto 새로운 addresses 정보가 담긴 모임 DTO
+     */
+    private void updateMeetAddress(Meet meet, MeetDto meetDto) {
+        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByMeet_Id(meet.getId());
         for (MeetAddress meetAddress : meetAddresses) {
             meetAddressRepository.delete(meetAddress);
         }
