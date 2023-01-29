@@ -13,6 +13,9 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 모임 모집글 생성 및 수정 시 사용하는 Request
+ */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
