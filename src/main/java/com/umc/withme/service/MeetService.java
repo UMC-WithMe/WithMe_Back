@@ -8,7 +8,6 @@ import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
-import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -88,25 +87,21 @@ public class MeetService {
      * 삭제할 모임의 id를 입력받아 해당 모임이 존재할 경우 삭제한다.
      * Meet, MeetAddress, MeetMember 테이블에서 삭제가 이루어진다.
      *
-     * @param meetId 삭제할 모임의 id
+     * @param meetId        삭제할 모임의 id
+     * @param loginMemberId 현재 로그인한 사용자의 id
      */
     @Transactional
-    public void deleteMeetById(Long meetId, String memberEmail) {
-        // 모임을 삭제하려고 하는 사용자
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(EmailNotFoundException::new);
-
+    public void deleteMeetById(Long meetId, Long loginMemberId) {
         // 삭제하려는 모임
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        // 모임의 주인
-        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+        // 모임의 주인의 pk
+        Long meetLeaderId = meet.getCreatedBy();
 
         // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
-        if (!meetLeader.equals(member))
-            throw new MeetDeleteForbiddenException(meet.getId(), memberEmail);
+        if (!meetLeaderId.equals(loginMemberId))
+            throw new MeetDeleteForbiddenException(meet.getId(), loginMemberId);
 
         meetAddressRepository.findAllByMeet_Id(meetId)
                 .forEach(ma -> meetAddressRepository.delete(ma));

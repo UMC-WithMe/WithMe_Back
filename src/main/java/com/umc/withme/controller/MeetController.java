@@ -106,7 +106,7 @@ public class MeetController {
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        meetService.deleteMeetById(meetId, principle.getUsername());
+        meetService.deleteMeetById(meetId, principle.getMemberId());
 
         return new ResponseEntity<>(
                 new BaseResponse(true),
