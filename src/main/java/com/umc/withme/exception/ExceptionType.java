@@ -7,6 +7,7 @@ import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,6 +48,7 @@ public enum ExceptionType {
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
     EMAIL_NOT_FOUND_EXCEPTION(1401, "해당 이메일을 갖는 회원을 찾을 수 없습니다.", EmailNotFoundException.class),
     MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 id를 갖는 회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
+    NICKNAME_DUPLICATE_EXCEPTION(1403, "이미 사용중인 닉네임입니다.", NicknameDuplicateException.class),
 
     // Meet
     MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException.class),

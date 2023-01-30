@@ -37,6 +37,7 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true)
     private String phoneNumber;
 
+    @Setter
     @Column(unique = true, nullable = false)
     private String nickname;
 
