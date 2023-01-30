@@ -3,6 +3,7 @@ package com.umc.withme.controller;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.review.ReviewCreateRequest;
 import com.umc.withme.dto.review.ReviewCreateResponse;
+import com.umc.withme.dto.review.ReviewGetInfoResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Tag(name = "후기 관련 API")
 @RestController
@@ -43,6 +45,15 @@ public class ReviewController {
         Long reviewId = reviewService.create(principle.getMemberId(), receiverId, meetId, reviewCreateRequest);
 
         ReviewCreateResponse response = ReviewCreateResponse.of(reviewId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @GetMapping("/reviews/send-reviews")
+    public ResponseEntity<DataResponse<List<ReviewGetInfoResponse>>> getReceiveReview(@AuthenticationPrincipal WithMeAppPrinciple principle) {
+        List<ReviewGetInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

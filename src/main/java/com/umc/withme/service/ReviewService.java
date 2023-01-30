@@ -2,12 +2,16 @@ package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.review.ReviewCreateRequest;
+import com.umc.withme.dto.review.ReviewGetInfoResponse;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,5 +52,18 @@ public class ReviewService {
         Review saveReview = reviewRepository.save(review);
 
         return saveReview.getId();
+    }
+
+    public List<ReviewGetInfoResponse> getReceiveReview(Long id) {
+        List<ReviewGetInfoResponse> infoList = new ArrayList<>();
+
+        reviewRepository.findAllByReceiver_id(id)
+                .stream()
+                .forEach((el) -> infoList.add(ReviewGetInfoResponse.of(el.getSender().getNickname(),
+                                                                        el.getContent(),
+                                                                        el.getMeet().getTitle(),
+                                                                        el.getCreatedAt())));
+
+        return infoList;
     }
 }
