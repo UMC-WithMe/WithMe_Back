@@ -18,13 +18,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/members")
 @Validated
 public class MemberController {
 
@@ -36,7 +35,7 @@ public class MemberController {
                     "반환 값이 true이면 이미 사용 중인 닉네임이고, false이면 사용 중이지 않는 닉네임이다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/members/check")
+    @GetMapping("/check")
     public ResponseEntity<DataResponse<NicknameDuplicationCheckResponse>> checkNicknameDuplicate(@RequestParam @NotBlank String nickname) {
         NicknameDuplicationCheckResponse response = NicknameDuplicationCheckResponse.of(memberService.checkNicknameDuplication(nickname));
 
@@ -54,7 +53,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
     })
-    @GetMapping("/members")
+    @GetMapping
     public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
         MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
@@ -66,14 +65,10 @@ public class MemberController {
 
     @Operation(
             summary = "회원 폰 번호 설정/재설정",
-            description = "<p><code>memberId</code>에 해당하는 회원의 폰 번호를 request body의 <code>phoneNumber</code>로 설정합니다.</p>",
+            description = "<p>로그인 중인 회원의 폰 번호를 request body의 <code>phoneNumber</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
-    })
-    @PatchMapping("/user/phone-number")
+    @PatchMapping("/phone-number")
     public ResponseEntity<BaseResponse> updateMemberPhoneNumber(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
             @Valid @RequestBody MemberPhoneNumberUpdateRequest request
@@ -86,15 +81,32 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "회원 주소 설정/재설정",
-            description = "<p><code>memberId</code>에 해당하는 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
+            summary = "회원 닉네임 설정/재설정",
+            description = "<p>로그인 중인 회원의 닉네임을 request body의 <code>nickname</code>로 설정합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1401: <code>email</code>에 해당하는 회원이 없는 경우", content = @Content)
+            @ApiResponse(responseCode = "409", description = "1403: 이미 사용중인 닉네임인 경우(닉네임 중복)", content = @Content)
     })
-    @PatchMapping("/user/address")
+    @PatchMapping("/nickname")
+    public ResponseEntity<BaseResponse> updateMemberNickname(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @Valid @RequestBody MemberNicknameUpdateRequest request
+    ) {
+        memberService.updateMemberNickname(principle.getUsername(), request.getNickname());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new BaseResponse(true));
+    }
+
+    @Operation(
+            summary = "회원 주소 설정/재설정",
+            description = "<p>로그인 중인 회원의 주소 정보를 request body의 <code>sido</code>, <code>sgg</code>로 설정합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @PatchMapping("/address")
     public ResponseEntity<BaseResponse> updateMemberAddress(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
             @Valid @RequestBody MemberAddressUpdateRequest request
