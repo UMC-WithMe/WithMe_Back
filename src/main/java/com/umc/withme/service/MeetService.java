@@ -123,7 +123,7 @@ public class MeetService {
     }
 
     /**
-     * 조건에 해당하는 모임을 조회하고 모임 DTO 목록을 반환한다.
+     * 조건에 해당하는 모임 모집글을 조회하고 모임 DTO 목록을 반환한다.
      *
      * @param meetSearch 모임 목록 검색 조건(카테고리, 동네, 제목)이 담긴 DTO
      * @return 조회한 모임 DTO 목록
@@ -143,19 +143,24 @@ public class MeetService {
             Member leader = memberRepository.findById(meet.getCreatedBy())
                     .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
-            //TODO : 좋아요 수 추후 구현 필요. 모집글 목록조회이므로 인원 카운트는 필요 X
+            //TODO : 좋아요 수 추후 구현 필요.
+
+            // 모집글 목록조회이므로 인원 카운트는 필요 X
             meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, 1L));
         }
 
         return meetDtos;
     }
 
-    // 조건에 해당하는 모임 기록을 찾아서 모임 DTO 목록을 반환한다.
+    /**
+     * 조건에 해당하는 모임 기록을 조회하고 모임 DTO 목록을 반환한다.
+     *
+     * @param meetSearch 모임 목록 검색 조건(모임 진행상태)이 담긴 DTO
+     * @return 조회한 모임 DTO 목록
+     */
     public List<MeetDto> findAllMeetsRecords(MeetSearch meetSearch) {
-        System.out.println("meetSearch = " + meetSearch);
         // 모임 진행상태로 조회한 모임 리스트
         List<Meet> meets = meetRepository.searchMeets(meetSearch);
-        System.out.println("meets.size() = " + meets.size());
 
         // 모임 리스트를 주소 및 리더 정보, 모임 인원수를 포함한 DTO 리스트로 변환해서 반환한다.
         List<MeetDto> meetDtos = new ArrayList<>();
