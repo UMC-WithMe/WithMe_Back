@@ -63,7 +63,7 @@ public class ReviewService {
     public List<ReviewGetInfoResponse> getReceiveReview(Long id) {
         List<ReviewGetInfoResponse> infoList = new ArrayList<>();
 
-        reviewRepository.findAllByReceiver_id(id)
+        reviewRepository.findAllByReceiver_Id(id)
                 .stream()
                 .forEach((el) -> infoList.add(ReviewGetInfoResponse.of(el.getSender().getNickname(),
                                                                         el.getContent(),
