@@ -89,13 +89,13 @@ public class MeetService {
      * 모임을 meetDto 를 바탕으로 수정한다.
      * 수정하려는 사용자가 기존 모임의 리더(주인)과 동일해야 모임을 수정할 수 있다.
      *
-     * @param meetId        수정하려는 모임의 id
-     * @param loginMemberId 수정하려는 사용자의 id (현재 로그인한 사용자 pk)
-     * @param meetDto       수정하려는 정보가 담긴 dto
+     * @param meetId          수정하려는 모임의 id
+     * @param loginMemberId   수정하려는 사용자의 id (현재 로그인한 사용자 pk)
+     * @param meetDtoToUpdate 수정하려는 정보가 담긴 dto
      * @return 수정된 모임 DTO
      */
     @Transactional
-    public MeetDto updateById(Long meetId, Long loginMemberId, MeetDto meetDto) {
+    public MeetDto updateById(Long meetId, Long loginMemberId, MeetDto meetDtoToUpdate) {
         // 수정하려는 모임 엔티티 조회
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new MeetIdNotFoundException(meetId));
@@ -107,11 +107,11 @@ public class MeetService {
         if (!meetLeaderId.equals(loginMemberId))
             throw new MeetUpdateForbiddenException(meetId, loginMemberId);
 
-        // 모임의 MeetAddress 모두 삭제 후 meetDto에 따라 다시 생성
-        updateMeetAddress(meet, meetDto);
+        // 모임의 MeetAddress 모두 삭제 후 meetDtoToUpdate에 따라 다시 생성
+        updateMeetAddress(meet, meetDtoToUpdate);
 
         // 모임 엔티티 수정
-        meet.update(meetDto);
+        meet.update(meetDtoToUpdate);
 
         // 수정된 모임의 주소 리스트 받아오기
         List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
