@@ -7,6 +7,7 @@ import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.NotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
+import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.repository.*;
@@ -53,6 +54,12 @@ public class MeetService {
         return meet.getId();
     }
 
+    /**
+     * AddressDto를 Address Entity로 변환해 반환해준다.
+     *
+     * @param dto 변환할 AddressDto
+     * @return 변환된 Address Entity
+     */
     private Address getAddress(AddressDto dto) {
         return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
                 .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
@@ -78,6 +85,35 @@ public class MeetService {
 
         //TODO : 좋아요 수 및 인원수 설정
         return MeetDto.from(meet, addresses, member, 0L, 1L);
+    }
+
+    /**
+     * 삭제할 모임의 id를 입력받아 해당 모임이 존재할 경우 삭제한다.
+     * Meet, MeetAddress, MeetMember 테이블에서 삭제가 이루어진다.
+     *
+     * @param meetId        삭제할 모임의 id
+     * @param loginMemberId 현재 로그인한 사용자의 id
+     */
+    @Transactional
+    public void deleteMeetById(Long meetId, Long loginMemberId) {
+        // 삭제하려는 모임
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
+
+        // 모임의 주인의 pk
+        Long meetLeaderId = meet.getCreatedBy();
+
+        // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
+        if (!meetLeaderId.equals(loginMemberId))
+            throw new MeetDeleteForbiddenException(meet.getId(), loginMemberId);
+
+        meetAddressRepository.findAllByMeet_Id(meetId)
+                .forEach(ma -> meetAddressRepository.delete(ma));
+
+        meetMemberRepository.findAllByMeet_Id(meetId)
+                .forEach(mm -> meetMemberRepository.delete(mm));
+
+        meetRepository.delete(meet);
     }
 
     /**
