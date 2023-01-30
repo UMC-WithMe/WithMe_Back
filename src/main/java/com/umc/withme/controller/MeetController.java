@@ -1,5 +1,7 @@
 package com.umc.withme.controller;
 
+import com.umc.withme.domain.constant.MeetCategory;
+import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
@@ -80,9 +82,8 @@ public class MeetController {
         );
     }
 
-
     /**
-     * 모임 리스트 조회 API
+     * 모임 모집글 리스트 조회 API
      * 조건에 해당하는 모임 모집글 목록들을 조회한다.
      *
      * @param category 조회할 모임의 카테고리
@@ -92,26 +93,46 @@ public class MeetController {
      * @return 조건에 해당하는 모임 DTO 리스트를 반환한다.
      */
     @Operation(
-            summary = "모임 리스트 조회 API",
+            summary = "모임 모집글 리스트 조회 API",
             description = "<p><code>category</code>, <code>sido</code>, <code>sgg</code>, " +
                     "<code>title</code> 조건에 맞는 모임 모집글 목록들을 반환합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/meets")
     public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
-            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "category", required = false) MeetCategory category,
             @RequestParam(value = "sido", required = false) String sido,
             @RequestParam(value = "sgg", required = false) String sgg,
             @RequestParam(value = "title", required = false) String title
     ) {
-        System.out.println("category = " + category);
-        System.out.println("sido = " + sido);
-        System.out.println("sgg = " + sgg);
-        System.out.println("title = " + title);
-        List<MeetDto> meetDtos = meetService.findAll(MeetSearch.of(category, sido, sgg, title));
-        for (MeetDto meetDto : meetDtos) {
-            System.out.println("meetDto = " + meetDto);
-        }
+        List<MeetDto> meetDtos = meetService.findAllMeets(MeetSearch.of(category, sido, sgg, title));
+
+        MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 모임 기록 목록 조회 API
+     * 현재 모임 기록 및 지난 모임 기록 화면에서 사용된다.
+     *
+     * @param meetStatus 조회할 모임 기록 진행 상태 조건.
+     *                   현재 모임 기록 : PROGRESS , 지난 모임 기록 : COMPLETE
+     * @param principle
+     * @return 조건에 해당하는 모임 DTO 리스트를 반환한다.
+     */
+    @GetMapping("/meets/record")
+    public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
+            @RequestParam(value = "meetStatus") MeetStatus meetStatus,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        System.out.println("meetStatus = " + meetStatus);
+        System.out.println("principle.getUsername() = " + principle.getUsername());
+        System.out.println("principle.getMemberId() = " + principle.getMemberId());
+        List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetSearch.of(meetStatus, principle.getMemberId()));
 
         MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
 

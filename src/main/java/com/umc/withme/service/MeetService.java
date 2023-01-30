@@ -76,17 +76,19 @@ public class MeetService {
         Member member = memberRepository.findById(meet.getCreatedBy())
                 .orElseThrow(UnauthorizedException::new);
 
-        return MeetDto.from(meet, addresses, member);
+        //TODO : 좋아요 수 및 인원수 설정
+        return MeetDto.from(meet, addresses, member, 0L, 1L);
     }
 
     /**
      * 조건에 해당하는 모임을 조회하고 모임 DTO 목록을 반환한다.
+     *
      * @param meetSearch 모임 목록 검색 조건(카테고리, 동네, 제목)이 담긴 DTO
      * @return 조회한 모임 DTO 목록
      */
-    public List<MeetDto> findAll(MeetSearch meetSearch) {
-        // 카테고리 및 동네로 조회한 모임 리스트
-        List<Meet> meets = meetRepository.takeAll(meetSearch);
+    public List<MeetDto> findAllMeets(MeetSearch meetSearch) {
+        // 카테고리 및 동네, 제목으로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeets(meetSearch);
 
         // 모임 리스트를 주소 및 리더 정보를 포함한 DTO 리스트로 변환해서 반환한다.
         List<MeetDto> meetDtos = new ArrayList<>();
@@ -97,10 +99,43 @@ public class MeetService {
                     .collect(Collectors.toUnmodifiableList());
 
             Member leader = memberRepository.findById(meet.getCreatedBy())
-                    .orElseThrow(NotFoundException::new);   // TODO : 모임삭제 merge 되면 exception 변경 필요
-
-            meetDtos.add(MeetDto.from(meet, addresses, leader));
+                    .orElseThrow(NotFoundException::new);   // TODO : 모임수정브랜치 merge 되면 exception 변경 필요
+            //TODO : 좋아요 수 및 인원수 설정
+            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, 1L));
         }
+
+        // TODO : 하트 갯수 넣기
+
+        return meetDtos;
+    }
+
+    // 조건에 해당하는 모임 기록을 찾아서 모임 DTO 목록을 반환한다.
+    public List<MeetDto> findAllMeetsRecords(MeetSearch meetSearch) {
+        System.out.println("meetSearch = " + meetSearch);
+        // 모임 진행상태로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeets(meetSearch);
+        System.out.println("meets.size() = " + meets.size());
+
+        // 모임 리스트를 주소 및 리더 정보, 모임 인원수를 포함한 DTO 리스트로 변환해서 반환한다.
+        List<MeetDto> meetDtos = new ArrayList<>();
+        for (Meet meet : meets) {
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toUnmodifiableList());
+            System.out.println("set addresses");
+            Member leader = memberRepository.findById(meet.getCreatedBy())
+                    .orElseThrow(NotFoundException::new);   // TODO : 모임수정브랜치 merge 되면 exception 변경 필요
+            System.out.println("set leader");
+            long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(mm -> mm.getMember())
+                    .count();
+            System.out.println("set membersCount");
+
+            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, membersCount));
+        }
+
         return meetDtos;
     }
 }

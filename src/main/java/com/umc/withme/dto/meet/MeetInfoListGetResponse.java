@@ -8,6 +8,9 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 모임 모집글 조회 및 모임 기록 조회에서 사용되는 Response DTO
+ */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MeetInfoListGetResponse {
