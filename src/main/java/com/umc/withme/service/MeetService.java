@@ -5,11 +5,11 @@ import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
-import com.umc.withme.exception.common.NotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -83,8 +83,14 @@ public class MeetService {
         Member member = memberRepository.findById(meet.getCreatedBy())
                 .orElseThrow(UnauthorizedException::new);
 
-        //TODO : 좋아요 수 및 인원수 설정
-        return MeetDto.from(meet, addresses, member, 0L, 1L);
+        //TODO : 좋아요 수 추후 구현 필요
+
+        long membersCount = meetMemberRepository.findAllByMeet_Id(meetId)
+                .stream()
+                .map(mm -> mm.getMember())
+                .count();
+
+        return MeetDto.from(meet, addresses, member, 0L, membersCount);
     }
 
     /**
@@ -135,12 +141,11 @@ public class MeetService {
                     .collect(Collectors.toUnmodifiableList());
 
             Member leader = memberRepository.findById(meet.getCreatedBy())
-                    .orElseThrow(NotFoundException::new);   // TODO : 모임수정브랜치 merge 되면 exception 변경 필요
-            //TODO : 좋아요 수 및 인원수 설정
+                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
+            //TODO : 좋아요 수 추후 구현 필요. 모집글 목록조회이므로 인원 카운트는 필요 X
             meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, 1L));
         }
-
-        // TODO : 하트 갯수 넣기
 
         return meetDtos;
     }
@@ -159,16 +164,16 @@ public class MeetService {
                     .stream()
                     .map(ma -> ma.getAddress())
                     .collect(Collectors.toUnmodifiableList());
-            System.out.println("set addresses");
+
             Member leader = memberRepository.findById(meet.getCreatedBy())
-                    .orElseThrow(NotFoundException::new);   // TODO : 모임수정브랜치 merge 되면 exception 변경 필요
-            System.out.println("set leader");
+                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
             long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
                     .stream()
                     .map(mm -> mm.getMember())
                     .count();
-            System.out.println("set membersCount");
 
+            // 모임 기록 조회이므로 좋아요 수는 필요 없다.
             meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, membersCount));
         }
 
