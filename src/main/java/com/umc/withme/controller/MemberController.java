@@ -87,7 +87,7 @@ public class MemberController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "409", description = "1402: 이미 사용중인 닉네임인 경우(닉네임 중복)", content = @Content)
+            @ApiResponse(responseCode = "409", description = "1403: 이미 사용중인 닉네임인 경우(닉네임 중복)", content = @Content)
     })
     @PatchMapping("/nickname")
     public ResponseEntity<BaseResponse> updateMemberNickname(
