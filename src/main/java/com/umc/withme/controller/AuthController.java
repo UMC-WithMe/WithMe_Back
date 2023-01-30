@@ -34,7 +34,9 @@ public class AuthController {
     @Operation(
             summary = "로그인",
             description = "<p>Kakao에서 전달받은 access token(<code>kakaoAccessToken</code>)으로 server에 로그인합니다.</p>" +
-                    "<p>로그인에 성공하면 jwt access token을 응답합니다.</p>"
+                    "<p>로그인에 성공하면 jwt access token을 응답합니다.</p>" +
+                    "<p><strong>이후 로그인 권한이 필요한 API를 호출할 때는 HTTP header에 다음과 같이 access token을 담아서 요청해야 합니다.</strong></p>" +
+                    "<ul><li><code>Authorization: Bearer 서버로부터_받은_액세스_토큰</code></li></ul>"
     )
     @PostMapping("/login")
     public ResponseEntity<DataResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) throws JsonProcessingException {
