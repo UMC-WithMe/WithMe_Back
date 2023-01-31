@@ -31,9 +31,9 @@ public class ReviewService {
     @Transactional
     public Long create(Long senderId, Long receiverId, Long meetId, ReviewCreateRequest requestDto) {
 
-        Member sender = memberRepository.findById(senderId).orElseThrow(MemberIdNotFoundException::new);
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(MemberIdNotFoundException::new);
-        Meet meet = meetRepository.findById(meetId).orElseThrow(MeetIdNotFoundException::new);
+        Member sender = memberRepository.findById(senderId).orElseThrow(()->new MemberIdNotFoundException(senderId));
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(()->new MemberIdNotFoundException(receiverId));
+        Meet meet = meetRepository.findById(meetId).orElseThrow(()-> new MeetIdNotFoundException(meetId));
 
         Point point = pointRepository.save(requestDto.getPoint().toDto().toEntity());
 
@@ -48,5 +48,14 @@ public class ReviewService {
         Review saveReview = reviewRepository.save(review);
 
         return saveReview.getId();
+    }
+
+    /**
+     * 받은 리뷰 개수 조회
+     * @param memberId 본인(받은 사람) 회원 id(pk)
+     * @return 받은 리뷰 개수
+     */
+    public Long getReceivedReviewsCount(Long memberId){
+        return reviewRepository.countByReceiver(memberId);
     }
 }

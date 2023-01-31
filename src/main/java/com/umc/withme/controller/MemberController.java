@@ -5,6 +5,7 @@ import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.member.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MemberService;
+import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,6 +29,7 @@ import javax.validation.constraints.NotBlank;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ReviewService reviewService;
 
     @Operation(
             summary = "닉네임 중복 조회",
@@ -54,10 +56,9 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
+    public ResponseEntity<DataResponse<MemberAllInfoResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
-        MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
-
+        MemberAllInfoResponse response = MemberAllInfoResponse.of(memberDto, reviewService.getReceivedReviewsCount(memberDto.getId()));
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse<>(response));

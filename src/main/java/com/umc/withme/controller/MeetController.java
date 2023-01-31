@@ -8,6 +8,7 @@ import com.umc.withme.dto.meet.MeetFormRequest;
 import com.umc.withme.dto.meet.MeetInfoGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
+import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,6 +31,7 @@ import javax.validation.Valid;
 public class MeetController {
 
     private final MeetService meetService;
+    private final ReviewService reviewService;
 
     /**
      * 모임글 생성 API
@@ -78,7 +80,7 @@ public class MeetController {
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoGetResponse response = MeetInfoGetResponse.of(meetDto, reviewService.getReceivedReviewsCount(meetDto.getLeader().getId()));
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -110,7 +112,7 @@ public class MeetController {
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
         MeetDto meetDto = meetService.updateById(meetId, principle.getMemberId(), meetFormRequest.toDto());
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoGetResponse response = MeetInfoGetResponse.of(meetDto, reviewService.getReceivedReviewsCount(meetDto.getLeader().getId()));
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),

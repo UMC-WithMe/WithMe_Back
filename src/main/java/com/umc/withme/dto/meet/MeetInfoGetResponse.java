@@ -4,7 +4,7 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
 import com.umc.withme.dto.address.AddressDto;
-import com.umc.withme.dto.member.MemberInfoGetResponse;
+import com.umc.withme.dto.member.MemberShortInfoResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class MeetInfoGetResponse {
     private Long meetId;
 
     @Schema(example = "", description = "모임을 생성한 사용자 정보 (모임의 리더 정보)")
-    private MemberInfoGetResponse leader;  // 이 모임의 리더
+    private MemberShortInfoResponse leader;  // 이 모임의 리더
 
     private List<AddressDto> addresses;  // 이 모임에 설정된 동네 리스트
 
@@ -58,11 +58,11 @@ public class MeetInfoGetResponse {
     @Schema(example = "2023-02-15", description = "모임 마감(종료) 날짜")
     private LocalDate endDate;
 
-    public static MeetInfoGetResponse from(MeetDto dto) {
+    public static MeetInfoGetResponse of(MeetDto dto, Long receivedReviewsCount) {
 
         return new MeetInfoGetResponse(
                 dto.getMeetId(),
-                MemberInfoGetResponse.from(dto.getLeader()),
+                MemberShortInfoResponse.of(dto.getLeader(), receivedReviewsCount),
                 dto.getAddresses(),
                 dto.getMeetCategory(),
                 dto.getRecruitStatus(),
