@@ -35,8 +35,8 @@ public class MessageService {
     @Transactional
     public Long createMessage(Long senderId, Long receiverId, Long meetId, MessageCreateRequest messageCreateRequest){
 
-        Member sender = memberRepository.findById(senderId).orElseThrow();
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(()-> new MemberIdNotFoundException(senderId));
+        Member sender = memberRepository.findById(senderId).orElseThrow(()-> new MemberIdNotFoundException(senderId));
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(()-> new MemberIdNotFoundException(receiverId));
 
         Meet meet = meetRepository.findById(meetId).orElseThrow(()-> new MeetIdNotFoundException(meetId));
 
@@ -47,8 +47,8 @@ public class MessageService {
                 .content(messageCreateRequest.getContent())
                 .build();
 
-        Message savedMessage = messageRepository.save(newMessage);
+        messageRepository.save(newMessage);
 
-        return savedMessage.getId();
+        return newMessage.getId();
     }
 }

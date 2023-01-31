@@ -1,6 +1,6 @@
 package com.umc.withme.controller;
 
-import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
@@ -30,14 +30,14 @@ public class MessageController {
      * @param principle
      * @param receiverId 쪽지 받는 회원 id(pk)
      * @param meetId 관련 모집글 id(pk)
-     * @return 쪽지 생성 응답 데이터 (생성된 쪽지 아이디)
+     * @return 쪽지생성 성공 여부
      */
 
     @Operation(summary = "쪽지 생성",
                description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
                              "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용" )
     @PostMapping("/messages")
-    public ResponseEntity<DataResponse<MessageCreateResponse>> createMessage(
+    public ResponseEntity<BaseResponse> createMessage(
             @Valid@RequestBody MessageCreateRequest messageCreateRequest,
             @AuthenticationPrincipal WithMeAppPrinciple principle, @RequestParam Long receiverId,
             @RequestParam Long meetId){
@@ -45,6 +45,6 @@ public class MessageController {
         Long messageId = messageService.createMessage(principle.getMemberId(), receiverId, meetId, messageCreateRequest);
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new DataResponse<>(messageCreateResponse));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(true));
     }
 }
