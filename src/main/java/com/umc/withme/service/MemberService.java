@@ -5,6 +5,7 @@ import com.umc.withme.domain.Member;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.AddressRepository;
 import com.umc.withme.repository.MemberRepository;
@@ -85,7 +86,7 @@ public class MemberService {
     }
 
     /**
-     * memberId에 해당하는 회원 entity의 폰 번호를 phoneNumber로 설정한다.
+     * email로 조회한 회원 entity의 폰 번호를 phoneNumber로 설정한다.
      *
      * @param email 폰 번호를 설정할 회원의 email
      * @param phoneNumber   설정할 폰 번호
@@ -94,6 +95,22 @@ public class MemberService {
     public void updateMemberPhoneNumber(String email, String phoneNumber) {
         Member member = getMemberByEmail(email);
         member.setPhoneNumber(phoneNumber);
+    }
+
+    /**
+     * email로 조회한 회원의 닉네임을 설정한다
+     *
+     * @param email 닉네임을 설정할 회원의 email
+     * @param nickname  변경하려는 nickname
+     */
+    @Transactional
+    public void updateMemberNickname(String email, String nickname) {
+        if (checkNicknameDuplication(nickname)) {
+            throw new NicknameDuplicateException();
+        }
+
+        Member member = getMemberByEmail(email);
+        member.setNickname(nickname);
     }
 
     /**

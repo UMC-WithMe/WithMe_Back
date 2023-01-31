@@ -1,33 +1,55 @@
 withme.application.version: v0.0.1
 
-debug: false
-
-# Spring Boot Actuator
-management.endpoints.web.exposure.include: "*"  # TODO: 노출하고 싶지 않은 서버 정보가 외부에 노출될 수 있으므로, 배포 시 삭제를 고려해야 함
+jwt.secret.key: ${JWT_SECRET_KEY}
 
 logging:
   level:
-    com.umc.withme: debug # TODO: 배포 시 적절한 logging level을 info 또는 warn으로 선택해야 함
+    com.umc.withme: debug
+    org.hibernate.SQL: debug
 
 spring:
-  datasource:
-    url: ${WITHME_DB_URL}
-    username: ${WITHME_DB_USERNAME}
-    password: ${WITHME_DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     open-in-view: false
-    hibernate.ddl-auto: create  # TODO: 배포 시 update, validate, none 중 하나를 선택
-    show-sql: true
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
-    defer-datasource-initialization: true  # TODO: 배포 시 제거
-  sql.init.mode: always # TODO: 배포 시 제거 또는 never로 설정
 
-# JWT
-jwt.secret.key: ${JWT_SECRET_KEY}
+---
+# Settings for local(dev)
+management.endpoints.web.exposure.include: "*"
+
+spring:
+  config.activate.on-profile: local
+  datasource:
+    url: ${WITHME_LOCAL_DB_URL}
+    username: ${WITHME_LOCAL_DB_USERNAME}
+    password: ${WITHME_LOCAL_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate.ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
+
+---
+# Settings for production(dev-server)
+logging:
+  level:
+    com.umc.withme: info
+
+spring:
+  config.activate.on-profile: prod
+  datasource:
+    url: ${WITHME_PROD_DB_URL}
+    username: ${WITHME_PROD_DB_USERNAME}
+    password: ${WITHME_PROD_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate.ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+  sql.init.mode: never
 
 ---
 # Settings for test
@@ -35,4 +57,10 @@ spring:
   config.activate.on-profile: test
   datasource:
     url: jdbc:h2:mem:testdb
+    username: sa
+    password:
     driver-class-name: org.h2.Driver
+  jpa:
+    hibernate.ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
