@@ -8,6 +8,7 @@ import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
@@ -91,6 +92,68 @@ public class MeetService {
                 .count();
 
         return MeetDto.from(meet, addresses, member, 0L, membersCount);
+    }
+
+    /**
+     * 모임을 meetDto 를 바탕으로 수정한다.
+     * 수정하려는 사용자가 기존 모임의 리더(주인)과 동일해야 모임을 수정할 수 있다.
+     *
+     * @param meetId          수정하려는 모임의 id
+     * @param loginMemberId   수정하려는 사용자의 id (현재 로그인한 사용자 pk)
+     * @param meetDtoToUpdate 수정하려는 정보가 담긴 dto
+     * @return 수정된 모임 DTO
+     */
+    @Transactional
+    public MeetDto updateById(Long meetId, Long loginMemberId, MeetDto meetDtoToUpdate) {
+        // 수정하려는 모임 엔티티 조회
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
+
+        // 모임의 리더 id
+        Long meetLeaderId = meet.getCreatedBy();
+
+        // 수정하고자 하는 모임의 주인과 사용자의 pk를 비교하고 일치하지 않으면 예외 처리
+        if (!meetLeaderId.equals(loginMemberId))
+            throw new MeetUpdateForbiddenException(meetId, loginMemberId);
+
+        // 모임의 MeetAddress 모두 삭제 후 meetDtoToUpdate에 따라 다시 생성
+        updateMeetAddress(meet, meetDtoToUpdate);
+
+        // 모임 엔티티 수정
+        meet.update(meetDtoToUpdate);
+
+        // 수정된 모임의 주소 리스트 받아오기
+        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
+                .stream()
+                .map(MeetAddress::getAddress)
+                .collect(Collectors.toList());
+
+        // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
+        return MeetDto.from(
+                meet,
+                addresses,
+                memberRepository.findById(meetLeaderId)
+                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)));
+    }
+
+    /**
+     * MeetService 내에서만 접근할 수 있는 메소드로 updateById 메소드 내에서 사용된다.
+     * <p>
+     * meetId에 해당하는 MeetAddress 모두 삭제 후,
+     * meetDto 내용을 바탕으로 MeetAddress 데이터를 생성한다.
+     *
+     * @param meet    수정할 모임 엔티티
+     * @param meetDto 새로운 addresses 정보가 담긴 모임 DTO
+     */
+    private void updateMeetAddress(Meet meet, MeetDto meetDto) {
+        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByMeet_Id(meet.getId());
+        for (MeetAddress meetAddress : meetAddresses) {
+            meetAddressRepository.delete(meetAddress);
+        }
+        meetDto.getAddresses().forEach(addressDto -> {
+            Address address = getAddress(addressDto);
+            meetAddressRepository.save(new MeetAddress(meet, address));
+        });
     }
 
     /**
