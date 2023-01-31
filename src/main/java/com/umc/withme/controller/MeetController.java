@@ -1,14 +1,10 @@
 package com.umc.withme.controller;
 
-import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
+import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.meet.*;
-import com.umc.withme.dto.meet.MeetCreateResponse;
-import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.meet.MeetFormRequest;
-import com.umc.withme.dto.meet.MeetInfoGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Tag(name = "MeetController", description = "모임 API Controller 입니다.")
@@ -192,6 +189,11 @@ public class MeetController {
      * @param principle
      * @return 조건에 해당하는 모임 DTO 리스트를 반환한다.
      */
+    @Operation(
+            summary = "모임 기록 리스트 조회 API",
+            description = "<p><code>meetStatus</code> 조건에 맞는 모임 기록 목록들을 반환합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
     @GetMapping("/meets/record")
     public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
             @RequestParam(value = "meetStatus") MeetStatus meetStatus,
