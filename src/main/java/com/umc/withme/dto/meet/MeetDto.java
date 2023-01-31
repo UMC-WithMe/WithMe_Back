@@ -36,10 +36,15 @@ public class MeetDto {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    private Long likeCount; // 이 모임의 좋아요 수
+    private Long membersCount;   // 이 모임에 모집된 사람의 수
+
     public static MeetDto from(
             Meet meet,
             List<Address> addresses, // meet에 등록된 모든 Address Entity List
-            Member leader           // meet의 리더 멤버
+            Member leader,           // meet의 리더 멤버
+            Long likeCount,
+            Long membersCount
     ) {
         return new MeetDto(
                 meet.getId(),
@@ -56,15 +61,17 @@ public class MeetDto {
                 meet.getMinPeople(),
                 meet.getMaxPeople(),
                 meet.getStartDate(),
-                meet.getEndDate());
+                meet.getEndDate(),
+                likeCount,
+                membersCount);
     }
 
-    public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
-        return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate);
+    public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses, Long likeCount, Long membersCount) {
+        return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate, likeCount, membersCount);
     }
 
-    public static MeetDto of(MemberDto leader, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
-        return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
+    public static MeetDto of(MemberDto leader, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses, Long likeCount, Long membersCount) {
+        return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses, likeCount, membersCount);
     }
 
     public Meet toEntity() {

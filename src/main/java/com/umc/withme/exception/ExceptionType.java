@@ -47,11 +47,11 @@ public enum ExceptionType {
     // Member
     NICKNAME_NOT_FOUND_EXCEPTION(1400, "해당 닉네임을 가지는 회원이 없습니다.", NicknameNotFoundException.class),
     EMAIL_NOT_FOUND_EXCEPTION(1401, "해당 이메일을 갖는 회원을 찾을 수 없습니다.", EmailNotFoundException.class),
-    MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 id를 갖는 회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
+    MEMBER_ID_NOT_FOUND_EXCEPTION(1402, "해당 아이디(PK)를 가지는 회원이 없습니다.", MemberIdNotFoundException.class),
     NICKNAME_DUPLICATE_EXCEPTION(1403, "이미 사용중인 닉네임입니다.", NicknameDuplicateException.class),
 
     // Meet
-    MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 id를 가지는 모임을 찾을 수 없습니다.", MeetIdNotFoundException.class),
+    MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 아이디(PK)를 가지는 모임이 없습니다.", MeetIdNotFoundException.class),
     MEET_DELETE_FORBIDDEN_EXCEPTION(2401, "해당 모임을 삭제할 권한이 없습니다.", MeetDeleteForbiddenException.class),
     MEET_UPDATE_FORBIDDEN_EXCEPTION(2402, "해당 모임을 수정할 권한이 없습니다.", MeetUpdateForbiddenException.class),
 

@@ -57,6 +57,7 @@ public class MeetFormRequest {
         return new MeetFormRequest(addresses, meetCategory, title, link, content, minPeople, maxPeople);
     }
 
+    // TODO : 추후 likeCount 및 membersCount 적절히 변경 필요
     public MeetDto toDto() {
         return MeetDto.of(
                 null,
@@ -68,7 +69,9 @@ public class MeetFormRequest {
                 getMaxPeople(),
                 getAddresses().stream()
                         .map(AddressRequest::toDto)
-                        .collect(Collectors.toUnmodifiableList())
+                        .collect(Collectors.toUnmodifiableList()),
+                0L,
+                1L 
         );
     }
 }

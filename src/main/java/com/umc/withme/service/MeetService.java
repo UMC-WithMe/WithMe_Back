@@ -3,6 +3,7 @@ package com.umc.withme.service;
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,7 +84,14 @@ public class MeetService {
         Member member = memberRepository.findById(meet.getCreatedBy())
                 .orElseThrow(UnauthorizedException::new);
 
-        return MeetDto.from(meet, addresses, member);
+        //TODO : 좋아요 수 추후 구현 필요
+
+        long membersCount = meetMemberRepository.findAllByMeet_Id(meetId)
+                .stream()
+                .map(mm -> mm.getMember())
+                .count();
+
+        return MeetDto.from(meet, addresses, member, 0L, membersCount);
     }
 
     /**
@@ -119,12 +128,20 @@ public class MeetService {
                 .map(MeetAddress::getAddress)
                 .collect(Collectors.toList());
 
+        // 모임에 속해있는 사용자 인원 수 가져오기
+        long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
+                .stream()
+                .map(mm -> mm.getMember())
+                .count();
+
         // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
         return MeetDto.from(
                 meet,
                 addresses,
                 memberRepository.findById(meetLeaderId)
-                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)));
+                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)),
+                0L, // TODO : 좋아요 수 구현 시 수정 필요
+                membersCount);
     }
 
     /**
@@ -174,5 +191,68 @@ public class MeetService {
                 .forEach(mm -> meetMemberRepository.delete(mm));
 
         meetRepository.delete(meet);
+    }
+
+    /**
+     * 조건에 해당하는 모임 모집글을 조회하고 모임 DTO 목록을 반환한다.
+     *
+     * @param meetSearch 모임 목록 검색 조건(카테고리, 동네, 제목)이 담긴 DTO
+     * @return 조회한 모임 DTO 목록
+     */
+    public List<MeetDto> findAllMeets(MeetSearch meetSearch) {
+        // 카테고리 및 동네, 제목으로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeets(meetSearch);
+
+        // 모임 리스트를 주소 및 리더 정보를 포함한 DTO 리스트로 변환해서 반환한다.
+        List<MeetDto> meetDtos = new ArrayList<>();
+        for (Meet meet : meets) {
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toUnmodifiableList());
+
+            Member leader = memberRepository.findById(meet.getCreatedBy())
+                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
+            //TODO : 좋아요 수 추후 구현 필요.
+
+            // 모집글 목록조회이므로 인원 카운트는 필요 X
+            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, 1L));
+        }
+
+        return meetDtos;
+    }
+
+    /**
+     * 조건에 해당하는 모임 기록을 조회하고 모임 DTO 목록을 반환한다.
+     *
+     * @param meetSearch 모임 목록 검색 조건(모임 진행상태)이 담긴 DTO
+     * @return 조회한 모임 DTO 목록
+     */
+    public List<MeetDto> findAllMeetsRecords(MeetSearch meetSearch) {
+        // 모임 진행상태로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeets(meetSearch);
+
+        // 모임 리스트를 주소 및 리더 정보, 모임 인원수를 포함한 DTO 리스트로 변환해서 반환한다.
+        List<MeetDto> meetDtos = new ArrayList<>();
+        for (Meet meet : meets) {
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toUnmodifiableList());
+
+            Member leader = memberRepository.findById(meet.getCreatedBy())
+                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
+            long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(mm -> mm.getMember())
+                    .count();
+
+            // 모임 기록 조회이므로 좋아요 수는 필요 없다.
+            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, membersCount));
+        }
+
+        return meetDtos;
     }
 }
