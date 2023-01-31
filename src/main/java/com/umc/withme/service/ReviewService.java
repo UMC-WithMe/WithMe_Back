@@ -56,6 +56,6 @@ public class ReviewService {
      * @return 받은 리뷰 개수
      */
     public Long getReceivedReviewsCount(Long memberId){
-        return reviewRepository.countByReceiver(memberId);
+        return reviewRepository.countByReceiver_Id(memberId);
     }
 }

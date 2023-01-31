@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @Schema(description = "쪽지 정보 (1개) 응답 데이터 ")
 public class MessageInfoResponse {
 
+    @Schema(description = "쪽지 id(pk)")
+    private Long messageId;
     @Schema(description = "쪽지 작성자 프로필 정보")
     private MemberShortInfoResponse memberShortInfoResponse;
     @Schema(description = "쪽지 내용") @Size(max = 500)
@@ -21,7 +23,7 @@ public class MessageInfoResponse {
     @Schema(example = "2023-01-30T11:30:53.690336", description = "쪽지 작성 시간")
     private LocalDateTime createAt;
 
-    public static MessageInfoResponse of(MemberShortInfoResponse memberShortInfoResponse, String content, LocalDateTime createAt){
-        return new MessageInfoResponse(memberShortInfoResponse, content, createAt);
+    public static MessageInfoResponse of(Long messageId, MemberShortInfoResponse memberShortInfoResponse, String content, LocalDateTime createAt){
+        return new MessageInfoResponse(messageId, memberShortInfoResponse, content, createAt);
     }
 }
