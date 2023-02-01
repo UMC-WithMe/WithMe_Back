@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.stream.Stream;
 
@@ -19,6 +20,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @Disabled("Spring Data JPA가 만들어주는 기능은 테스트 할 필요가 없다.")
 @DisplayName("[Repository] Address")
+@ActiveProfiles("test")
 @DataJpaTest
 class AddressRepositoryTest {
 

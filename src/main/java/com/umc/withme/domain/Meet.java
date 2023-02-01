@@ -4,6 +4,7 @@ import com.umc.withme.domain.common.BaseEntity;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
+import com.umc.withme.dto.meet.MeetDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,6 +66,20 @@ public class Meet extends BaseEntity {
     }
 
     // 코드 추가는 여기에
+
+    /**
+     * meetDto에 따라 엔티티의 정보를 수정한다.
+     *
+     * @param meetDto 수정하려는 정보가 담긴 meetDto
+     */
+    public void update(MeetDto meetDto) {
+        this.category = meetDto.getMeetCategory();
+        this.title = meetDto.getTitle();
+        this.minPeople = meetDto.getMinPeople();
+        this.maxPeople = meetDto.getMaxPeople();
+        this.link = meetDto.getLink();
+        this.content = meetDto.getContent();
+    }
 
     // Equals and HashCode
     @Override
