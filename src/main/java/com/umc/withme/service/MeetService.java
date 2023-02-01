@@ -4,7 +4,6 @@ import com.umc.withme.domain.*;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
-import com.umc.withme.exception.common.UnauthorizedException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
@@ -54,17 +53,6 @@ public class MeetService {
     }
 
     /**
-     * AddressDto를 Address Entity로 변환해 반환해준다.
-     *
-     * @param dto 변환할 AddressDto
-     * @return 변환된 Address Entity
-     */
-    private Address getAddress(AddressDto dto) {
-        return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
-                .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
-    }
-
-    /**
      * 모임 id를 입력받아 모임 DTO를 컨트롤러에게 반환하는 함수이다.
      *
      * @param meetId 조회할 모임의 id
@@ -76,11 +64,11 @@ public class MeetService {
 
         List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
                 .stream()
-                .map(ma -> ma.getAddress())
+                .map(MeetAddress::getAddress)
                 .collect(Collectors.toUnmodifiableList());
 
         Member member = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(UnauthorizedException::new);
+                .orElseThrow(MemberIdNotFoundException::new);
 
         return MeetDto.from(meet, addresses, member);
     }
@@ -102,20 +90,21 @@ public class MeetService {
 
         // 모임의 리더 id
         Long meetLeaderId = meet.getCreatedBy();
-
         // 수정하고자 하는 모임의 주인과 사용자의 pk를 비교하고 일치하지 않으면 예외 처리
-        if (!meetLeaderId.equals(loginMemberId))
+        if (!meetLeaderId.equals(loginMemberId)) {
             throw new MeetUpdateForbiddenException(meetId, loginMemberId);
+        }
 
         // 모임의 MeetAddress 모두 삭제 후 meetDtoToUpdate에 따라 다시 생성
-        updateMeetAddress(meet, meetDtoToUpdate);
+        meetAddressRepository.deleteAllByMeet_Id(meet.getId());
+        meetDtoToUpdate.getAddresses().forEach(addressDto ->
+                meetAddressRepository.save(new MeetAddress(meet, getAddress(addressDto))));
 
         // 모임 엔티티 수정
         meet.update(meetDtoToUpdate);
 
         // 수정된 모임의 주소 리스트 받아오기
-        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
-                .stream()
+        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId).stream()
                 .map(MeetAddress::getAddress)
                 .collect(Collectors.toList());
 
@@ -124,27 +113,8 @@ public class MeetService {
                 meet,
                 addresses,
                 memberRepository.findById(meetLeaderId)
-                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)));
-    }
-
-    /**
-     * MeetService 내에서만 접근할 수 있는 메소드로 updateById 메소드 내에서 사용된다.
-     * <p>
-     * meetId에 해당하는 MeetAddress 모두 삭제 후,
-     * meetDto 내용을 바탕으로 MeetAddress 데이터를 생성한다.
-     *
-     * @param meet    수정할 모임 엔티티
-     * @param meetDto 새로운 addresses 정보가 담긴 모임 DTO
-     */
-    private void updateMeetAddress(Meet meet, MeetDto meetDto) {
-        List<MeetAddress> meetAddresses = meetAddressRepository.findAllByMeet_Id(meet.getId());
-        for (MeetAddress meetAddress : meetAddresses) {
-            meetAddressRepository.delete(meetAddress);
-        }
-        meetDto.getAddresses().forEach(addressDto -> {
-            Address address = getAddress(addressDto);
-            meetAddressRepository.save(new MeetAddress(meet, address));
-        });
+                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId))
+        );
     }
 
     /**
@@ -160,19 +130,25 @@ public class MeetService {
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        // 모임의 주인의 pk
-        Long meetLeaderId = meet.getCreatedBy();
-
         // 모임의 주인과 사용자가 일치하면 해당 모임 삭제. 일치하지 않으면 예외 발생
-        if (!meetLeaderId.equals(loginMemberId))
+        if (!meet.getCreatedBy().equals(loginMemberId)) {
             throw new MeetDeleteForbiddenException(meet.getId(), loginMemberId);
+        }
 
-        meetAddressRepository.findAllByMeet_Id(meetId)
-                .forEach(ma -> meetAddressRepository.delete(ma));
-
-        meetMemberRepository.findAllByMeet_Id(meetId)
-                .forEach(mm -> meetMemberRepository.delete(mm));
+        meetAddressRepository.deleteAllByMeet_Id(meetId);
+        meetMemberRepository.deleteAllByMeet_Id(meetId);
 
         meetRepository.delete(meet);
+    }
+
+    /**
+     * AddressDto를 Address Entity로 변환해 반환해준다.
+     *
+     * @param dto 변환할 AddressDto
+     * @return 변환된 Address Entity
+     */
+    private Address getAddress(AddressDto dto) {
+        return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
+                .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
     }
 }
