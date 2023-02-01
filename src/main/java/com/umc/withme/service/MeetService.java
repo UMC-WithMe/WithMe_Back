@@ -159,14 +159,14 @@ public class MeetService {
 
     /**
      * AddressDto를 Address Entity로 변환해 반환해준다.
+     *
      * @param dto 변환할 AddressDto
      * @return 변환된 Address Entity
+     */
     private Address getAddress(AddressDto dto) {
         return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
                 .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
     }
-     */
-     *
 
     /**
      * 조건에 해당하는 모임 모집글을 조회하고 모임 DTO 목록을 반환한다.
