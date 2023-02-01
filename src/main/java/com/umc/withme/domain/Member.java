@@ -58,7 +58,7 @@ public class Member extends BaseTimeEntity {
     @Formula("(select count(r.review_id) " +
             "from review r " +
             "where r.receiver_id=member_id)")
-    private int numOfReceivedReviews;
+    private Integer numOfReceivedReviews;
 
     // Builder & Constructor
     @Builder
