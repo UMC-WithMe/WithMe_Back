@@ -27,7 +27,7 @@ public class ReviewDto {
                 review.getId(),
                 MemberDto.from(review.getSender()),
                 MemberDto.from(review.getReceiver()),
-                MeetDto.from(review.getMeet(), null, null),
+                MeetDto.from(review.getMeet()),
                 PointDto.from(review.getPoint()),
                 review.getContent(),
                 review.getCreatedAt()
