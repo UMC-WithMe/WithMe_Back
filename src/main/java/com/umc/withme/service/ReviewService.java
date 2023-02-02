@@ -2,7 +2,8 @@ package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.review.ReviewCreateRequest;
-import com.umc.withme.dto.review.ReviewGetInfoResponse;
+import com.umc.withme.dto.review.ReviewDto;
+import com.umc.withme.dto.review.ReviewInfoResponse;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
@@ -10,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,16 +61,10 @@ public class ReviewService {
      * @param id 로그인한 사용자의 아이디
      * @return ReviewGetInfoResponse 타입의 리스트
      */
-    public List<ReviewGetInfoResponse> getReceiveReview(Long id) {
-        List<ReviewGetInfoResponse> infoList = new ArrayList<>();
-
-        reviewRepository.findAllByReceiver_Id(id)
-                .stream()
-                .forEach((el) -> infoList.add(ReviewGetInfoResponse.of(el.getSender().getNickname(),
-                                                                        el.getContent(),
-                                                                        el.getMeet().getTitle(),
-                                                                        el.getCreatedAt())));
-
-        return infoList;
+    public List<ReviewInfoResponse> getReceiveReview(Long loginMemberId) {
+        return reviewRepository.findAllByReceiver_Id(loginMemberId).stream()
+                .map(ReviewDto::from)
+                .map(ReviewInfoResponse::from)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

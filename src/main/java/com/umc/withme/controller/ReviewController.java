@@ -3,7 +3,7 @@ package com.umc.withme.controller;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.review.ReviewCreateRequest;
 import com.umc.withme.dto.review.ReviewCreateResponse;
-import com.umc.withme.dto.review.ReviewGetInfoResponse;
+import com.umc.withme.dto.review.ReviewInfoResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,11 +56,11 @@ public class ReviewController {
             description = "로그인된 사용자의 아이디(pk)로 받은 후기를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/reviews/send-reviews")
-    public ResponseEntity<DataResponse<List<ReviewGetInfoResponse>>> getReceiveReview(
+    @GetMapping("/reviews/receive-reviews")
+    public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getReceiveReviews(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<ReviewGetInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
+        List<ReviewInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
