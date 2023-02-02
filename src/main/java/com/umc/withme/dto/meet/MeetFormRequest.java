@@ -69,9 +69,7 @@ public class MeetFormRequest {
                 getMaxPeople(),
                 getAddresses().stream()
                         .map(AddressRequest::toDto)
-                        .collect(Collectors.toUnmodifiableList()),
-                0L,
-                1L 
+                        .collect(Collectors.toUnmodifiableList())
         );
     }
 }

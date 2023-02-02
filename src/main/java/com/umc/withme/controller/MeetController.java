@@ -199,9 +199,6 @@ public class MeetController {
             @RequestParam(value = "meetStatus") MeetStatus meetStatus,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        System.out.println("meetStatus = " + meetStatus);
-        System.out.println("principle.getUsername() = " + principle.getUsername());
-        System.out.println("principle.getMemberId() = " + principle.getMemberId());
         List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetSearch.of(meetStatus, principle.getMemberId()));
 
         MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);

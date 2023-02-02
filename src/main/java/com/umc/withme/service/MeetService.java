@@ -72,14 +72,7 @@ public class MeetService {
         Member member = memberRepository.findById(meet.getCreatedBy())
                 .orElseThrow(MemberIdNotFoundException::new);
 
-        //TODO : 좋아요 수 추후 구현 필요
-
-        long membersCount = meetMemberRepository.findAllByMeet_Id(meetId)
-                .stream()
-                .map(mm -> mm.getMember())
-                .count();
-
-        return MeetDto.from(meet, addresses, member, 0L, membersCount);
+        return MeetDto.from(meet, addresses, member);
     }
 
     /**
@@ -128,9 +121,8 @@ public class MeetService {
                 meet,
                 addresses,
                 memberRepository.findById(meetLeaderId)
-                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId)),
-                0L, // TODO : 좋아요 수 구현 시 수정 필요
-                membersCount);
+                        .orElseThrow(() -> new MemberIdNotFoundException(meetLeaderId))
+        );
     }
 
     /**
@@ -189,10 +181,9 @@ public class MeetService {
             Member leader = memberRepository.findById(meet.getCreatedBy())
                     .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
-            //TODO : 좋아요 수 추후 구현 필요.
+            //TODO : 좋아요 수 추후 구현 필요 모집글 목록조회이므로 인원 카운트는 필요 X
 
-            // 모집글 목록조회이므로 인원 카운트는 필요 X
-            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, 1L));
+            meetDtos.add(MeetDto.from(meet, addresses, leader));
         }
 
         return meetDtos;
@@ -219,13 +210,9 @@ public class MeetService {
             Member leader = memberRepository.findById(meet.getCreatedBy())
                     .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
-            long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
-                    .stream()
-                    .map(mm -> mm.getMember())
-                    .count();
+            //TODO : 모임 인원 수 추후 구현 필요. 모임 기록 조회이므로 좋아요 수는 필요 없다.
 
-            // 모임 기록 조회이므로 좋아요 수는 필요 없다.
-            meetDtos.add(MeetDto.from(meet, addresses, leader, 0L, membersCount));
+            meetDtos.add(MeetDto.from(meet, addresses, leader));
         }
 
         return meetDtos;
