@@ -59,6 +59,24 @@ public class MeetDto {
                 meet.getEndDate());
     }
 
+    // 리뷰 조회 API에서 사용: leader와 address가 필요없어 null로 넣어둠.
+    public static MeetDto from(Meet meet) {
+        return new MeetDto(
+                meet.getId(),
+                null,
+                null,
+                meet.getCategory(),
+                meet.getRecruitStatus(),
+                meet.getMeetStatus(),
+                meet.getTitle(),
+                meet.getLink(),
+                meet.getContent(),
+                meet.getMinPeople(),
+                meet.getMaxPeople(),
+                meet.getStartDate(),
+                meet.getEndDate());
+    }
+
     public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
         return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate);
     }
