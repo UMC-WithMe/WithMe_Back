@@ -60,7 +60,18 @@ public class ReviewController {
     public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getReceiveReviews(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<ReviewInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
+        List<ReviewInfoResponse> response = reviewService.getReceiveReviews(principle.getMemberId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @GetMapping("/reviews/send-reviews")
+    public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getSendReviews(
+            @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<ReviewInfoResponse> response = reviewService.getSendReviews(principle.getMemberId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
