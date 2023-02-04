@@ -68,7 +68,7 @@ public class MeetService {
                 .collect(Collectors.toUnmodifiableList());
 
         Member member = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(MemberIdNotFoundException::new);
+                .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
         return MeetDto.from(meet, addresses, member);
     }
