@@ -1,16 +1,11 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.review.ReviewCreateRequest;
-import com.umc.withme.dto.review.ReviewCreateResponse;
-import com.umc.withme.dto.review.ReviewInfoResponse;
+import com.umc.withme.dto.review.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +56,15 @@ public class ReviewController {
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         List<ReviewInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @GetMapping("/reviews/recent-receive-reviews/{memberId}")
+    public ResponseEntity<DataResponse<RecentReviewInfoResponse>> getRecentReviews(@PathVariable Long memberId) {
+        RecentReviewInfoResponse response = reviewService.getRecentTwoMeetReview(memberId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
