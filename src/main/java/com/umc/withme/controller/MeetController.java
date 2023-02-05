@@ -2,9 +2,9 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.meet.MeetCreateRequest;
 import com.umc.withme.dto.meet.MeetCreateResponse;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetFormRequest;
 import com.umc.withme.dto.meet.MeetInfoGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
@@ -31,10 +31,12 @@ public class MeetController {
 
     private final MeetService meetService;
 
+
     /**
      * 모임글 생성 API
      *
-     * @param meetCreateRequest 생성하려는 모임 모집글 form 데이터
+     * @param meetFormRequest 생성하려는 모임 모집글 데이터
+     * @param principle
      * @return 생성된 모임글 id를 data 에 담아서 반환한다.
      */
     @Operation(
@@ -44,10 +46,10 @@ public class MeetController {
     )
     @PostMapping("/meets")
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
-            @Valid @RequestBody MeetCreateRequest meetCreateRequest,
+            @Valid @RequestBody MeetFormRequest meetFormRequest,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        Long meetId = meetService.createMeet(meetCreateRequest.toDto(), principle.getUsername());
+        Long meetId = meetService.createMeet(meetFormRequest.toDto(), principle.getUsername());
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
 
@@ -76,6 +78,38 @@ public class MeetController {
     @GetMapping("/meets/{meetId}")
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
+
+        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * 모임 모집글 수정 API
+     *
+     * @param meetId          수정하려는 모집글의 id
+     * @param meetFormRequest 수정하려는 정보가 담긴 요청 DTO
+     * @return 수정된 모임 모집글의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
+     */
+    @Operation(
+            summary = "모임 모집글 수정 API",
+            description = "<p><code>meetId</code>에 해당하는 모임을 <code>request body</code>에 담긴 정보로 수정하고" +
+                    "수정된 모임을 response body 에 넣어 전달합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
+    })
+    @PutMapping("/meets/{meetId}")
+    public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeet(
+            @PathVariable Long meetId,
+            @Valid @RequestBody MeetFormRequest meetFormRequest,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
+        MeetDto meetDto = meetService.updateById(meetId, principle.getMemberId(), meetFormRequest.toDto());
 
         MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
 

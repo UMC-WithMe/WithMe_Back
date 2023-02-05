@@ -3,6 +3,13 @@ package com.umc.withme.exception.meet;
 import com.umc.withme.exception.common.NotFoundException;
 
 public class MeetIdNotFoundException extends NotFoundException {
+<<<<<<< HEAD
+=======
+
+    public MeetIdNotFoundException() {
+    }
+
+>>>>>>> develop
     /**
      * 모임의 id를 입력받아 에러 로그와 함께 출력한다.
      *
