@@ -6,6 +6,8 @@ import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,13 +36,15 @@ public class MessageController {
      */
 
     @Operation(summary = "쪽지 생성",
-               description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
-                             "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용" )
+            description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
+                    "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용",
+            security = @SecurityRequirement(name = "access-token"))
     @PostMapping("/messages")
     public ResponseEntity<BaseResponse> createMessage(
-            @Valid@RequestBody MessageCreateRequest messageCreateRequest,
-            @AuthenticationPrincipal WithMeAppPrinciple principle, @RequestParam Long receiverId,
-            @RequestParam Long meetId){
+            @Valid @RequestBody MessageCreateRequest messageCreateRequest,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @RequestParam Long receiverId,
+            @RequestParam Long meetId) {
 
         Long messageId = messageService.createMessage(principle.getMemberId(), receiverId, meetId, messageCreateRequest);
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);

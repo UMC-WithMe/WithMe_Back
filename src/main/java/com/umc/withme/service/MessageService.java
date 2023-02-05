@@ -26,11 +26,11 @@ public class MessageService {
     /**
      * 새로운 쪽지 생성하여 DB에 저장
      *
-     * @param senderId 쪽지 보낸 회원 id(pk)
-     * @param receiverId 쪽지 받는 회원 id(pk)
-     * @param meetId 관련 모집글 id(pk)
-     * @param messageCreateRequest 쪽지 생성 요청 데이터 (쪽지 내용)
-     * @return 생성된(DB에 저장된) 쪽지 id(pk)
+     * @param senderId              쪽지 보낸 회원 id(pk)
+     * @param receiverId            쪽지 받는 회원 id(pk)
+     * @param meetId                관련 모집글 id(pk)
+     * @param messageCreateRequest  쪽지 생성 요청 데이터 (쪽지 내용)
+     * @return                      생성된(DB에 저장된) 쪽지 id(pk)
      */
     @Transactional
     public Long createMessage(Long senderId, Long receiverId, Long meetId, MessageCreateRequest messageCreateRequest){
