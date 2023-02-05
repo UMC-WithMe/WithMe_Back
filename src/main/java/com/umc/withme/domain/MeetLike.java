@@ -1,0 +1,46 @@
+package com.umc.withme.domain;
+
+import com.umc.withme.domain.common.BaseTimeEntity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.Objects;
+
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Entity
+public class MeetLike extends BaseTimeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "meet_like_id")
+    private Long id;
+
+    @JoinColumn(name = "member_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY)
+    private Member member;
+
+    @JoinColumn(name = "meet_id", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY)
+    private Meet meet;
+
+    public MeetLike(Member member, Meet meet){
+        this.member = member;
+        this.meet = meet;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof com.umc.withme.domain.MeetLike)) return false;
+        com.umc.withme.domain.MeetLike that = (com.umc.withme.domain.MeetLike) o;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+        @Override
+        public int hashCode() { return Objects.hash(this.getId()); }
+
+}
