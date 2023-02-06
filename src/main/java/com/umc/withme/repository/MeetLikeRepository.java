@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MeetLikeRepository extends JpaRepository<MeetLike, Long> {
 
-    List<MeetLike> findAllByMember_Id(Long receiverId);
+    List<MeetLike> findAllByMember_Id(Long memberId);
     Long countByMeet_Id(Long meetId);
 
 }
