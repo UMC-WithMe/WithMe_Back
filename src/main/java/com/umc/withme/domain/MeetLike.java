@@ -2,6 +2,7 @@ package com.umc.withme.domain;
 
 import com.umc.withme.domain.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,7 @@ public class MeetLike extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY)
     private Meet meet;
 
+    @Builder
     public MeetLike(Member member, Meet meet){
         this.member = member;
         this.meet = meet;
