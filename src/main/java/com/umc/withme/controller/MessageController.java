@@ -27,16 +27,6 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    /**
-     * 쪽지 생성 API
-     *
-     * @param messageCreateRequest 쪽지 생성 요청 데이터 (쪽지 내용)
-     * @param principle
-     * @param receiverId 쪽지 받는 회원 id(pk)
-     * @param meetId 관련 모집글 id(pk)
-     * @return 쪽지 생성 응답 데이터 (생성된 쪽지 아이디)
-     */
-
     @Operation(summary = "쪽지 생성",
                description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
                              "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용" )
@@ -51,12 +41,7 @@ public class MessageController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new DataResponse<>(messageCreateResponse));
     }
-
-    /**
-     *
-     * @param principle
-     * @return 쪽지함 조회 응답 데이터 (회원 프로필 정보, 쪽지 내용, 작성시간)
-     */
+    
     @Operation(summary = "쪽지함 조회", description = "<p> 회원이 자신의 쪽지함을 조회합니다</p>")
     @GetMapping("/messages")
     public ResponseEntity<DataResponse<List<MessageInfoResponse>>> getMessageList(
