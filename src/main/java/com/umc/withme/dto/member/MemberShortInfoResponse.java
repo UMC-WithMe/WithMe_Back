@@ -20,21 +20,14 @@ public class MemberShortInfoResponse {
     @Schema(description = "회원 주소 中 시군구 정보")
     private String sggAddress;
 
-    public static MemberShortInfoResponse of(MemberDto memberDto, Long receivedReviewsCount) {
-        Double trustPoint = (double) 0;
-        if (!receivedReviewsCount.equals(0L)) {
-            TotalPoint totalPoint = memberDto.getTotalPoint();
-            Double attendanceAverage = totalPoint.getAttendanceTotalPoint() / (double) receivedReviewsCount;
-            Double passionAverage = totalPoint.getPassionTotalPoint() / (double) receivedReviewsCount;
-            Double contactAverage = totalPoint.getContactTotalPoint() / (double) receivedReviewsCount;
-            trustPoint = (attendanceAverage + passionAverage + contactAverage) / 3;
-        }
+    public static MemberShortInfoResponse from(MemberDto memberDto) {
+        double trustPoint = memberDto.getTotalPoint().calculateTrustPoint(memberDto.getNumOfReceivedReviews());
 
         return new MemberShortInfoResponse(
                 memberDto.getId(),
                 memberDto.getNickname(),
                 trustPoint,
-                memberDto.getAddress() != null ? memberDto.getAddress().getSgg() : null);
+                memberDto.getAddress().getSgg()
+        );
     }
-
 }

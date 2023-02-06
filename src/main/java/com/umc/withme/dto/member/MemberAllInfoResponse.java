@@ -37,10 +37,10 @@ public class MemberAllInfoResponse {
     private TotalPoint totalPoint;
 
     @Schema(description = "받은 리뷰 개수")
-    private Long receivedReviewsCount;
+    private Integer numOfReceivedReviews;
 
 
-    public static MemberAllInfoResponse of(MemberDto dto, Long receivedReviewsCount) {
+    public static MemberAllInfoResponse from(MemberDto dto) {
         return new MemberAllInfoResponse(
                 dto.getNickname(),
                 dto.getPhoneNumber(),
@@ -49,7 +49,7 @@ public class MemberAllInfoResponse {
                 dto.getEmail(),
                 dto.getAddress(),
                 dto.getTotalPoint(),
-                receivedReviewsCount
+                dto.getNumOfReceivedReviews()
         );
     }
 }
