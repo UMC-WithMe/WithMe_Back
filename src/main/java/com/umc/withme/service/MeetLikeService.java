@@ -21,6 +21,13 @@ public class MeetLikeService {
     private final MemberRepository memberRepository;
     private final MeetRepository meetRepository;
 
+    /**
+     * DB에 찜정보(회원, 모집글)를 새로 저장
+     *
+     * @param memberId
+     * @param meetId
+     */
+
     @Transactional
     public void createMeetLike(Long memberId, Long meetId) {
 
