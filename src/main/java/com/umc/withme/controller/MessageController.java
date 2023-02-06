@@ -8,8 +8,8 @@ import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,25 +27,30 @@ public class MessageController {
 
     private final MessageService messageService;
 
+
     @Operation(summary = "쪽지 생성",
-               description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
-                             "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용" )
+            description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
+                    "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용",
+            security = @SecurityRequirement(name = "access-token"))
     @PostMapping("/messages")
     public ResponseEntity<DataResponse<MessageCreateResponse>> createMessage(
-            @Valid@RequestBody MessageCreateRequest messageCreateRequest,
-            @AuthenticationPrincipal WithMeAppPrinciple principle, @RequestParam Long receiverId,
-            @RequestParam Long meetId){
+            @Valid @RequestBody MessageCreateRequest messageCreateRequest,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @RequestParam Long receiverId,
+            @RequestParam Long meetId) {
 
         Long messageId = messageService.createMessage(principle.getMemberId(), receiverId, meetId, messageCreateRequest);
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new DataResponse<>(messageCreateResponse));
     }
-    
-    @Operation(summary = "쪽지함 조회", description = "<p> 회원이 자신의 쪽지함을 조회합니다</p>")
+
+    @Operation(summary = "쪽지함 조회",
+            description = "<p> 회원이 자신의 쪽지함을 조회합니다</p>",
+            security = @SecurityRequirement(name = "access-token"))
     @GetMapping("/messages")
     public ResponseEntity<DataResponse<List<MessageInfoResponse>>> getMessageList(
-            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle){
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
 
         List<MessageInfoResponse> messageInfoResponseList = messageService.getMessageList(principle.getMemberId());
 

@@ -18,6 +18,10 @@ public class PointDto {
         return new PointDto(id, attendance, passion, contactSpeed);
     }
 
+    public static PointDto from(Point point) {
+        return PointDto.of(point.getId(), point.getAttendance(), point.getPassion(), point.getContactSpeed());
+    }
+
     public Point toEntity() {
         return Point.builder()
                 .attendance(this.getAttendance())
