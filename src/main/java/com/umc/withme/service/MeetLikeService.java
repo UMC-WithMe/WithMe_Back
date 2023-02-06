@@ -41,4 +41,13 @@ public class MeetLikeService {
 
         meetLikeRepository.save(meetLike);
     }
+
+    /**
+     * DB에 저장된 찜 1개 삭제
+     *
+     * @param meetLikeId
+     */
+    public void deleteMeetLike(Long meetLikeId){
+        meetLikeRepository.deleteById(meetLikeId);
+    }
 }

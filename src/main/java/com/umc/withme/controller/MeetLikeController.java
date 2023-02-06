@@ -2,7 +2,6 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.like.MeetLikeCreateRequest;
-import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetLikeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,5 +35,18 @@ public class MeetLikeController {
         meetLikeService.createMeetLike(principle.getMemberId(), meetLikeCreateRequest.getMeetId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(true));
+    }
+
+    @Operation(summary = "찜 삭제",
+    description = "<p> 회원이 찜 1개를 삭제합니다:: <code>id</code> - 삭제할 찜id(pk) ",
+    security = @SecurityRequirement(name = "access-token"))
+    @DeleteMapping("/meet-likes/{id}")
+    public ResponseEntity<BaseResponse> deleteMeetLike(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @PathVariable (name = "id") Long meetLikeId){
+
+        meetLikeService.deleteMeetLike(meetLikeId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse(true));
     }
 }
