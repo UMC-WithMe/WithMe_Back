@@ -1,6 +1,7 @@
 package com.umc.withme.dto.meet;
 
 
+import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.RecruitStatus;
 import com.umc.withme.dto.member.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +23,9 @@ public class MeetShortInfoResponse {
     @Schema(description = "작성자 닉네임")
     private String nickname;
 
+    @Schema(description = "카테고리")
+    private MeetCategory meetCategory;
+
     @Schema(description = "모집글 제목")
     private String title;
 
@@ -39,6 +43,7 @@ public class MeetShortInfoResponse {
         return new MeetShortInfoResponse(
                 meetDto.getMeetId(),
                 memberDto.getNickname(),
+                meetDto.getMeetCategory(),
                 meetDto.getTitle(),
                 meetDto.getRecruitStatus(),
                 meetDto.toEntity().getCreatedAt(),
