@@ -27,7 +27,6 @@ public class MessageController {
 
     private final MessageService messageService;
 
-
     @Operation(summary = "쪽지 생성",
             description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
                     "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용",

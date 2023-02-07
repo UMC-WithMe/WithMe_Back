@@ -1,6 +1,5 @@
 package com.umc.withme.dto.member;
 
-import com.umc.withme.domain.TotalPoint;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,12 +21,11 @@ public class MemberShortInfoResponse {
 
     public static MemberShortInfoResponse from(MemberDto memberDto) {
         double trustPoint = memberDto.getTotalPoint().calculateTrustPoint(memberDto.getNumOfReceivedReviews());
-
         return new MemberShortInfoResponse(
                 memberDto.getId(),
                 memberDto.getNickname(),
                 trustPoint,
-                memberDto.getAddress().getSgg()
+                memberDto.getAddress() != null ? memberDto.getAddress().getSgg() : null
         );
     }
 }
