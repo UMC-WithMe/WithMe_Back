@@ -80,7 +80,9 @@ public class MeetDto {
                 meet.getMinPeople(),
                 meet.getMaxPeople(),
                 meet.getStartDate(),
-                meet.getEndDate());
+                meet.getEndDate(),
+                0L,
+                1L);
     }
 
     // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
