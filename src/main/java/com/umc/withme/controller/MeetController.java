@@ -18,27 +18,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Tag(name = "MeetController", description = "모임 API Controller 입니다.")
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api")
 public class MeetController {
 
     private final MeetService meetService;
 
-
-    /**
-     * 모임글 생성 API
-     *
-     * @param meetFormRequest 생성하려는 모임 모집글 데이터
-     * @param principle
-     * @return 생성된 모임글 id를 data 에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 생성",
             description = "<p>request body 에 입력된 정보를 바탕으로 모임 모집글을 1개 생성합니다.</p>",
@@ -59,13 +54,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 단건 조회 API
-     * 모임 id로 모임을 1건 조회한다.
-     *
-     * @param meetId 조회하려는 모임의 id
-     * @return 조회한 모임의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 1개 조회 API",
             description = "<p><code>meetId</code>에 해당하는 모임의 정보를 response body 에 넣어 전달합니다.</p>",
@@ -87,13 +75,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 모집글 수정 API
-     *
-     * @param meetId          수정하려는 모집글의 id
-     * @param meetFormRequest 수정하려는 정보가 담긴 요청 DTO
-     * @return 수정된 모임 모집글의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 수정 API",
             description = "<p><code>meetId</code>에 해당하는 모임을 <code>request body</code>에 담긴 정보로 수정하고" +
@@ -119,13 +100,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임글 단건 삭제 API
-     * 모임의 id를 입력받아 해당하는 모임이 있으면 삭제한다.
-     *
-     * @param meetId 삭제하려는 모임의 id
-     * @return 삭제한 모임의 id를 데이터에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 1개 삭제 API",
             description = "<p><code>meetId</code>에 해당하는 모임을 삭제하고 삭제한 <code>meetId</code>를 response body에 넣어 전달합니다.</p>",
@@ -148,16 +122,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 모집글 리스트 조회 API
-     * 조건에 해당하는 모임 모집글 목록들을 조회한다.
-     *
-     * @param category 조회할 모임의 카테고리
-     * @param sido     조회할 모임의 동네 시/도 주소
-     * @param sgg      조회할 모임의 동네 시/군/구 주소
-     * @param title    조회할 모임의 제목
-     * @return 조건에 해당하는 모임 DTO 리스트를 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 리스트 조회 API",
             description = "<p><code>category</code>, <code>sido</code>, <code>sgg</code>, " +
@@ -169,7 +133,7 @@ public class MeetController {
             @RequestParam(value = "category", required = false) MeetCategory category,
             @RequestParam(value = "sido", required = false) String sido,
             @RequestParam(value = "sgg", required = false) String sgg,
-            @RequestParam(value = "title", required = false) String title
+            @RequestParam(value = "title", required = false) @NotBlank String title
     ) {
         List<MeetDto> meetDtos = meetService.findAllMeets(MeetSearch.of(category, sido, sgg, title));
 
@@ -181,15 +145,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 기록 목록 조회 API
-     * 현재 모임 기록 및 지난 모임 기록 화면에서 사용된다.
-     *
-     * @param meetStatus 조회할 모임 기록 진행 상태 조건.
-     *                   현재 모임 기록 : PROGRESS , 지난 모임 기록 : COMPLETE
-     * @param principle
-     * @return 조건에 해당하는 모임 DTO 리스트를 반환한다.
-     */
     @Operation(
             summary = "모임 기록 리스트 조회 API",
             description = "<p><code>meetStatus</code> 조건에 맞는 모임 기록 목록들을 반환합니다.</p>",

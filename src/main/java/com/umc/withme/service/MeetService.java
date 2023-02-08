@@ -110,12 +110,6 @@ public class MeetService {
                 .map(MeetAddress::getAddress)
                 .collect(Collectors.toList());
 
-        // 모임에 속해있는 사용자 인원 수 가져오기
-        long membersCount = meetMemberRepository.findAllByMeet_Id(meet.getId())
-                .stream()
-                .map(mm -> mm.getMember())
-                .count();
-
         // 수정된 모임 정보 바탕으로 MeetDto 생성해서 반환
         return MeetDto.from(
                 meet,

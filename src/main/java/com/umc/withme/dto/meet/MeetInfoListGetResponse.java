@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 모임 모집글 조회 및 모임 기록 조회에서 사용되는 Response DTO
@@ -19,10 +19,9 @@ public class MeetInfoListGetResponse {
     private List<MeetInfoGetResponse> meetInfoGetResponses;
 
     public static MeetInfoListGetResponse from(List<MeetDto> meetDtos) {
-        List<MeetInfoGetResponse> meetInfoGetResponseList = new ArrayList<>();
-        for (MeetDto meetDto : meetDtos) {
-            meetInfoGetResponseList.add(MeetInfoGetResponse.from(meetDto));
-        }
-        return new MeetInfoListGetResponse(meetInfoGetResponseList);
+        return new MeetInfoListGetResponse(
+                meetDtos.stream()
+                        .map(MeetInfoGetResponse::from)
+                        .collect(Collectors.toUnmodifiableList()));
     }
 }
