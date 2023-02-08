@@ -22,7 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Tag(name = "MeetController", description = "모임 API Controller 입니다.")
@@ -133,7 +133,7 @@ public class MeetController {
             @RequestParam(value = "category", required = false) MeetCategory category,
             @RequestParam(value = "sido", required = false) String sido,
             @RequestParam(value = "sgg", required = false) String sgg,
-            @RequestParam(value = "title", required = false) @NotBlank String title
+            @RequestParam(value = "title", required = false) @Size(min = 2) String title
     ) {
         List<MeetDto> meetDtos = meetService.findAllMeets(MeetSearch.of(category, sido, sgg, title));
 
@@ -155,7 +155,7 @@ public class MeetController {
             @RequestParam(value = "meetStatus") MeetStatus meetStatus,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetSearch.of(meetStatus, principle.getMemberId()));
+        List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetRecordSearch.of(meetStatus, principle.getMemberId()));
 
         MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
 

@@ -1,6 +1,7 @@
 package com.umc.withme.repository;
 
 import com.umc.withme.domain.Meet;
+import com.umc.withme.dto.meet.MeetRecordSearch;
 import com.umc.withme.dto.meet.MeetSearch;
 import org.springframework.stereotype.Repository;
 
@@ -63,8 +64,35 @@ public class CustomizedMeetRepositoryImpl implements CustomizedMeetRepository {
             jpql += " m.title LIKE CONCAT('%', :title, '%')";
         }
 
-        // 모임 진행상태 검색
-        if (meetSearch.getMeetStatus() != null) {
+        // 쿼리 생성
+        TypedQuery<Meet> query = em.createQuery(jpql, Meet.class)
+                .setMaxResults(100);
+
+        // 쿼리 파라미터 설정
+        if (meetSearch.getMeetCategory() != null)
+            query = query.setParameter("category", meetSearch.getMeetCategory());
+        if (meetSearch.getAdderess() != null) {
+            query = query.setParameter("sido", meetSearch.getAdderess().getSido());
+            query = query.setParameter("sgg", meetSearch.getAdderess().getSgg());
+        }
+        if (meetSearch.getTitle() != null)
+            query = query.setParameter("title", meetSearch.getTitle());
+
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Meet> searchMeetRecords(MeetRecordSearch meetRecordSearch) {
+        // 모임과 주소 정보를 조회한다.
+        String jpql = "select distinct m from Meet m" +
+                " join MeetAddress ma on m.id = ma.meet.id" +
+                " join Address a on a.id = ma.address.id" +
+                " join MeetMember mm on m.id = mm.meet.id";
+        boolean isFirstCondition = true;
+
+
+        // 모임 진행상태 검색 (PROGRESS, COMPLETE)
+        if (meetRecordSearch.getMeetStatus() != null) {
             if (isFirstCondition) {
                 jpql += " where";
                 isFirstCondition = false;
@@ -74,8 +102,8 @@ public class CustomizedMeetRepositoryImpl implements CustomizedMeetRepository {
             jpql += " m.meetStatus = :meetStatus";
         }
 
-        // 모임 멤버 검색
-        if (meetSearch.getMemberId() != null) {
+        // 모임 멤버 검색 (모임기록을 조회하고자 하는 사용자 id)
+        if (meetRecordSearch.getMemberId() != null) {
             if (isFirstCondition) {
                 jpql += " where";
                 isFirstCondition = false;
@@ -90,18 +118,10 @@ public class CustomizedMeetRepositoryImpl implements CustomizedMeetRepository {
                 .setMaxResults(100);
 
         // 쿼리 파라미터 설정
-        if (meetSearch.getMeetCategory() != null)
-            query = query.setParameter("category", meetSearch.getMeetCategory());
-        if (meetSearch.getAdderess() != null) {
-            query = query.setParameter("sido", meetSearch.getAdderess().getSido());
-            query = query.setParameter("sgg", meetSearch.getAdderess().getSgg());
-        }
-        if (meetSearch.getTitle() != null)
-            query = query.setParameter("title", meetSearch.getTitle());
-        if (meetSearch.getMeetStatus() != null)
-            query = query.setParameter("meetStatus", meetSearch.getMeetStatus());
-        if (meetSearch.getMemberId() != null)
-            query = query.setParameter("memberId", meetSearch.getMemberId());
+        if (meetRecordSearch.getMeetStatus() != null)
+            query = query.setParameter("meetStatus", meetRecordSearch.getMeetStatus());
+        if (meetRecordSearch.getMemberId() != null)
+            query = query.setParameter("memberId", meetRecordSearch.getMemberId());
 
         return query.getResultList();
     }

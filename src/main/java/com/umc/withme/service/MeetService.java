@@ -3,6 +3,7 @@ package com.umc.withme.service;
 import com.umc.withme.domain.*;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetRecordSearch;
 import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
@@ -165,35 +166,24 @@ public class MeetService {
         List<Meet> meets = meetRepository.searchMeets(meetSearch);
 
         // 모임 리스트를 주소 및 리더 정보를 포함한 DTO 리스트로 변환해서 반환한다.
-        List<MeetDto> meetDtos = new ArrayList<>();
-        for (Meet meet : meets) {
-            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
-                    .stream()
-                    .map(ma -> ma.getAddress())
-                    .collect(Collectors.toUnmodifiableList());
-
-            Member leader = memberRepository.findById(meet.getCreatedBy())
-                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
-
-            //TODO : 좋아요 수 추후 구현 필요 모집글 목록조회이므로 인원 카운트는 필요 X
-
-            meetDtos.add(MeetDto.from(meet, addresses, leader));
-        }
-
-        return meetDtos;
+        return getMeetDtos(meets);
     }
 
     /**
      * 조건에 해당하는 모임 기록을 조회하고 모임 DTO 목록을 반환한다.
      *
-     * @param meetSearch 모임 목록 검색 조건(모임 진행상태)이 담긴 DTO
+     * @param meetRecordSearch 모임 목록 검색 조건(모임 진행상태, 사용자 id)이 담긴 DTO
      * @return 조회한 모임 DTO 목록
      */
-    public List<MeetDto> findAllMeetsRecords(MeetSearch meetSearch) {
+    public List<MeetDto> findAllMeetsRecords(MeetRecordSearch meetRecordSearch) {
         // 모임 진행상태로 조회한 모임 리스트
-        List<Meet> meets = meetRepository.searchMeets(meetSearch);
+        List<Meet> meets = meetRepository.searchMeetRecords(meetRecordSearch);
 
         // 모임 리스트를 주소 및 리더 정보, 모임 인원수를 포함한 DTO 리스트로 변환해서 반환한다.
+        return getMeetDtos(meets);
+    }
+
+    private List<MeetDto> getMeetDtos(List<Meet> meets) {
         List<MeetDto> meetDtos = new ArrayList<>();
         for (Meet meet : meets) {
             List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
@@ -204,7 +194,7 @@ public class MeetService {
             Member leader = memberRepository.findById(meet.getCreatedBy())
                     .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
 
-            //TODO : 모임 인원 수 추후 구현 필요. 모임 기록 조회이므로 좋아요 수는 필요 없다.
+            //TODO : 모임 인원 수 및 좋아요 수 추후 구현 필요
 
             meetDtos.add(MeetDto.from(meet, addresses, leader));
         }
