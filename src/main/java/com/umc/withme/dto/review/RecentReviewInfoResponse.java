@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 public class RecentReviewInfoResponse {
 
     @Schema(description = "가장 최근에 끝난 모임에서 받은 후기 목록")
-    private List<RecentReviewInfo> info1;
+    private List<RecentReviewInfo> reviewList1;
 
     @Schema(description = "2번째로 최근에 끝난 모임에서 받은 후기 목록")
-    private List<RecentReviewInfo> info2;
+    private List<RecentReviewInfo> reviewList2;
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
