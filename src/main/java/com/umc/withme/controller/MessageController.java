@@ -1,8 +1,11 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
+import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
+import com.umc.withme.dto.message.MessageDto;
+import com.umc.withme.dto.message.MessageInfoListGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +34,8 @@ public class MessageController {
      *
      * @param messageCreateRequest 쪽지 생성 요청 데이터 (쪽지 내용)
      * @param principle
-     * @param receiverId 쪽지 받는 회원 id(pk)
-     * @param meetId 관련 모집글 id(pk)
+     * @param receiverId           쪽지 받는 회원 id(pk)
+     * @param meetId               관련 모집글 id(pk)
      * @return 쪽지생성 성공 여부
      */
 
@@ -50,5 +54,25 @@ public class MessageController {
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(true));
+    }
+
+    @Operation(
+            summary = "특정 쪽지방의 쪽지 조회",
+            description = "<p>채팅방의 쪽지 리스트를를 조회합니다. <code>chatroomId</code> - 쪽지 채팅방 id </p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/messages/{chatroomId}")
+    public ResponseEntity<DataResponse<MessageInfoListGetResponse>> getMessage(
+            @PathVariable Long chatroomId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<MessageDto> messageDtos = messageService.findMessages(chatroomId, principle.getMemberId());
+
+        MessageInfoListGetResponse response = MessageInfoListGetResponse.from(messageDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
     }
 }

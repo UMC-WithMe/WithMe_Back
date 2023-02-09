@@ -26,6 +26,15 @@ public class MessageDto {
         return new MessageDto(messageId, sender, receiver, meet, content);
     }
 
+    public static MessageDto from(Message message){
+        return new MessageDto(
+                message.getId(),
+                MemberDto.from(message.getSender()),
+                MemberDto.from(message.getReceiver()),
+                MeetDto.from(message.getMeet()),
+                message.getContent());
+    }
+
     public Message toEntity(Member sender, Member receiver, Meet meet){
         return Message.builder()
                 .sender(sender)
