@@ -6,6 +6,7 @@ import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,31 +77,24 @@ public class ReviewService {
      */
     public RecentReviewInfoResponse getRecentTwoMeetReview(Long memberId) {
 
-        List<Meet> twoMeetList = new ArrayList<>();
-        List<List<ReviewDto>> reviewList = new ArrayList<>();
+        memberRepository.findById(memberId).orElseThrow(MemberIdNotFoundException::new);
 
-        // 사용자가 참여한 모든 모임 조회
-        List<Meet> meetList = meetMemberRepository.findAllByMember_Id(memberId).stream()
-                                                    .map(mm -> meetRepository.findById(mm.getMeet().getId()).orElseThrow(MeetIdNotFoundException::new))
-                                                    .sorted(Comparator.comparing(Meet::getEndDate).reversed())
-                                                    .collect(Collectors.toUnmodifiableList());
+        List<List<ReviewDto>> reviewList = new ArrayList<>(); // 모임에서 받은 후기 리스트
+        List<Meet> recentMeet = meetMemberRepository.findByMeetOrderByEndDate(memberId, PageRequest.of(0,2)); // 최근 끝난 모임 최대 2개 조회
 
-        // 가장 최근 끝난 모임 2개 가져오기
-        if (meetList.size() > 1) {
-            twoMeetList = meetList.subList(0, 2);
-        } else if (meetList.size() == 1) {
-            Collections.copy(twoMeetList, meetList);
-        } else {
-            return (RecentReviewInfoResponse) Collections.emptyMap();
-        }
-
-        // 가져온 모임에서 받은 후기 조회
-        twoMeetList.forEach(m -> {
+        // 모임마다 받은 후기 조회
+        recentMeet.forEach(m -> {
             List<ReviewDto> collect = reviewRepository.findAllByMeet_IdAndReceiver_Id(m.getId(), memberId).stream()
                     .map(ReviewDto::from)
                     .collect(Collectors.toUnmodifiableList());
             reviewList.add(collect);
         });
+
+        if (reviewList.size() == 0) {
+            return RecentReviewInfoResponse.from(Collections.emptyList(), Collections.emptyList());
+        } else if (reviewList.size() == 1) {
+            return RecentReviewInfoResponse.from(reviewList.get(0), Collections.emptyList());
+        }
 
         return RecentReviewInfoResponse.from(reviewList.get(0), reviewList.get(1));
     }
