@@ -124,18 +124,20 @@ public class MeetController {
 
     @Operation(
             summary = "모임 모집글 리스트 조회 API",
-            description = "<p><code>category</code>, <code>sido</code>, <code>sgg</code>, " +
-                    "<code>title</code> 조건에 맞는 모임 모집글 목록들을 반환합니다.</p>",
+            description = "<p>조건에 맞는 모임 모집글 목록들을 반환합니다." +
+                    "<p><code>category</code>: null일 때 모든 카테고리에 대한 모집글이 조회됩니다.</p>" +
+                    "<p><code>isLocal</code>: 내동네 모집글 조회일 때 true 아니면 false로 하면 됩니다.</p>" +
+                    "<p><code>title</code>: 제목 검색 조건이 없을 때는 null로 하면 됩니다.</p></p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/meets")
     public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
             @RequestParam(value = "category", required = false) MeetCategory category,
-            @RequestParam(value = "sido", required = false) String sido,
-            @RequestParam(value = "sgg", required = false) String sgg,
-            @RequestParam(value = "title", required = false) @Size(min = 2) String title
+            @RequestParam(value = "isLocal", required = false) Boolean isLocal,
+            @RequestParam(value = "title", required = false) @Size(min = 2) String title,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<MeetDto> meetDtos = meetService.findAllMeets(MeetSearch.of(category, sido, sgg, title));
+        List<MeetDto> meetDtos = meetService.findAllMeets(category, isLocal, title, principle.getMemberId());
 
         MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
 

@@ -1,6 +1,7 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
+import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.meet.MeetRecordSearch;
@@ -158,10 +159,23 @@ public class MeetService {
     /**
      * 조건에 해당하는 모임 모집글을 조회하고 모임 DTO 목록을 반환한다.
      *
-     * @param meetSearch 모임 목록 검색 조건(카테고리, 동네, 제목)이 담긴 DTO
+     * @param category 모임 카테고리 조건 (모든 카테고리일 경우 null)
+     * @param isLocal  내동네이면 ture, 온동네이면 false
+     * @param title    모임 제목 검색 조건
+     * @param memberId 현재 로그인한 사용자 id
      * @return 조회한 모임 DTO 목록
      */
-    public List<MeetDto> findAllMeets(MeetSearch meetSearch) {
+    public List<MeetDto> findAllMeets(MeetCategory category, Boolean isLocal, String title, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+
+        // 검색 조건 설정
+        MeetSearch meetSearch;
+        if (isLocal && member.getAddress() != null)
+            meetSearch = MeetSearch.of(category, member.getAddress().getSido(), member.getAddress().getSgg(), title);
+        else meetSearch = MeetSearch.of(category, null, null, title);
+
         // 카테고리 및 동네, 제목으로 조회한 모임 리스트
         List<Meet> meets = meetRepository.searchMeets(meetSearch);
 
