@@ -55,7 +55,23 @@ public class ReviewController {
     public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getReceiveReviews(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<ReviewInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
+        List<ReviewInfoResponse> response = reviewService.getReceiveReviews(principle.getMemberId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @Operation(
+            summary = "작성한 후기 글 조회",
+            description = "로그인된 사용자의 아이디(pk)로 작성한 후기를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/reviews/send-reviews")
+    public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getSendReviews(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<ReviewInfoResponse> response = reviewService.getSendReviews(principle.getMemberId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)

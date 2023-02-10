@@ -58,11 +58,24 @@ public class ReviewService {
     /**
      * 로그인된 사용자의 아이디(PK)로 받은 리뷰들을 조회해 필요한 데이터를 리스트에 담아 반환
      *
-     * @param id 로그인한 사용자의 아이디
+     * @param loginMemberId 로그인한 사용자의 아이디
      * @return ReviewGetInfoResponse 타입의 리스트
      */
-    public List<ReviewInfoResponse> getReceiveReview(Long loginMemberId) {
+    public List<ReviewInfoResponse> getReceiveReviews(Long loginMemberId) {
         return reviewRepository.findAllByReceiver_Id(loginMemberId).stream()
+                .map(ReviewDto::from)
+                .map(ReviewInfoResponse::from)
+                .collect(Collectors.toUnmodifiableList());
+    }
+    
+    /**
+     * 로그인된 사용자의 아이디(PK)로 작성한 리뷰들을 조회해 필요한 데이터를 리스트에 담아 반환
+     *
+     * @param loginMemberId 로그인한 사용자의 아이디
+     * @return ReviewGetInfoResponse 타입의 리스트
+     */
+    public List<ReviewInfoResponse> getSendReviews(Long loginMemberId) {
+        return reviewRepository.findAllBySender_Id(loginMemberId).stream()
                 .map(ReviewDto::from)
                 .map(ReviewInfoResponse::from)
                 .collect(Collectors.toUnmodifiableList());
