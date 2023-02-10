@@ -2,7 +2,6 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.like.MeetLikeCreateRequest;
-import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetLikeService;
 import io.swagger.v3.oas.annotations.Operation;

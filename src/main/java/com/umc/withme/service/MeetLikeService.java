@@ -24,8 +24,8 @@ public class MeetLikeService {
     /**
      * DB에 찜정보(회원, 모집글)를 새로 저장
      *
-     * @param memberId
-     * @param meetId
+     * @param memberId  회원 id(pk)
+     * @param meetId    찜하려는 모집글 id(pk)
      */
 
     @Transactional
@@ -34,11 +34,13 @@ public class MeetLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
+        if(meetLikeRepository.findByMember_IdAndMeet_Id(memberId, meetId) ==null){ //해당 찜이 이미 존재하는지 확인
         MeetLike meetLike = MeetLike.builder()
                 .member(member)
                 .meet(meet)
                 .build();
 
         meetLikeRepository.save(meetLike);
+        }
     }
 }
