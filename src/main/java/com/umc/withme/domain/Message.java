@@ -19,6 +19,10 @@ public class Message extends BaseEntity {
     @Column(name = "message_id")
     private Long id;
 
+    @JoinColumn(name = "chatroom_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Chatroom chatroom;
+
     @JoinColumn(name = "sender_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member sender;
@@ -35,7 +39,8 @@ public class Message extends BaseEntity {
     private String content;
 
     @Builder
-    private Message(Member sender, Member receiver, Meet meet, String content) {
+    private Message(Chatroom chatroom, Member sender, Member receiver, Meet meet, String content) {
+        this.chatroom = chatroom;
         this.sender = sender;
         this.receiver = receiver;
         this.meet = meet;

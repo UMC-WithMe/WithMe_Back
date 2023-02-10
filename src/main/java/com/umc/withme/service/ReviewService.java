@@ -1,12 +1,18 @@
 package com.umc.withme.service;
 
-import com.umc.withme.domain.*;
+import com.umc.withme.domain.Meet;
+import com.umc.withme.domain.Member;
+import com.umc.withme.domain.Point;
+import com.umc.withme.domain.Review;
 import com.umc.withme.dto.review.ReviewCreateRequest;
 import com.umc.withme.dto.review.ReviewDto;
 import com.umc.withme.dto.review.ReviewInfoResponse;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
-import com.umc.withme.repository.*;
+import com.umc.withme.repository.MeetRepository;
+import com.umc.withme.repository.MemberRepository;
+import com.umc.withme.repository.PointRepository;
+import com.umc.withme.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,9 +56,7 @@ public class ReviewService {
                 .content(requestDto.getContent())
                 .build();
 
-        Review saveReview = reviewRepository.save(review);
-
-        return saveReview.getId();
+        return reviewRepository.save(review).getId();
     }
 
     /**

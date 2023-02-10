@@ -15,15 +15,16 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MeetInfoGetResponse {
+public class MeetInfoResponse {
 
     @Schema(example = "2", description = "조회한 모임의 id")
     private Long meetId;
 
-    @Schema(example = "", description = "모임을 생성한 사용자 정보 (모임의 리더 정보)")
-    private MemberShortInfoResponse leader;  // 이 모임의 리더
+    @Schema(description = "모임을 생성한 사용자 정보 (모임의 리더 정보)")
+    private MemberShortInfoResponse leader;
 
-    private List<AddressDto> addresses;  // 이 모임에 설정된 동네 리스트
+    @Schema(description = "이 모임에 설정된 지역 리스트")
+    private List<AddressDto> addresses;
 
     @Schema(example = "STUDY", description = "모임의 카테고리")
     private MeetCategory meetCategory;
@@ -37,13 +38,10 @@ public class MeetInfoGetResponse {
     @Schema(example = "OOO 스터디원 모집합니다!", description = "모임 모집글의 제목")
     private String title;
 
-    @Schema(example = "https://open.kakao.com/o/s1RrvrQe",
-            description = "추가적으로 사용할 카톡 오픈채팅 링크 또는 모집 폼 링크")
+    @Schema(example = "https://open.kakao.com/o/s1RrvrQe", description = "추가적으로 사용할 카톡 오픈채팅 링크 또는 모집 폼 링크")
     private String link;
 
-    @Schema(
-            example = "함께 OOO 공부 하고 자료도 나누면서 함께 성장해봐요!",
-            description = "모임 모집글의 내용")
+    @Schema(example = "함께 OOO 공부 하고 자료도 나누면서 함께 성장해봐요!", description = "모임 모집글의 내용")
     private String content;
 
     @Schema(example = "3", description = "모임의 최소 인원")
@@ -58,11 +56,11 @@ public class MeetInfoGetResponse {
     @Schema(example = "2023-02-15", description = "모임 마감(종료) 날짜")
     private LocalDate endDate;
 
-    public static MeetInfoGetResponse of(MeetDto dto, Long receivedReviewsCount) {
+    public static MeetInfoResponse from(MeetDto dto) {
 
-        return new MeetInfoGetResponse(
+        return new MeetInfoResponse(
                 dto.getMeetId(),
-                MemberShortInfoResponse.of(dto.getLeader(), receivedReviewsCount),
+                MemberShortInfoResponse.from(dto.getLeader()),
                 dto.getAddresses(),
                 dto.getMeetCategory(),
                 dto.getRecruitStatus(),

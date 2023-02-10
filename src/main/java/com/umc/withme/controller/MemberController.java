@@ -5,7 +5,6 @@ import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.member.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MemberService;
-import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,7 +28,6 @@ import javax.validation.constraints.NotBlank;
 public class MemberController {
 
     private final MemberService memberService;
-    private final ReviewService reviewService;
 
     @Operation(
             summary = "닉네임 중복 조회",
@@ -58,7 +56,7 @@ public class MemberController {
     @GetMapping
     public ResponseEntity<DataResponse<MemberAllInfoResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
-        MemberAllInfoResponse response = MemberAllInfoResponse.of(memberDto, reviewService.getReceivedReviewsCount(memberDto.getId()));
+        MemberAllInfoResponse response = MemberAllInfoResponse.from(memberDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse<>(response));

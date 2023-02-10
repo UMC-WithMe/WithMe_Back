@@ -4,6 +4,7 @@ import com.umc.withme.domain.common.BaseTimeEntity;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.domain.constant.RoleType;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -53,6 +54,11 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
+
+    @Formula("(select count(r.review_id) " +
+            "from review r " +
+            "where r.receiver_id=member_id)")
+    private Integer numOfReceivedReviews;
 
     // Builder & Constructor
     @Builder

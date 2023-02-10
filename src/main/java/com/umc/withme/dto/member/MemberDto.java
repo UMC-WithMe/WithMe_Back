@@ -22,21 +22,19 @@ public class MemberDto {
     private Integer ageRange;
     private Gender gender;
     private TotalPoint totalPoint;
+    private Integer numOfReceivedReviews;
     private RoleType roleType;
 
     public static MemberDto of(String email, String password, Integer ageRange, Gender gender) {
-        return MemberDto.of(null, null, email, password, null, null, ageRange, gender, null, null);
+        return MemberDto.of(null, null, email, password, null, null, ageRange, gender, null, null, null);
     }
 
-    public static MemberDto of(Long id, AddressDto address, String email, String password, String phoneNumber, String nickname, Integer ageRange, Gender gender, TotalPoint totalPoint, RoleType roleType) {
-        return new MemberDto(id, address, email, password, phoneNumber, nickname, ageRange, gender, totalPoint, roleType);
+    public static MemberDto of(Long id, AddressDto address, String email, String password, String phoneNumber, String nickname, Integer ageRange, Gender gender, TotalPoint totalPoint, Integer numOfReceivedReviews, RoleType roleType) {
+        return new MemberDto(id, address, email, password, phoneNumber, nickname, ageRange, gender, totalPoint, numOfReceivedReviews, roleType);
     }
 
     public static MemberDto from(Member member) {
-        AddressDto addressDto = null;
-        if (member.getAddress() != null) {
-            addressDto = AddressDto.from(member.getAddress());
-        }
+        AddressDto addressDto = member.getAddress() != null ? AddressDto.from(member.getAddress()) : null;
 
         return MemberDto.of(
                 member.getId(),
@@ -48,6 +46,7 @@ public class MemberDto {
                 member.getAgeRange(),
                 member.getGender(),
                 member.getTotalPoint(),
+                member.getNumOfReceivedReviews(),
                 member.getRoleType()
         );
     }
