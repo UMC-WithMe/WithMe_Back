@@ -2,11 +2,13 @@ package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
 import com.umc.withme.domain.constant.MeetCategory;
+import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.meet.MeetRecordSearch;
 import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
+import com.umc.withme.exception.meet.MeetCompleteForbiddenException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
@@ -214,5 +216,39 @@ public class MeetService {
         }
 
         return meetDtos;
+    }
+
+    /**
+     * 사용자가 모임의 리더인 경우, 모임의 상태가 완료 상태로 변경되고 변경된 모임 DTO를 반환한다.
+     * 사용자가 모임의 리더가 아닌 경우, 예외가 발생한다.
+     *
+     * @param meetId   해제하려는 모임 id
+     * @param memberId 현재 로그인한 사용자 id
+     * @return 모임의 상태가 완료로 변경된 모임 DTO
+     */
+    @Transactional
+    public MeetDto setMeetComplete(Long meetId, Long memberId) {
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new MeetIdNotFoundException(meetId));
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+
+        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
+                .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
+        // 사용자가 모임의 리더가 아닐 경우 예외 발생
+        if (member != meetLeader) throw new MeetCompleteForbiddenException(meetId, memberId);
+
+        // 모임의 상태를 완료 상태로 변경
+        meet.setMeetStatus(MeetStatus.COMPLETE);
+
+        // meet에 등록된 주소 리스트 조회
+        List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meetId)
+                .stream()
+                .map(MeetAddress::getAddress)
+                .collect(Collectors.toUnmodifiableList());
+
+        return MeetDto.from(meet, addresses, member);
     }
 }
