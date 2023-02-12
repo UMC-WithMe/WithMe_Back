@@ -21,11 +21,11 @@ public class MeetLike extends BaseTimeEntity {
     private Long id;
 
     @JoinColumn(name = "member_id", nullable = false)
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
     @JoinColumn(name = "meet_id", nullable = false)
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Meet meet;
 
     @Builder
