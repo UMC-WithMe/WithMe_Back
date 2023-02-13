@@ -121,11 +121,18 @@ public class MeetService {
      * @return 수정된 모임 DTO
      */
     @Transactional
-    public MeetDto updateMeetById(Long meetId, Long loginMemberId, MeetDto meetDtoToUpdate) {
+    public MeetDto updateMeetById(Long meetId, Long loginMemberId, MeetDto meetDtoToUpdate, MultipartFile meetImage) {
         Meet meet = getMeetById(meetId);
         Member meetLeader = getMemberById(meet.getCreatedBy());
 
         validateUpdateAuthority(loginMemberId, meetLeader.getId());
+
+        if (meetImage != null) {
+            s3FileService.deleteFile(meet.getMeetImage());
+
+            ImageFile newMeetImage = s3FileService.saveFile(meetImage);
+            meet.setMeetImage(newMeetImage);
+        }
 
         // 모임의 MeetAddress 모두 삭제 후 meetDtoToUpdate에 따라 다시 생성
         meetAddressRepository.deleteAllByMeet_Id(meet.getId());
@@ -142,28 +149,6 @@ public class MeetService {
                 getAddressesByMeetId(meetId),
                 meetLeader
         );
-    }
-
-    /**
-     * 모임/모집글의 대표 이미지를 수정한다.
-     *
-     * @param meetId 이미지를 변경하고자 하는 모임의 id(PK)
-     * @param loginMemberId 로그인 회원의 id(PK)
-     * @param meetImage 변경하고자 하는 이미지
-     * @return 이미지가 변경된 모임의 정보가 담긴 dto
-     */
-    @Transactional
-    public MeetDto updateMeetImage(Long meetId, Long loginMemberId, MultipartFile meetImage) {
-        Meet meet = getMeetById(meetId);
-
-        validateUpdateAuthority(loginMemberId, meet.getCreatedBy());
-
-        s3FileService.deleteFile(meet.getMeetImage());
-
-        ImageFile newMeetImage = s3FileService.saveFile(meetImage);
-        meet.setMeetImage(newMeetImage);
-
-        return createMeetDtoForResponse(meet);
     }
 
     /**
@@ -304,7 +289,7 @@ public class MeetService {
      * 로그인 회원이 모임/모집글에 대한 수정 권한이 있는지 검증한다.
      *
      * @param loginMemberId 로그인 회원
-     * @param meetLeaderId 수정하고자 하는 모임/모집글
+     * @param meetLeaderId  수정하고자 하는 모임/모집글
      * @throws MeetUpdateForbiddenException 수정 권한이 없는 경우. 즉, 로그인 회원과 모임의 리더가 다른 경우.
      */
     private void validateUpdateAuthority(Long loginMemberId, Long meetLeaderId) {
@@ -317,7 +302,7 @@ public class MeetService {
      * 로그인 회원이 모임/모집글에 대한 삭제 권한이 있는지 검증한다.
      *
      * @param loginMemberId 로그인 회원
-     * @param meetLeaderId 삭제하고자 하는 모임/모집글
+     * @param meetLeaderId  삭제하고자 하는 모임/모집글
      * @throws MeetUpdateForbiddenException 삭제 권한이 없는 경우. 즉, 로그인 회원과 모임의 리더가 다른 경우.
      */
     private void validateMeetDeleteAuthority(Long loginMemberId, Long meetLeaderId) {

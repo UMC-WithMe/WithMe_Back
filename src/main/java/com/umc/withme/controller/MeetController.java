@@ -37,7 +37,7 @@ public class MeetController {
     private final MeetService meetService;
 
     @Operation(
-            summary = "모임/모집글 생성",
+            summary = "모임 모집글 생성",
             description = "<p>모임/모집글 생성에 필요한 정보를 받아 모집글을 생성합니다.</p>" +
                     "<p>모집글 생성에 필요한 정보가 담긴 meetFormRequest는 반드시 content type을 <strong>application/json</strong>으로 전달해야 합니다.</p>" +
                     "<p>대표 이미지를 전달할 meetImage는 반드시 content type을 <strong>multipart/form-data</strong>으로 전달해야 합니다.</p>",
@@ -129,22 +129,28 @@ public class MeetController {
     }
 
     @Operation(
-            summary = "모임 모집글 수정 API",
-            description = "<p><code>meetId</code>에 해당하는 모임을 <code>request body</code>에 담긴 정보로 수정하고" +
-                    "수정된 모임을 response body 에 넣어 전달합니다.</p>",
+            summary = "모임 모집글 수정",
+            description = "<p><code>meetId</code>에 해당하는 모임을 <code>meetFormRequest</code>에 담긴 정보로 수정하고 수정된 모임 정보를 응답합니다.</p>" +
+                    "<p>모집글 생성에 필요한 정보가 담긴 <code>meetFormRequest</code>는 반드시 content type을 <strong>application/json</strong>으로 전달해야 합니다.</p>" +
+                    "<p>대표 이미지를 전달할 <code>meetImage</code>는 반드시 content type을 <strong>multipart/form-data</strong>으로 전달해야 합니다. " +
+                    "대표 이미지를 변경하지 않으려면 <code>meetImage</code>는 빼고 비워서 전달하면 됩니다. (필수값 아님)</p>",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
-    @PutMapping("/meets/{meetId}")
+    @PutMapping(
+            value = "/meets/{meetId}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
     public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeet(
             @PathVariable Long meetId,
-            @Valid @RequestBody MeetFormRequest meetFormRequest,
+            @Valid @RequestPart MeetFormRequest meetFormRequest,
+            @Parameter(description = "대표 이미지로 설정하고자 하는 이미지 파일", example = "모임 대표 이미지") @RequestPart(required = false) MultipartFile meetImage,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        MeetDto meetDto = meetService.updateMeetById(meetId, principle.getMemberId(), meetFormRequest.toDto());
+        MeetDto meetDto = meetService.updateMeetById(meetId, principle.getMemberId(), meetFormRequest.toDto(), meetImage);
 
         MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
 
@@ -152,32 +158,6 @@ public class MeetController {
                 new DataResponse<>(response),
                 HttpStatus.OK
         );
-    }
-
-    @Operation(
-            summary = "모임 대표 이미지 수정",
-            description = "<p>multipart/form-data 형식으로 이미지 파일을 전달받는다.</p>" +
-                    "<p>그 후, 모임의 대표 이미지를 전달받은 이미지로 변경한다.</p>",
-            security = @SecurityRequirement(name = "access-token")
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "2402: 로그인 사용자가 모임을 수정할 권한이 없는 경우", content = @Content)
-    })
-    @PatchMapping(
-            value = "/meets/{meetId}/image",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeetImage(
-            @PathVariable Long meetId,
-            @Parameter(description = "대표 이미지로 설정하고자 하는 이미지 파일") @RequestPart MultipartFile meetImage,
-            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
-    ) {
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetService.updateMeetImage(meetId, principle.getMemberId(), meetImage));
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new DataResponse<>(response));
     }
 
     @Operation(
