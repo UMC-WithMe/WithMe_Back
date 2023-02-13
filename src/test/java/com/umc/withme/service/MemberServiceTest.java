@@ -1,6 +1,7 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.Address;
+import com.umc.withme.domain.ImageFile;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.dto.member.MemberDto;
@@ -8,6 +9,7 @@ import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.AddressRepository;
+import com.umc.withme.repository.ImageFileRepository;
 import com.umc.withme.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,9 +43,13 @@ class MemberServiceTest {
     private MemberService sut;
 
     @Mock
+    private S3FileService s3FileService;
+    @Mock
     private MemberRepository memberRepository;
     @Mock
     private AddressRepository addressRepository;
+    @Mock
+    private ImageFileRepository imageFileRepository;
 
     @Test
     void 닉네임_중복_여부_확인() {
@@ -257,6 +267,29 @@ class MemberServiceTest {
         then(addressRepository).should().findBySidoAndSgg(sido, sgg);
     }
 
+    @Test
+    void 회원_이메일과_이미지_파일이_주어지면_회원의_프로필_이미지_파일을_업데이트한다() throws IOException {
+        // given
+        Member member = createMember();
+        MultipartFile imageForUpdate = new MockMultipartFile(
+                "file",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test".getBytes()
+        );
+        ImageFile expected = createImageFileWithId(imageForUpdate.getOriginalFilename());
+        given(memberRepository.findByEmail(TEST_EMAIL)).willReturn(Optional.of(member));
+        given(s3FileService.saveFile(imageForUpdate)).willReturn(expected);
+
+        // when
+        sut.updateMemberProfileImage(TEST_EMAIL, imageForUpdate);
+
+        // then
+        assertThat(member.getProfileImage().getFileName()).isEqualTo(imageForUpdate.getOriginalFilename());
+        then(memberRepository).should().findByEmail(TEST_EMAIL);
+        then(s3FileService).should().saveFile(imageForUpdate);
+    }
+
     private MemberDto createMemberDto() {
         return MemberDto.of(
                 TEST_EMAIL,
@@ -275,7 +308,7 @@ class MemberServiceTest {
     }
 
     private Member createMemberWithoutPhoneNumberAndAddress() {
-        Member member = createMemberDto().toEntity();
+        Member member = createMemberDto().toEntity(createImageFile());
         ReflectionTestUtils.setField(member, "id", 1L);
 
         return member;
@@ -286,5 +319,27 @@ class MemberServiceTest {
         ReflectionTestUtils.setField(address, "id", 1L);
 
         return address;
+    }
+
+    private ImageFile createImageFile(String fileName) {
+        return ImageFile.builder()
+                .fileName(fileName)
+                .storedFileName("test")
+                .url("url")
+                .build();
+    }
+
+    private ImageFile createImageFile() {
+        return createImageFile("test");
+    }
+
+    private ImageFile createImageFileWithId(String fileName) {
+        ImageFile imageFile = createImageFile(fileName);
+        ReflectionTestUtils.setField(imageFile, "id", 1L);
+        return imageFile;
+    }
+
+    private ImageFile createImageFileWithId() {
+        return createImageFileWithId("test");
     }
 }
