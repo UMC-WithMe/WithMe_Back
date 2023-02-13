@@ -61,6 +61,7 @@ public class MeetFormRequest {
     public MeetDto toDto() {
         return MeetDto.of(
                 null,
+                null,
                 getMeetCategory(),
                 getTitle(),
                 getLink(),

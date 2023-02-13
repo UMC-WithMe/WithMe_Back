@@ -21,6 +21,11 @@ public class Meet extends BaseEntity {
     @Column(name = "meet_id")
     private Long id;
 
+    @Setter
+    @JoinColumn(name = "meet_Image")
+    @OneToOne(fetch = FetchType.LAZY)
+    private ImageFile meetImage;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MeetCategory category;
@@ -53,7 +58,8 @@ public class Meet extends BaseEntity {
 
     // Builder & Constructor
     @Builder
-    private Meet(MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
+    private Meet(ImageFile meetImage, MeetCategory category, String title, Integer minPeople, Integer maxPeople, String link, String content) {
+        this.meetImage = meetImage;
         this.category = category;
         this.recruitStatus = RecruitStatus.PROGRESS;
         this.title = title;

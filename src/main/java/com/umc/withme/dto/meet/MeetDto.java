@@ -1,11 +1,13 @@
 package com.umc.withme.dto.meet;
 
 import com.umc.withme.domain.Address;
+import com.umc.withme.domain.ImageFile;
 import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
+import com.umc.withme.dto.ImageFileDto;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.member.MemberDto;
 import lombok.AccessLevel;
@@ -22,6 +24,7 @@ public class MeetDto {
 
     private Long meetId;
     private MemberDto leader;  // 이 모임의 리더
+    private ImageFileDto meetImage;
     private List<AddressDto> addresses;  // 이 모임에 설정된 동네 리스트
     private MeetCategory meetCategory;
     private RecruitStatus recruitStatus;
@@ -48,6 +51,7 @@ public class MeetDto {
         return new MeetDto(
                 meet.getId(),
                 MemberDto.from(leader),
+                ImageFileDto.from(meet.getMeetImage()),
                 addresses.stream()
                         .map(AddressDto::from)
                         .collect(Collectors.toUnmodifiableList()),
@@ -65,10 +69,12 @@ public class MeetDto {
                 1L);
     }
 
-    // 리뷰 조회 API에서 사용: leader와 address가 필요없어 null로 넣어둠.
+    // 리뷰 조회 API에서 사용: leader와 address가 필요없어 null로 넣어둠
+    // TODO: leader, address를 null로 처리하는 것이 괜찮을지, 다른 방법은 없는지에 대한 고민 필요
     public static MeetDto from(Meet meet) {
         return new MeetDto(
                 meet.getId(),
+                null,
                 null,
                 null,
                 meet.getCategory(),
@@ -86,17 +92,18 @@ public class MeetDto {
     }
 
     // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
-    public static MeetDto of(Long meetId, MemberDto leader, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
-        return new MeetDto(meetId, leader, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate, 0L, 1L);
+    public static MeetDto of(Long meetId, MemberDto leader, ImageFileDto meetImage, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
+        return new MeetDto(meetId, leader, meetImage, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate, 0L, 1L);
     }
 
     // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
-    public static MeetDto of(MemberDto leader, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
-        return MeetDto.of(null, leader, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
+    public static MeetDto of(MemberDto leader, ImageFileDto meetImage, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
+        return MeetDto.of(null, leader, meetImage, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
     }
 
-    public Meet toEntity() {
+    public Meet toEntity(ImageFile meetImage) {
         return Meet.builder()
+                .meetImage(meetImage)
                 .category(this.getMeetCategory())
                 .title(this.getTitle())
                 .minPeople(this.getMinPeople())
