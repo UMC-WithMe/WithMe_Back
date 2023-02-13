@@ -1,8 +1,11 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.*;
+import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.address.AddressDto;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetRecordSearch;
+import com.umc.withme.dto.meet.MeetSearch;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,5 +154,65 @@ public class MeetService {
     private Address getAddress(AddressDto dto) {
         return addressRepository.findBySidoAndSgg(dto.getSido(), dto.getSgg())
                 .orElseThrow(() -> new AddressNotFoundException(dto.getSido(), dto.getSgg()));
+    }
+
+    /**
+     * 조건에 해당하는 모임 모집글을 조회하고 모임 DTO 목록을 반환한다.
+     *
+     * @param category 모임 카테고리 조건 (모든 카테고리일 경우 null)
+     * @param isLocal  내동네이면 ture, 온동네이면 false
+     * @param title    모임 제목 검색 조건
+     * @param memberId 현재 로그인한 사용자 id
+     * @return 조회한 모임 DTO 목록
+     */
+    public List<MeetDto> findAllMeets(MeetCategory category, Boolean isLocal, String title, Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+
+        // 검색 조건 설정
+        MeetSearch meetSearch;
+        if (isLocal && member.getAddress() != null)
+            meetSearch = MeetSearch.of(category, member.getAddress().getSido(), member.getAddress().getSgg(), title);
+        else meetSearch = MeetSearch.of(category, null, null, title);
+
+        // 카테고리 및 동네, 제목으로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeets(meetSearch);
+
+        // 모임 리스트를 주소 및 리더 정보를 포함한 DTO 리스트로 변환해서 반환한다.
+        return getMeetDtos(meets);
+    }
+
+    /**
+     * 조건에 해당하는 모임 기록을 조회하고 모임 DTO 목록을 반환한다.
+     *
+     * @param meetRecordSearch 모임 목록 검색 조건(모임 진행상태, 사용자 id)이 담긴 DTO
+     * @return 조회한 모임 DTO 목록
+     */
+    public List<MeetDto> findAllMeetsRecords(MeetRecordSearch meetRecordSearch) {
+        // 모임 진행상태로 조회한 모임 리스트
+        List<Meet> meets = meetRepository.searchMeetRecords(meetRecordSearch);
+
+        // 모임 리스트를 주소 및 리더 정보, 모임 인원수를 포함한 DTO 리스트로 변환해서 반환한다.
+        return getMeetDtos(meets);
+    }
+
+    private List<MeetDto> getMeetDtos(List<Meet> meets) {
+        List<MeetDto> meetDtos = new ArrayList<>();
+        for (Meet meet : meets) {
+            List<Address> addresses = meetAddressRepository.findAllByMeet_Id(meet.getId())
+                    .stream()
+                    .map(ma -> ma.getAddress())
+                    .collect(Collectors.toUnmodifiableList());
+
+            Member leader = memberRepository.findById(meet.getCreatedBy())
+                    .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
+
+            //TODO : 모임 인원 수 및 좋아요 수 추후 구현 필요
+
+            meetDtos.add(MeetDto.from(meet, addresses, leader));
+        }
+
+        return meetDtos;
     }
 }

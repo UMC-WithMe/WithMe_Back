@@ -4,6 +4,7 @@ import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
 import com.umc.withme.exception.chatroom.ChatroomIdNotFoundException;
 import com.umc.withme.exception.common.CustomException;
+import com.umc.withme.exception.file.MultipartFileNotReadableException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
@@ -60,11 +61,14 @@ public enum ExceptionType {
     // Address
     ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
 
+    // File
+    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
+
     // Message
-    MESSAGE_GET_FORBIDDEN_EXCEPTION(4403, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
+    MESSAGE_GET_FORBIDDEN_EXCEPTION(5403, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
 
     // Chatroom
-    CHATROOM_ID_NOT_FOUND_EXCEPTION(5400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);
+    CHATROOM_ID_NOT_FOUND_EXCEPTION(6400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);
 
     private final int errorCode;
     private final String errorMessage;

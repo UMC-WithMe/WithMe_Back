@@ -24,8 +24,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param nickname
      * @return Member 객체
      */
-    @EntityGraph(attributePaths = {"address"})
+    @EntityGraph(attributePaths = {"profileImage", "address"})
     Optional<Member> findByNickname(String nickname);
 
+    @EntityGraph(attributePaths = {"profileImage", "address"})
     Optional<Member> findByEmail(String email);
 }

@@ -1,8 +1,10 @@
 package com.umc.withme.service;
 
+import com.umc.withme.domain.ImageFile;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.repository.ImageFileRepository;
 import com.umc.withme.repository.MemberRepository;
 import com.umc.withme.security.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +30,16 @@ class AuthServiceTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
+    private ImageFileRepository imageFileRepository;
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
 
     @Test
     void 유저_정보가_주어지면_회원으로_등록한다() {
         // given
         MemberDto memberDto = createMemberDto();
+        given(imageFileRepository.existsDefaultMemberProfileImage()).willReturn(true);
+        given(imageFileRepository.getDefaultMemberProfileImage()).willReturn(createImageFile());
         given(memberRepository.save(any(Member.class))).willReturn(createMember());
 
         // when
@@ -68,14 +74,17 @@ class AuthServiceTest {
     }
 
     private Member createMember() {
-        Member member = Member.builder()
-                .email("test@daum.net")
-                .password("1234")
-                .ageRange(20)
-                .gender(Gender.MALE)
-                .build();
+        Member member = createMemberDto().toEntity(createImageFile());
         ReflectionTestUtils.setField(member, "id", 1L);
 
         return member;
+    }
+
+    private ImageFile createImageFile() {
+        return ImageFile.builder()
+                .fileName("test")
+                .storedFileName("test")
+                .url("url")
+                .build();
     }
 }
