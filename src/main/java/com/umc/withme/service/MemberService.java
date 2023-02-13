@@ -1,6 +1,7 @@
 package com.umc.withme.service;
 
 import com.umc.withme.domain.Address;
+import com.umc.withme.domain.ImageFile;
 import com.umc.withme.domain.Member;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
@@ -8,18 +9,22 @@ import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.AddressRepository;
+import com.umc.withme.repository.ImageFileRepository;
 import com.umc.withme.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final S3FileService s3FileService;
     private final MemberRepository memberRepository;
     private final AddressRepository addressRepository;
+    private final ImageFileRepository imageFileRepository;
 
     /**
      * DB에서 닉네임 중복 여부 확인 후 결과를 반환한다.
@@ -126,6 +131,26 @@ public class MemberService {
         Address address = addressRepository.findBySidoAndSgg(sido, sgg)
                 .orElseThrow(() -> new AddressNotFoundException(sido, sgg));
         member.setAddress(address);
+    }
+
+    /**
+     * 회원의 프로필 이미지를 교체한다.
+     * 기존 프로필 이미지가 기본 이미지가 아니라면 S3 bucket에서 삭제 후 변경한다.
+     *
+     * @param loginMemberEmail 프로필 이미지를 교체할 회원의 email (로그인 사용자)
+     * @param multipartFile 교체할 프로필 이미지
+     */
+    @Transactional
+    public void updateMemberProfileImage(String loginMemberEmail, MultipartFile multipartFile) {
+        Member member = getMemberByEmail(loginMemberEmail);
+
+        // 회원의 profile image가 기본 이미지가 아니라면
+        if (!member.getProfileImage().equals(imageFileRepository.getDefaultMemberProfileImage())) {
+            s3FileService.deleteFile(member.getProfileImage());
+        }
+
+        ImageFile newProfileImage = s3FileService.saveFile(multipartFile);
+        member.setProfileImage(newProfileImage);
     }
 
     /**

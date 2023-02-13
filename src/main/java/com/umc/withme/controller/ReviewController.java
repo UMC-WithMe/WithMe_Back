@@ -1,16 +1,11 @@
 package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.review.ReviewCreateRequest;
-import com.umc.withme.dto.review.ReviewCreateResponse;
-import com.umc.withme.dto.review.ReviewInfoResponse;
+import com.umc.withme.dto.review.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +47,7 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "받은 후기 글 조회",
+            summary = "받은 후기 조회",
             description = "로그인된 사용자의 아이디(pk)로 받은 후기를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
@@ -60,7 +55,37 @@ public class ReviewController {
     public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getReceiveReviews(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        List<ReviewInfoResponse> response = reviewService.getReceiveReview(principle.getMemberId());
+        List<ReviewInfoResponse> response = reviewService.getReceiveReviews(principle.getMemberId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @Operation(
+            summary = "작성한 후기 글 조회",
+            description = "로그인된 사용자의 아이디(pk)로 작성한 후기를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/reviews/send-reviews")
+    public ResponseEntity<DataResponse<List<ReviewInfoResponse>>> getSendReviews(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<ReviewInfoResponse> response = reviewService.getSendReviews(principle.getMemberId());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @Operation(
+            summary = "최근에 받은 후기 조회",
+            description = "사용자의 아이디(PK)를 입력받아 최근에 끝난 2개 모임에서 받은 후기를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/reviews/recent-receive-reviews/{memberId}")
+    public ResponseEntity<DataResponse<RecentReviewInfoResponse>> getRecentReviews(@PathVariable Long memberId) {
+        RecentReviewInfoResponse response = reviewService.getRecentTwoMeetReview(memberId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

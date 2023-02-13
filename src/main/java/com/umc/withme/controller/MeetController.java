@@ -1,11 +1,10 @@
 package com.umc.withme.controller;
 
+import com.umc.withme.domain.constant.MeetCategory;
+import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.meet.MeetCreateResponse;
-import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.meet.MeetFormRequest;
-import com.umc.withme.dto.meet.MeetInfoGetResponse;
+import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,26 +18,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Tag(name = "MeetController", description = "모임 API Controller 입니다.")
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api")
 public class MeetController {
 
     private final MeetService meetService;
 
-
-    /**
-     * 모임글 생성 API
-     *
-     * @param meetFormRequest 생성하려는 모임 모집글 데이터
-     * @param principle
-     * @return 생성된 모임글 id를 data 에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 생성",
             description = "<p>request body 에 입력된 정보를 바탕으로 모임 모집글을 1개 생성합니다.</p>",
@@ -59,13 +54,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 단건 조회 API
-     * 모임 id로 모임을 1건 조회한다.
-     *
-     * @param meetId 조회하려는 모임의 id
-     * @return 조회한 모임의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 1개 조회 API",
             description = "<p><code>meetId</code>에 해당하는 모임의 정보를 response body 에 넣어 전달합니다.</p>",
@@ -87,13 +75,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임 모집글 수정 API
-     *
-     * @param meetId          수정하려는 모집글의 id
-     * @param meetFormRequest 수정하려는 정보가 담긴 요청 DTO
-     * @return 수정된 모임 모집글의 정보를 담은 MeetInfoGetResponse를 data에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 수정 API",
             description = "<p><code>meetId</code>에 해당하는 모임을 <code>request body</code>에 담긴 정보로 수정하고" +
@@ -119,13 +100,6 @@ public class MeetController {
         );
     }
 
-    /**
-     * 모임글 단건 삭제 API
-     * 모임의 id를 입력받아 해당하는 모임이 있으면 삭제한다.
-     *
-     * @param meetId 삭제하려는 모임의 id
-     * @return 삭제한 모임의 id를 데이터에 담아서 반환한다.
-     */
     @Operation(
             summary = "모임 모집글 1개 삭제 API",
             description = "<p><code>meetId</code>에 해당하는 모임을 삭제하고 삭제한 <code>meetId</code>를 response body에 넣어 전달합니다.</p>",
@@ -144,6 +118,51 @@ public class MeetController {
 
         return new ResponseEntity<>(
                 new BaseResponse(true),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(
+            summary = "모임 모집글 리스트 조회 API",
+            description = "<p>조건에 맞는 모임 모집글 목록들을 반환합니다." +
+                    "<p><code>category</code>: null일 때 모든 카테고리에 대한 모집글이 조회됩니다.</p>" +
+                    "<p><code>isLocal</code>: 내동네 모집글 조회일 때 true 아니면 false로 하면 됩니다.</p>" +
+                    "<p><code>title</code>: 제목 검색 조건이 없을 때는 null로 하면 됩니다.</p></p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/meets")
+    public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
+            @RequestParam(value = "category", required = false) MeetCategory category,
+            @RequestParam(value = "isLocal", required = false) Boolean isLocal,
+            @RequestParam(value = "title", required = false) @Size(min = 2) String title,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<MeetDto> meetDtos = meetService.findAllMeets(category, isLocal, title, principle.getMemberId());
+
+        MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(
+            summary = "모임 기록 리스트 조회 API",
+            description = "<p><code>meetStatus</code> 조건에 맞는 모임 기록 목록들을 반환합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/meets/record")
+    public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
+            @RequestParam(value = "meetStatus") MeetStatus meetStatus,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetRecordSearch.of(meetStatus, principle.getMemberId()));
+
+        MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
                 HttpStatus.OK
         );
     }

@@ -19,6 +19,11 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     @Setter
+    @JoinColumn(name = "profile_image_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    private ImageFile profileImage;
+
+    @Setter
     @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
@@ -56,7 +61,8 @@ public class Member extends BaseTimeEntity {
 
     // Builder & Constructor
     @Builder
-    private Member(String email, String password, Integer ageRange, Gender gender) {
+    private Member(ImageFile profileImage, String email, String password, Integer ageRange, Gender gender) {
+        this.profileImage = profileImage;
         this.email = email;
         this.password = password;
         this.nickname = email;
