@@ -231,14 +231,11 @@ public class MeetService {
         Meet meet = meetRepository.findById(meetId)
                 .orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
+        // 사용자가 모임의 리더가 아닐 경우 예외 발생
+        if (memberId != meet.getCreatedBy()) throw new MeetCompleteForbiddenException(meetId, memberId);
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberIdNotFoundException(memberId));
-
-        Member meetLeader = memberRepository.findById(meet.getCreatedBy())
-                .orElseThrow(() -> new MemberIdNotFoundException(meet.getCreatedBy()));
-
-        // 사용자가 모임의 리더가 아닐 경우 예외 발생
-        if (member != meetLeader) throw new MeetCompleteForbiddenException(meetId, memberId);
 
         // 모임의 상태를 완료 상태로 변경
         meet.setMeetStatus(MeetStatus.COMPLETE);
