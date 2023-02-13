@@ -42,7 +42,7 @@ public class S3FileService {
         return imageFileRepository.saveAndFlush(
                 ImageFile.builder()
                         .fileName(DEFAULT_PROFILE_IMAGE_NAME)
-                        .storedFileName(DEFAULT_PROFILE_IMAGE_NAME)
+                        .storedFileName(DIR_PATH + DEFAULT_PROFILE_IMAGE_NAME)
                         .url(defaultImageUrl)
                         .build()
         );
