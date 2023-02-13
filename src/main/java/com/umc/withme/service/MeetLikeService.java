@@ -4,6 +4,7 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.MeetLike;
 import com.umc.withme.domain.Member;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.repository.MeetLikeRepository;
 import com.umc.withme.repository.MeetRepository;
@@ -34,7 +35,9 @@ public class MeetLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        if(!meetLikeRepository.existByMember_IdAndMeet_Id(memberId, meetId)){ //해당 찜이 이미 존재하는지 확인
+        meetLikeRepository.findByMember_IdAndMeet_Id(memberId, meetId).orElseThrow(()-> new MeetLikeConflictException(memberId, meetId));
+
+        if(!meetLikeRepository.existsByMember_IdAndMeet_Id(memberId, meetId)){
             MeetLike meetLike = MeetLike.builder()
                     .member(member)
                     .meet(meet)

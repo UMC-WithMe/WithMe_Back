@@ -37,8 +37,8 @@ public class MeetLike extends BaseTimeEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof com.umc.withme.domain.MeetLike)) return false;
-        com.umc.withme.domain.MeetLike that = (com.umc.withme.domain.MeetLike) o;
+        if (!(o instanceof MeetLike)) return false;
+        MeetLike that = (MeetLike) o;
         return this.getId() != null && this.getId().equals(that.getId());
     }
 

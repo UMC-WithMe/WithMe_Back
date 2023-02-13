@@ -6,6 +6,7 @@ import com.umc.withme.exception.common.CustomException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
@@ -56,7 +57,10 @@ public enum ExceptionType {
     MEET_UPDATE_FORBIDDEN_EXCEPTION(2402, "해당 모임을 수정할 권한이 없습니다.", MeetUpdateForbiddenException.class),
 
     // Address
-    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class);
+    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
+
+    //MeetLike
+    MEET_LIKE_CONFLICT_EXCEPTION(4400, "이미 찜한 모임입니다.", MeetLikeConflictException.class);
 
     private final int errorCode;
     private final String errorMessage;
