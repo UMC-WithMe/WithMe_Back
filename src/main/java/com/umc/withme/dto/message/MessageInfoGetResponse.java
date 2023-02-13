@@ -16,6 +16,7 @@ public class MessageInfoGetResponse {
     @Schema(description = "쪽지를 작성한 사용자 정보")
     private MemberInfoGetResponse sender;
 
+    // TODO : 추후 MemberShortInfoResponse 로 변경 필요
     @Schema(description = "쪽지를 받은 사용자 정보")
     private MemberInfoGetResponse receiver;
 

@@ -2,6 +2,7 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.dto.message.MessageDto;
@@ -28,16 +29,6 @@ import java.util.List;
 public class MessageController {
 
     private final MessageService messageService;
-
-    /**
-     * 쪽지 생성 API
-     *
-     * @param messageCreateRequest 쪽지 생성 요청 데이터 (쪽지 내용)
-     * @param principle
-     * @param receiverId           쪽지 받는 회원 id(pk)
-     * @param meetId               관련 모집글 id(pk)
-     * @return 쪽지생성 성공 여부
-     */
 
     @Operation(summary = "쪽지 생성",
             description = "<p> 회원이 쪽지 1개를 생성합니다:: <code>meetId</code> - 관련 모집글, <code>receiverId</code> - 받는 회원, " +
@@ -68,7 +59,12 @@ public class MessageController {
     ) {
         List<MessageDto> messageDtos = messageService.findMessages(chatroomId, principle.getMemberId());
 
-        MessageInfoListGetResponse response = MessageInfoListGetResponse.from(messageDtos);
+        MeetDto meetDto = messageService.findMeetByChatroomId(chatroomId);
+
+        MessageInfoListGetResponse response = MessageInfoListGetResponse.from(
+                meetDto.getMeetId(),
+                meetDto.getTitle(),
+                messageDtos);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),

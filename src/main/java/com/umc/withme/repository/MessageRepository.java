@@ -4,11 +4,16 @@ import com.umc.withme.domain.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findAllByChatroom_IdOrderByCreatedAt(Long chatroomId);
 
-    Long countBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
+//    Long countBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
+
+    Boolean existsBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
 
     Message findTopBySender_IdAndReceiver_IdAndMeet_Id(Long receiverId, Long senderId, Long meetId);
+
+    Optional<Message> findFirstByChatroom_Id(Long chatroomId);
 }

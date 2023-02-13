@@ -4,13 +4,18 @@ import com.umc.withme.domain.Chatroom;
 import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.Message;
+import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageDto;
 import com.umc.withme.exception.chatroom.ChatroomIdNotFoundException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
+import com.umc.withme.exception.message.MessageByChatroomIdNotFoundException;
 import com.umc.withme.exception.message.MessageGetForbiddenException;
-import com.umc.withme.repository.*;
+import com.umc.withme.repository.ChatroomRepository;
+import com.umc.withme.repository.MeetRepository;
+import com.umc.withme.repository.MemberRepository;
+import com.umc.withme.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +30,6 @@ import java.util.stream.Collectors;
 public class MessageService {
 
     private final MeetRepository meetRepository;
-    private final MeetAddressRepository meetAddressRepository;
-    private final AddressRepository addressRepository;
     private final MessageRepository messageRepository;
     private final MemberRepository memberRepository;
     private final ChatroomRepository chatroomRepository;
@@ -48,17 +51,17 @@ public class MessageService {
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
         // 쪽지의 chatroom 설정
-        Long count1 = messageRepository.countBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId);
-        Long count2 = messageRepository.countBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId);
+        Boolean exists1 = messageRepository.existsBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId);
+        Boolean exists2 = messageRepository.existsBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId);
         Chatroom chatroom;
-        if (count1.equals(0L) && count2.equals(0L)) { // 새로 채팅방을 생성할 경우
+        if (!exists1 && !exists2) { // 새로 채팅방을 생성할 경우
             Chatroom newChatroom = new Chatroom();
             chatroom = chatroomRepository.save(newChatroom);
-        } else if (count1.equals(0L)) {
-            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId)
+        } else if (exists1) {
+            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId)
                     .getChatroom();
         } else {
-            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId)
+            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId)
                     .getChatroom();
         }
 
@@ -93,7 +96,7 @@ public class MessageService {
             throw new ChatroomIdNotFoundException(chatroomId);
         }
         // 사용자가 채팅방을 볼 권한이 없을 경우 예외가 발생한다.
-        else if (member != messages.get(0).getSender() && member != messages.get(0).getReceiver()) {
+        if (member != messages.get(0).getSender() && member != messages.get(0).getReceiver()) {
             throw new MessageGetForbiddenException(chatroomId, memberId);
         }
 
@@ -101,5 +104,17 @@ public class MessageService {
         return messages.stream()
                 .map(MessageDto::from)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    /**
+     * 채팅방에 연결된 모임을 조회해 DTO로 반환한다.
+     *
+     * @param chatroomId 조회하려는 채팅방 id
+     * @return 조회한 모임 DTO
+     */
+    public MeetDto findMeetByChatroomId(Long chatroomId) {
+        Message message = messageRepository.findFirstByChatroom_Id(chatroomId)
+                .orElseThrow(() -> new MessageByChatroomIdNotFoundException(chatroomId));
+        return MeetDto.from(message.getMeet());
     }
 }
