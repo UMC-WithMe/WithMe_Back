@@ -13,10 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -114,6 +116,27 @@ public class MemberController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
+                .body(new BaseResponse(true));
+    }
+
+    @Operation(
+            summary = "회원 프로필 이미지 설정",
+            description = "<p>로그인 중인 회원의 프로필 이미지를 교체합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @PatchMapping(
+            value = "/profile-image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<BaseResponse> updateMemberProfileImage(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
+            @Parameter(description = "교체할 이미지 파일") @RequestPart MultipartFile profileImageFile
+    ) {
+        memberService.updateMemberProfileImage(principle.getUsername(), profileImageFile);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .body(new BaseResponse(true));
     }
 }

@@ -1,5 +1,6 @@
 package com.umc.withme.controller;
 
+import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
@@ -32,7 +33,7 @@ public class MessageController {
                     "<code>messageCreateRequest</code>의 <code>content</code></p> - 쪽지 내용",
             security = @SecurityRequirement(name = "access-token"))
     @PostMapping("/messages")
-    public ResponseEntity<DataResponse<MessageCreateResponse>> createMessage(
+    public ResponseEntity<BaseResponse> createMessage(
             @Valid @RequestBody MessageCreateRequest messageCreateRequest,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,
             @RequestParam Long receiverId,
@@ -41,7 +42,7 @@ public class MessageController {
         Long messageId = messageService.createMessage(principle.getMemberId(), receiverId, meetId, messageCreateRequest);
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new DataResponse<>(messageCreateResponse));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(true));
     }
 
     @Operation(summary = "쪽지함 조회",
