@@ -35,9 +35,9 @@ public class MeetLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        meetLikeRepository.findByMember_IdAndMeet_Id(memberId, meetId).orElseThrow(()-> new MeetLikeConflictException(memberId, meetId));
-
-        if(!meetLikeRepository.existsByMember_IdAndMeet_Id(memberId, meetId)){
+        if(meetLikeRepository.existsByMember_IdAndMeet_Id(memberId, meetId)) {
+            throw new MeetLikeConflictException(memberId, meetId);
+        }else{
             MeetLike meetLike = MeetLike.builder()
                     .member(member)
                     .meet(meet)
