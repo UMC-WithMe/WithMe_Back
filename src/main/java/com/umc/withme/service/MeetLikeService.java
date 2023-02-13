@@ -40,7 +40,7 @@ public class MeetLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        if(!meetLikeRepository.existByMember_IdAndMeet_Id(memberId, meetId)){ //해당 찜이 이미 존재하는지 확인
+        if(!meetLikeRepository.existsByMember_IdAndMeet_Id(memberId, meetId)){ //해당 찜이 이미 존재하는지 확인
             MeetLike meetLike = MeetLike.builder()
                     .member(member)
                     .meet(meet)
@@ -75,10 +75,7 @@ public class MeetLikeService {
         List<MeetLike> meetLikeList = meetLikeRepository.findAllByMember_Id(memberId);
         for (MeetLike meetLike: meetLikeList) {
             Meet meet = meetLike.getMeet();
-
-            Long meetLikeCount = meetLikeRepository.countByMeet_Id(meet.getId());
-
-            meetShortInfoResponseList.add(MeetShortInfoResponse.of(MeetDto.from(meet), MemberDto.from(member), meetLikeCount));
+            meetShortInfoResponseList.add(MeetShortInfoResponse.of(MeetDto.from(meet), MemberDto.from(member), meetLikeList.size()));
         }
 
         return meetShortInfoResponseList;

@@ -36,9 +36,9 @@ public class MeetShortInfoResponse {
     private LocalDateTime createdAt;
 
     @Schema(description = "찜 수")
-    private Long meetLikeCount;
+    private Integer meetLikeCount;
 
-    public static MeetShortInfoResponse of(MeetDto meetDto, MemberDto memberDto, Long meetLikeCount) {
+    public static MeetShortInfoResponse of(MeetDto meetDto, MemberDto memberDto, Integer meetLikeCount) {
 
         return new MeetShortInfoResponse(
                 meetDto.getMeetId(),
