@@ -14,6 +14,9 @@ public class MemberInfoGetResponse {
     @Schema(example = "park", description = "회원의 닉네임")
     private String nickname;
 
+    @Schema(example = "https://withme-s3-bucket.s3.ap-northeast-2.amazonaws.com/member/default-profile-image.jpeg", description = "프로필 이미지 URL")
+    private String profileImage;
+
     @Schema(example = "010-1234-5678", description = "회원의 핸드폰 번호")
     private String phoneNumber;
 
@@ -29,6 +32,7 @@ public class MemberInfoGetResponse {
     public static MemberInfoGetResponse from(MemberDto dto) {
         return new MemberInfoGetResponse(
                 dto.getNickname(),
+                dto.getProfileImage().getUrl(),
                 dto.getPhoneNumber(),
                 dto.getAgeRange(),
                 dto.getGender(),
