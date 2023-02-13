@@ -170,4 +170,24 @@ public class MeetController {
                 HttpStatus.OK
         );
     }
+
+    @Operation(
+            summary = "모임 해제 API",
+            description = "<p><code>meetId</code>에 해당하는 모임을 해제 상태로 변경합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @PatchMapping("/meets/{meetId}")
+    public ResponseEntity<DataResponse<MeetInfoGetResponse>> setMeetComplete(
+            @PathVariable Long meetId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        MeetDto meetDto = meetService.setMeetComplete(meetId, principle.getMemberId());
+
+        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
 }

@@ -5,10 +5,7 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
 import com.umc.withme.dto.meet.MeetDto;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -32,6 +29,7 @@ public class Meet extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RecruitStatus recruitStatus;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private MeetStatus meetStatus;
 
