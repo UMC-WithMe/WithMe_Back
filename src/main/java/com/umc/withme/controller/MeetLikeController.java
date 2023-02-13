@@ -39,8 +39,8 @@ public class MeetLikeController {
     }
 
     @Operation(summary = "찜 삭제",
-    description = "<p> 회원이 선택한 모집글들을 찜 목록에서 삭제합니다:: <code>meetLikeDeleteRequest</code>의 <code>meetLikeIdList</code> - 삭제할 찜id(pk) 리스트 ",
-    security = @SecurityRequirement(name = "access-token"))
+            description = "<p> 회원이 선택한 모집글들을 찜 목록에서 삭제합니다:: <code>meetLikeDeleteRequest</code>의 <code>meetLikeIdList</code> - 삭제할 찜id(pk) 리스트 ",
+            security = @SecurityRequirement(name = "access-token"))
     @DeleteMapping("/meet-likes")
     public ResponseEntity<BaseResponse> deleteMeetLike(
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle,

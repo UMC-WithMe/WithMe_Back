@@ -29,7 +29,6 @@ public class MeetLikeService {
      * @param memberId  회원 id(pk)
      * @param meetId    찜하려는 모집글 id(pk)
      */
-
     @Transactional
     public void createMeetLike(Long memberId, Long meetId) {
 
