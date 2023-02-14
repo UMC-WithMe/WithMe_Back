@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,7 +30,6 @@ public class MeetLikeService {
      * @param memberId  회원 id(pk)
      * @param meetId    찜하려는 모집글 id(pk)
      */
-
     @Transactional
     public void createMeetLike(Long memberId, Long meetId) {
 
@@ -44,6 +45,18 @@ public class MeetLikeService {
                     .build();
 
              meetLikeRepository.save(meetLike);
+        }
+    }
+
+    /**
+     * 전달받은 찜목록 DB에서 삭제
+     *
+     * @param meetLikeIdList
+     */
+    public void deleteMeetLike(List<Long> meetLikeIdList){
+
+        for (Long meetLikeId: meetLikeIdList) {
+            meetLikeRepository.deleteById(meetLikeId);
         }
     }
 }

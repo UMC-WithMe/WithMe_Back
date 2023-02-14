@@ -42,7 +42,7 @@ public class MeetLike extends BaseTimeEntity {
         return this.getId() != null && this.getId().equals(that.getId());
     }
 
-        @Override
-        public int hashCode() { return Objects.hash(this.getId()); }
+    @Override
+    public int hashCode() { return Objects.hash(this.getId()); }
 
 }
