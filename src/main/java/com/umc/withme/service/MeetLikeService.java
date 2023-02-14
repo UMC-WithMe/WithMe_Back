@@ -35,7 +35,7 @@ public class MeetLikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        if(!meetLikeRepository.existByMember_IdAndMeet_Id(memberId, meetId)){ //해당 찜이 이미 존재하는지 확인
+        if(!meetLikeRepository.existsByMember_IdAndMeet_Id(memberId, meetId)){ //해당 찜이 이미 존재하는지 확인
             MeetLike meetLike = MeetLike.builder()
                     .member(member)
                     .meet(meet)
