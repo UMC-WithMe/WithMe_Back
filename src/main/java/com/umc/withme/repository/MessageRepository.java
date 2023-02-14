@@ -45,4 +45,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Boolean existsBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
 
     Optional<Message> findFirstByChatroom_Id(Long chatroomId);
+
+    void deleteAllByChatroom_Id(Long chatroomId);
 }
