@@ -4,6 +4,10 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.meet.MeetCreateResponse;
+import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetFormRequest;
+import com.umc.withme.dto.meet.MeetInfoResponse;
 import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
@@ -25,7 +29,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-@Tag(name = "MeetController", description = "모임 API Controller 입니다.")
+@Tag(name = "모임/모집 글", description = "모임과 모집 글 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @Validated
@@ -64,10 +68,10 @@ public class MeetController {
             @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @GetMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
+    public ResponseEntity<DataResponse<MeetInfoResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -86,13 +90,13 @@ public class MeetController {
             @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @PutMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeet(
+    public ResponseEntity<DataResponse<MeetInfoResponse>> updateMeet(
             @PathVariable Long meetId,
             @Valid @RequestBody MeetFormRequest meetFormRequest,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
         MeetDto meetDto = meetService.updateById(meetId, principle.getMemberId(), meetFormRequest.toDto());
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -173,13 +177,13 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @PatchMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> setMeetComplete(
+    public ResponseEntity<DataResponse<MeetInfoResponse>> setMeetComplete(
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         MeetDto meetDto = meetService.setMeetComplete(meetId, principle.getMemberId());
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
