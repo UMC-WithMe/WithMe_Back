@@ -4,12 +4,12 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.meet.response.MeetCreateResponse;
 import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.MeetRecordSearch;
 import com.umc.withme.dto.meet.request.MeetFormRequest;
+import com.umc.withme.dto.meet.response.MeetCreateResponse;
 import com.umc.withme.dto.meet.response.MeetInfoListGetResponse;
 import com.umc.withme.dto.meet.response.MeetInfoResponse;
-import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,6 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Tag(name = "모임/모집 글", description = "모임과 모집 글 관련 API입니다.")
-@Tag(name = "MeetController", description = "모임 API")
 @RestController
 @RequiredArgsConstructor
 @Validated
