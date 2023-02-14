@@ -9,6 +9,7 @@ import com.umc.withme.exception.meet.MeetCompleteForbiddenException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
@@ -67,12 +68,15 @@ public enum ExceptionType {
     // File
     MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
 
+    //MeetLike
+    MEET_LIKE_CONFLICT_EXCEPTION(5400, "이미 찜한 모임입니다.", MeetLikeConflictException.class),
+
     // Message
-    MESSAGE_GET_FORBIDDEN_EXCEPTION(5400, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
-    MESSAGE_CHATROOM_ID_NOT_FOUND_EXCEPTION(5401, "해당 채팅방 아이디(FK)를 가지는 쪽지가 없습니다.", MessageByChatroomIdNotFoundException.class),
+    MESSAGE_GET_FORBIDDEN_EXCEPTION(6400, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
+    MESSAGE_CHATROOM_ID_NOT_FOUND_EXCEPTION(6401, "해당 채팅방 아이디(FK)를 가지는 쪽지가 없습니다.", MessageByChatroomIdNotFoundException.class),
 
     // Chatroom
-    CHATROOM_ID_NOT_FOUND_EXCEPTION(6400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);
+    CHATROOM_ID_NOT_FOUND_EXCEPTION(7400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);
 
     private final int errorCode;
     private final String errorMessage;

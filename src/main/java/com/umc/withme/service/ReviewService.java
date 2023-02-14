@@ -1,6 +1,12 @@
 package com.umc.withme.service;
 
-import com.umc.withme.domain.*;
+import com.umc.withme.domain.Meet;
+import com.umc.withme.domain.Member;
+import com.umc.withme.domain.Point;
+import com.umc.withme.domain.Review;
+import com.umc.withme.dto.review.ReviewCreateRequest;
+import com.umc.withme.dto.review.ReviewDto;
+import com.umc.withme.dto.review.ReviewInfoResponse;
 import com.umc.withme.dto.review.*;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
@@ -36,9 +42,9 @@ public class ReviewService {
     @Transactional
     public Long create(Long senderId, Long receiverId, Long meetId, ReviewCreateRequest requestDto) {
 
-        Member sender = memberRepository.findById(senderId).orElseThrow(MemberIdNotFoundException::new);
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(MemberIdNotFoundException::new);
-        Meet meet = meetRepository.findById(meetId).orElseThrow(MeetIdNotFoundException::new);
+        Member sender = memberRepository.findById(senderId).orElseThrow(()->new MemberIdNotFoundException(senderId));
+        Member receiver = memberRepository.findById(receiverId).orElseThrow(()->new MemberIdNotFoundException(receiverId));
+        Meet meet = meetRepository.findById(meetId).orElseThrow(()-> new MeetIdNotFoundException(meetId));
 
         Point point = pointRepository.save(requestDto.getPoint().toDto().toEntity());
 
@@ -50,9 +56,7 @@ public class ReviewService {
                 .content(requestDto.getContent())
                 .build();
 
-        Review saveReview = reviewRepository.save(review);
-
-        return saveReview.getId();
+        return reviewRepository.save(review).getId();
     }
 
     /**
@@ -90,7 +94,7 @@ public class ReviewService {
      */
     public RecentReviewInfoResponse getRecentTwoMeetReview(Long memberId) {
 
-        memberRepository.findById(memberId).orElseThrow(MemberIdNotFoundException::new);
+        memberRepository.findById(memberId).orElseThrow(()->new MemberIdNotFoundException(memberId));
 
         List<List<ReviewDto>> reviewList = new ArrayList<>(); // 모임에서 받은 후기 리스트
         List<Meet> recentMeet = meetMemberRepository.findByMeetOrderByEndDate(memberId, PageRequest.of(0,2)); // 최근 끝난 모임 최대 2개 조회

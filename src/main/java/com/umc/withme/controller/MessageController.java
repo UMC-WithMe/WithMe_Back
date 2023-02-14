@@ -5,6 +5,7 @@ import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
+import com.umc.withme.dto.message.MessageInfoResponse;
 import com.umc.withme.dto.message.MessageDto;
 import com.umc.withme.dto.message.MessageInfoListGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
@@ -45,6 +46,18 @@ public class MessageController {
         MessageCreateResponse messageCreateResponse = MessageCreateResponse.of(messageId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(true));
+    }
+
+    @Operation(summary = "쪽지함 조회",
+            description = "<p> 회원이 자신의 쪽지함을 조회합니다</p>",
+            security = @SecurityRequirement(name = "access-token"))
+    @GetMapping("/messages")
+    public ResponseEntity<DataResponse<List<MessageInfoResponse>>> getMessageList(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
+
+        List<MessageInfoResponse> messageInfoResponseList = messageService.getMessageList(principle.getMemberId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(new DataResponse<>(messageInfoResponseList));
     }
 
     @Operation(
