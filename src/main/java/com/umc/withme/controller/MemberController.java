@@ -58,13 +58,25 @@ public class MemberController {
             description = "<p>해당 <code>nickname</code>을 가지는 사용자의 정보를 조회한다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
-    })
     @GetMapping
     public ResponseEntity<DataResponse<MemberAllInfoResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
+        MemberAllInfoResponse response = MemberAllInfoResponse.from(memberDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new DataResponse<>(response));
+    }
+
+    @Operation(
+            summary = "로그인한 회원 정보 조회",
+            description = "로그인한 사용자의 정보를 조회한다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/login-member")
+    public ResponseEntity<DataResponse<MemberAllInfoResponse>> getLonginMemberInfo(
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        MemberDto memberDto = memberService.getLonginMemberInfo(principle.getMemberId());
         MemberAllInfoResponse response = MemberAllInfoResponse.from(memberDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
