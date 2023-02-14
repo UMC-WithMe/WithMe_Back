@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class MeetInfoListGetResponse {
 
     @Schema(description = "조회한 모임 정보 리스트")
-    private List<MeetInfoGetResponse> meetInfoGetResponses;
+    private List<MeetInfoResponse> meetInfoRespons;
 
     public static MeetInfoListGetResponse from(List<MeetDto> meetDtos) {
         return new MeetInfoListGetResponse(
                 meetDtos.stream()
-                        .map(MeetInfoGetResponse::from)
+                        .map(MeetInfoResponse::from)
                         .collect(Collectors.toUnmodifiableList()));
     }
 }
