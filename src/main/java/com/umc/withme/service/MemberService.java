@@ -6,6 +6,7 @@ import com.umc.withme.domain.Member;
 import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.member.EmailNotFoundException;
+import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import com.umc.withme.repository.AddressRepository;
@@ -47,7 +48,7 @@ public class MemberService {
     }
 
     /**
-     * 특정 닉네임을 가진 회원을 조회한 후 반환한다.
+     * 특정 닉네임을 가진 회원의 정보를 조회한 후 반환한다.
      *
      * @param nickname
      * @return {@link MemberDto}에 회원 정보를 담아 반환
@@ -57,6 +58,19 @@ public class MemberService {
         return memberRepository.findByNickname(nickname)
                 .map(MemberDto::from)
                 .orElseThrow(NicknameNotFoundException::new);
+    }
+
+    /**
+     * 로그인한 회원의 정보를 조회한 후 반환한다.
+     *
+     * @param loginMemberId 로그인한 사용자의 아이디(pk)
+     * @return {@link MemberDto}에 회원 정보를 담아 반환
+     * @throws NicknameNotFoundException 닉네임이 존재하지 않을 경우
+     */
+    public MemberDto getLonginMemberInfo(Long loginMemberId) {
+        return memberRepository.findById(loginMemberId)
+                .map(MemberDto::from)
+                .orElseThrow(() -> new MemberIdNotFoundException(loginMemberId));
     }
 
     /**
