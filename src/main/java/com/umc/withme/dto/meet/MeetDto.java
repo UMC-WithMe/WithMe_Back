@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,13 +43,26 @@ public class MeetDto {
     private Long likeCount; // 이 모임의 좋아요 수
     private Long membersCount;   // 이 모임에 모집된 사람의 수
 
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+
+    // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
+    public static MeetDto of(Long meetId, MemberDto leader, ImageFileDto meetImage, List<AddressDto> addresses, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, Integer minPeople, Integer maxPeople, LocalDate startDate, LocalDate endDate, Long likeCount, Long membersCount, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        return new MeetDto(meetId, leader, meetImage, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate, likeCount, membersCount, createdAt, modifiedAt);
+    }
+
+    // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
+    public static MeetDto of(List<AddressDto> addresses, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople) {
+        return MeetDto.of(null, null, null, addresses, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, 0L, 1L, null, null);
+    }
+
     // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
     public static MeetDto from(
             Meet meet,
             List<Address> addresses, // meet에 등록된 모든 Address Entity List
             Member leader           // meet의 리더 멤버
     ) {
-        return new MeetDto(
+        return MeetDto.of(
                 meet.getId(),
                 MemberDto.from(leader),
                 ImageFileDto.from(meet.getMeetImage()),
@@ -66,16 +80,20 @@ public class MeetDto {
                 meet.getStartDate(),
                 meet.getEndDate(),
                 0L,
-                1L);
+                1L,
+                meet.getCreatedAt(),
+                meet.getModifiedAt()
+        );
     }
 
     // 리뷰 조회 API에서 사용: leader와 address가 필요없어 null로 넣어둠
     // TODO: leader, address를 null로 처리하는 것이 괜찮을지, 다른 방법은 없는지에 대한 고민 필요
+    // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
     public static MeetDto from(Meet meet) {
-        return new MeetDto(
+        return MeetDto.of(
                 meet.getId(),
                 null,
-                null,
+                ImageFileDto.from(meet.getMeetImage()),
                 null,
                 meet.getCategory(),
                 meet.getRecruitStatus(),
@@ -88,17 +106,10 @@ public class MeetDto {
                 meet.getStartDate(),
                 meet.getEndDate(),
                 0L,
-                1L);
-    }
-
-    // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
-    public static MeetDto of(Long meetId, MemberDto leader, ImageFileDto meetImage, MeetCategory meetCategory, RecruitStatus recruitStatus, MeetStatus meetStatus, String title, String link, String content, int minPeople, int maxPeople, LocalDate startDate, LocalDate endDate, List<AddressDto> addresses) {
-        return new MeetDto(meetId, leader, meetImage, addresses, meetCategory, recruitStatus, meetStatus, title, link, content, minPeople, maxPeople, startDate, endDate, 0L, 1L);
-    }
-
-    // TODO: 추후 좋아요 수 및 모임 인원 수 설정 필요
-    public static MeetDto of(MemberDto leader, ImageFileDto meetImage, MeetCategory meetCategory, String title, String link, String content, int minPeople, int maxPeople, List<AddressDto> addresses) {
-        return MeetDto.of(null, leader, meetImage, meetCategory, null, null, title, link, content, minPeople, maxPeople, null, null, addresses);
+                1L,
+                meet.getCreatedAt(),
+                meet.getModifiedAt()
+        );
     }
 
     public Meet toEntity(ImageFile meetImage) {

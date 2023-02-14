@@ -1,4 +1,4 @@
-package com.umc.withme.dto.member;
+package com.umc.withme.dto.member.request;
 
 import lombok.AccessLevel;
 import lombok.Getter;

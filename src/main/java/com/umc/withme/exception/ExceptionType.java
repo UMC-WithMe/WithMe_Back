@@ -2,16 +2,20 @@ package com.umc.withme.exception;
 
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
+import com.umc.withme.exception.chatroom.ChatroomIdNotFoundException;
 import com.umc.withme.exception.common.CustomException;
 import com.umc.withme.exception.file.MultipartFileNotReadableException;
 import com.umc.withme.exception.meet.MeetCompleteForbiddenException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
+import com.umc.withme.exception.message.MessageByChatroomIdNotFoundException;
+import com.umc.withme.exception.message.MessageGetForbiddenException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -58,11 +62,21 @@ public enum ExceptionType {
     MEET_UPDATE_FORBIDDEN_EXCEPTION(2402, "해당 모임을 수정할 권한이 없습니다.", MeetUpdateForbiddenException.class),
     MEET_COMPLETE_FORBIDDEN_EXCEPTION(2403, "해당 모임을 해제할 권한이 없습니다.", MeetCompleteForbiddenException.class),
 
-    // Address
+    // Address,
     ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
 
     // File
-    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class);
+    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
+
+    //MeetLike
+    MEET_LIKE_CONFLICT_EXCEPTION(5400, "이미 찜한 모임입니다.", MeetLikeConflictException.class),
+
+    // Message
+    MESSAGE_GET_FORBIDDEN_EXCEPTION(6400, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
+    MESSAGE_CHATROOM_ID_NOT_FOUND_EXCEPTION(6401, "해당 채팅방 아이디(FK)를 가지는 쪽지가 없습니다.", MessageByChatroomIdNotFoundException.class),
+
+    // Chatroom
+    CHATROOM_ID_NOT_FOUND_EXCEPTION(7400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);
 
     private final int errorCode;
     private final String errorMessage;

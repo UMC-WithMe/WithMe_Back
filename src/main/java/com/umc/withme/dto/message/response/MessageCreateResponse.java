@@ -1,4 +1,4 @@
-package com.umc.withme.dto.message;
+package com.umc.withme.dto.message.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;

@@ -3,6 +3,11 @@ package com.umc.withme.controller;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.member.*;
+import com.umc.withme.dto.member.request.MemberAddressUpdateRequest;
+import com.umc.withme.dto.member.request.MemberNicknameUpdateRequest;
+import com.umc.withme.dto.member.request.MemberPhoneNumberUpdateRequest;
+import com.umc.withme.dto.member.response.MemberAllInfoResponse;
+import com.umc.withme.dto.member.response.NicknameDuplicationCheckResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,10 +61,9 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "1400: <code>nickname</code>을 가지는 회원이 없는 경우", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<DataResponse<MemberInfoGetResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
+    public ResponseEntity<DataResponse<MemberAllInfoResponse>> getMemberInfo(@RequestParam @NotBlank String nickname) {
         MemberDto memberDto = memberService.findMemberByNickname(nickname);
-        MemberInfoGetResponse response = MemberInfoGetResponse.from(memberDto);
-
+        MemberAllInfoResponse response = MemberAllInfoResponse.from(memberDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new DataResponse<>(response));

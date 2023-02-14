@@ -4,6 +4,11 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.meet.response.MeetCreateResponse;
+import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.meet.request.MeetFormRequest;
+import com.umc.withme.dto.meet.response.MeetInfoListGetResponse;
+import com.umc.withme.dto.meet.response.MeetInfoResponse;
 import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
@@ -27,6 +32,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+@Tag(name = "모임/모집 글", description = "모임과 모집 글 관련 API입니다.")
 @Tag(name = "MeetController", description = "모임 API")
 @RestController
 @RequiredArgsConstructor
@@ -72,10 +78,10 @@ public class MeetController {
             @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
     })
     @GetMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> getMeet(@PathVariable Long meetId) {
+    public ResponseEntity<DataResponse<MeetInfoResponse>> getMeet(@PathVariable Long meetId) {
         MeetDto meetDto = meetService.findById(meetId);
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -144,7 +150,7 @@ public class MeetController {
             value = "/meets/{meetId}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}
     )
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> updateMeet(
+    public ResponseEntity<DataResponse<MeetInfoResponse>> updateMeet(
             @PathVariable Long meetId,
             @Valid @RequestPart MeetFormRequest meetFormRequest,
             @Parameter(description = "대표 이미지로 설정하고자 하는 이미지 파일", example = "모임 대표 이미지") @RequestPart(required = false) MultipartFile meetImage,
@@ -152,7 +158,7 @@ public class MeetController {
     ) {
         MeetDto meetDto = meetService.updateMeetById(meetId, principle.getMemberId(), meetFormRequest.toDto(), meetImage);
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -166,13 +172,13 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @PatchMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> setMeetComplete(
+    public ResponseEntity<DataResponse<MeetInfoResponse>> setMeetComplete(
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         MeetDto meetDto = meetService.setMeetComplete(meetId, principle.getMemberId());
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
