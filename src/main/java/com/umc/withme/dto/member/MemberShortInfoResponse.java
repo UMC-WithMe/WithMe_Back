@@ -12,6 +12,8 @@ public class MemberShortInfoResponse {
 
     @Schema(description = "회원 id(pk)")
     private Long memberId;
+    @Schema(example = "https://withme-s3-bucket.s3.ap-northeast-2.amazonaws.com/member/default-profile-image.jpeg", description = "회원 프로필 이미지 URL")
+    private String profileImage;
     @Schema(description = "회원 닉네임")
     private String nickname;
     @Schema(description = "회원 신뢰도 지수")
@@ -23,6 +25,7 @@ public class MemberShortInfoResponse {
         double trustPoint = memberDto.getTotalPoint().calculateTrustPoint(memberDto.getNumOfReceivedReviews());
         return new MemberShortInfoResponse(
                 memberDto.getId(),
+                memberDto.getProfileImage().getUrl(),
                 memberDto.getNickname(),
                 trustPoint,
                 memberDto.getAddress() != null ? memberDto.getAddress().getSgg() : null
