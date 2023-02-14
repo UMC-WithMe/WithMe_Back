@@ -6,14 +6,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     Long countBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
 
     Message findTopBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
-    
+
     // TODO : 네이티브 쿼리를 추후 JPQL로 변경 필요
+
     /**
      * 쪽지함 화면에서 보여지는 쪽지들을 조회할 때 사용하는 메소드입니다.
      * 각 쪽지 채팅방의 최신 쪽지 1개씩 가져와 리스트에 담습니다.
@@ -37,4 +39,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             nativeQuery = true
     )
     List<Message> findAllByMemberId(@Param("memberId") Long memberId);
+
+    List<Message> findAllByChatroom_IdOrderByCreatedAt(Long chatroomId);
+
+    Boolean existsBySender_IdAndReceiver_IdAndMeet_Id(Long senderId, Long receiverId, Long meetId);
+
+    Optional<Message> findFirstByChatroom_Id(Long chatroomId);
 }

@@ -2,9 +2,12 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
+import com.umc.withme.dto.meet.MeetDto;
 import com.umc.withme.dto.message.MessageCreateRequest;
 import com.umc.withme.dto.message.MessageCreateResponse;
 import com.umc.withme.dto.message.MessageInfoResponse;
+import com.umc.withme.dto.message.MessageDto;
+import com.umc.withme.dto.message.MessageInfoListGetResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,5 +58,30 @@ public class MessageController {
         List<MessageInfoResponse> messageInfoResponseList = messageService.getMessageList(principle.getMemberId());
 
         return ResponseEntity.status(HttpStatus.OK).body(new DataResponse<>(messageInfoResponseList));
+    }
+
+    @Operation(
+            summary = "특정 쪽지방의 쪽지 조회",
+            description = "<p>채팅방의 쪽지 리스트를를 조회합니다. <code>chatroomId</code> - 쪽지 채팅방 id </p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/messages/{chatroomId}")
+    public ResponseEntity<DataResponse<MessageInfoListGetResponse>> getMessage(
+            @PathVariable Long chatroomId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        List<MessageDto> messageDtos = messageService.findMessages(chatroomId, principle.getMemberId());
+
+        MeetDto meetDto = messageService.findMeetByChatroomId(chatroomId);
+
+        MessageInfoListGetResponse response = MessageInfoListGetResponse.from(
+                meetDto.getMeetId(),
+                meetDto.getTitle(),
+                messageDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
     }
 }
