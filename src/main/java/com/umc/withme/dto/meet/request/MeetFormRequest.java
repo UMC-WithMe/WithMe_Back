@@ -1,7 +1,8 @@
-package com.umc.withme.dto.meet;
+package com.umc.withme.dto.meet.request;
 
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.dto.address.AddressRequest;
+import com.umc.withme.dto.meet.MeetDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -60,16 +61,15 @@ public class MeetFormRequest {
     // TODO : 추후 likeCount 및 membersCount 적절히 변경 필요
     public MeetDto toDto() {
         return MeetDto.of(
-                null,
+                getAddresses().stream()
+                        .map(AddressRequest::toDto)
+                        .collect(Collectors.toUnmodifiableList()),
                 getMeetCategory(),
                 getTitle(),
                 getLink(),
                 getContent(),
                 getMinPeople(),
-                getMaxPeople(),
-                getAddresses().stream()
-                        .map(AddressRequest::toDto)
-                        .collect(Collectors.toUnmodifiableList())
+                getMaxPeople()
         );
     }
 }

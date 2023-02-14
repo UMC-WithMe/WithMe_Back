@@ -4,10 +4,11 @@ import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.meet.MeetCreateResponse;
+import com.umc.withme.dto.meet.response.MeetCreateResponse;
 import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.meet.MeetFormRequest;
-import com.umc.withme.dto.meet.MeetInfoResponse;
+import com.umc.withme.dto.meet.request.MeetFormRequest;
+import com.umc.withme.dto.meet.response.MeetInfoListGetResponse;
+import com.umc.withme.dto.meet.response.MeetInfoResponse;
 import com.umc.withme.dto.meet.*;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetService;
@@ -20,16 +21,19 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.List;
 
 @Tag(name = "모임/모집 글", description = "모임과 모집 글 관련 API입니다.")
+@Tag(name = "MeetController", description = "모임 API")
 @RestController
 @RequiredArgsConstructor
 @Validated
@@ -40,15 +44,21 @@ public class MeetController {
 
     @Operation(
             summary = "모임 모집글 생성",
-            description = "<p>request body 에 입력된 정보를 바탕으로 모임 모집글을 1개 생성합니다.</p>",
+            description = "<p>모임/모집글 생성에 필요한 정보를 받아 모집글을 생성합니다.</p>" +
+                    "<p>모집글 생성에 필요한 정보가 담긴 meetFormRequest는 반드시 content type을 <strong>application/json</strong>으로 전달해야 합니다.</p>" +
+                    "<p>대표 이미지를 전달할 meetImage는 반드시 content type을 <strong>multipart/form-data</strong>으로 전달해야 합니다.</p>",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PostMapping("/meets")
+    @PostMapping(
+            value = "/meets",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
     public ResponseEntity<DataResponse<MeetCreateResponse>> createMeet(
-            @Valid @RequestBody MeetFormRequest meetFormRequest,
+            @Valid @RequestPart MeetFormRequest meetFormRequest,
+            @Parameter(description = "모임 대표 사진", example = "모임 대표 이미지") @RequestPart MultipartFile meetImage,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
-        Long meetId = meetService.createMeet(meetFormRequest.toDto(), principle.getUsername());
+        Long meetId = meetService.createMeet(meetFormRequest.toDto(), meetImage, principle.getUsername());
 
         MeetCreateResponse response = MeetCreateResponse.of(meetId);
 
@@ -75,53 +85,6 @@ public class MeetController {
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
-                HttpStatus.OK
-        );
-    }
-
-    @Operation(
-            summary = "모임 모집글 수정 API",
-            description = "<p><code>meetId</code>에 해당하는 모임을 <code>request body</code>에 담긴 정보로 수정하고" +
-                    "수정된 모임을 response body 에 넣어 전달합니다.</p>",
-            security = @SecurityRequirement(name = "access-token")
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
-    })
-    @PutMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoResponse>> updateMeet(
-            @PathVariable Long meetId,
-            @Valid @RequestBody MeetFormRequest meetFormRequest,
-            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle) {
-        MeetDto meetDto = meetService.updateById(meetId, principle.getMemberId(), meetFormRequest.toDto());
-
-        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
-
-        return new ResponseEntity<>(
-                new DataResponse<>(response),
-                HttpStatus.OK
-        );
-    }
-
-    @Operation(
-            summary = "모임 모집글 1개 삭제 API",
-            description = "<p><code>meetId</code>에 해당하는 모임을 삭제하고 삭제한 <code>meetId</code>를 response body에 넣어 전달합니다.</p>",
-            security = @SecurityRequirement(name = "access-token")
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Success"),
-            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
-    })
-    @DeleteMapping("/meets/{meetId}")
-    public ResponseEntity<BaseResponse> deleteMeet(
-            @PathVariable Long meetId,
-            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
-    ) {
-        meetService.deleteMeetById(meetId, principle.getMemberId());
-
-        return new ResponseEntity<>(
-                new BaseResponse(true),
                 HttpStatus.OK
         );
     }
@@ -157,13 +120,45 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/meets/record")
-    public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeets(
+    public ResponseEntity<DataResponse<MeetInfoListGetResponse>> getMeetRecords(
             @RequestParam(value = "meetStatus") MeetStatus meetStatus,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         List<MeetDto> meetDtos = meetService.findAllMeetsRecords(MeetRecordSearch.of(meetStatus, principle.getMemberId()));
 
         MeetInfoListGetResponse response = MeetInfoListGetResponse.from(meetDtos);
+
+        return new ResponseEntity<>(
+                new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(
+            summary = "모임 모집글 수정",
+            description = "<p><code>meetId</code>에 해당하는 모임을 <code>meetFormRequest</code>에 담긴 정보로 수정하고 수정된 모임 정보를 응답합니다.</p>" +
+                    "<p>모집글 생성에 필요한 정보가 담긴 <code>meetFormRequest</code>는 반드시 content type을 <strong>application/json</strong>으로 전달해야 합니다.</p>" +
+                    "<p>대표 이미지를 전달할 <code>meetImage</code>는 반드시 content type을 <strong>multipart/form-data</strong>으로 전달해야 합니다. " +
+                    "대표 이미지를 변경하지 않으려면 <code>meetImage</code>는 빼고 비워서 전달하면 됩니다. (필수값 아님)</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
+    })
+    @PutMapping(
+            value = "/meets/{meetId}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
+    public ResponseEntity<DataResponse<MeetInfoResponse>> updateMeet(
+            @PathVariable Long meetId,
+            @Valid @RequestPart MeetFormRequest meetFormRequest,
+            @Parameter(description = "대표 이미지로 설정하고자 하는 이미지 파일", example = "모임 대표 이미지") @RequestPart(required = false) MultipartFile meetImage,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        MeetDto meetDto = meetService.updateMeetById(meetId, principle.getMemberId(), meetFormRequest.toDto(), meetImage);
+
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
@@ -187,6 +182,28 @@ public class MeetController {
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(
+            summary = "모임 모집글 1개 삭제 API",
+            description = "<p><code>meetId</code>에 해당하는 모임을 삭제하고 삭제한 <code>meetId</code>를 response body에 넣어 전달합니다.</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "404", description = "2400: <code>meetId</code>에 해당하는 모임이 없는 경우", content = @Content)
+    })
+    @DeleteMapping("/meets/{meetId}")
+    public ResponseEntity<BaseResponse> deleteMeet(
+            @PathVariable Long meetId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        meetService.deleteMeetById(meetId, principle.getMemberId());
+
+        return new ResponseEntity<>(
+                new BaseResponse(true),
                 HttpStatus.OK
         );
     }

@@ -1,5 +1,6 @@
-package com.umc.withme.dto.member;
+package com.umc.withme.dto.member.response;
 
+import com.umc.withme.dto.member.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

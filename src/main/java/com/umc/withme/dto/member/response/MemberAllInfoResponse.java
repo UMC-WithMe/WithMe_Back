@@ -1,8 +1,9 @@
-package com.umc.withme.dto.member;
+package com.umc.withme.dto.member.response;
 
 import com.umc.withme.domain.TotalPoint;
 import com.umc.withme.domain.constant.Gender;
 import com.umc.withme.dto.address.AddressDto;
+import com.umc.withme.dto.member.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

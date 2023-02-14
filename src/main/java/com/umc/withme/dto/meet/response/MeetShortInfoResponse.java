@@ -1,9 +1,9 @@
-package com.umc.withme.dto.meet;
+package com.umc.withme.dto.meet.response;
 
 
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.RecruitStatus;
-import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.dto.ImageFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,10 +18,11 @@ public class MeetShortInfoResponse {
     @Schema(description = "모집글 id")
     private Long meetId;
 
-    //@Schema(description = "모집글 대표 사진")
+    @Schema(description = "모임 대표 사진", example = "https://withme-s3-bucket.s3.ap-northeast-2.amazonaws.com/member/default-profile-image.jpeg")
+    private ImageFileDto meetImage;
 
     @Schema(description = "작성자 닉네임")
-    private String nickname;
+    private String leaderNickname;
 
     @Schema(description = "카테고리")
     private MeetCategory meetCategory;
@@ -38,17 +39,7 @@ public class MeetShortInfoResponse {
     @Schema(description = "찜 수")
     private Integer meetLikeCount;
 
-    public static MeetShortInfoResponse of(MeetDto meetDto, MemberDto memberDto, Integer meetLikeCount) {
-
-        return new MeetShortInfoResponse(
-                meetDto.getMeetId(),
-                memberDto.getNickname(),
-                meetDto.getMeetCategory(),
-                meetDto.getTitle(),
-                meetDto.getRecruitStatus(),
-                meetDto.toEntity().getCreatedAt(),
-                meetLikeCount
-        );
+    public static MeetShortInfoResponse of(Long meetId, ImageFileDto meetImage, String leaderNickname, MeetCategory meetCategory, String title, RecruitStatus recruitStatus, LocalDateTime createdAt, Integer meetLikeCount) {
+        return new MeetShortInfoResponse(meetId, meetImage, leaderNickname, meetCategory, title, recruitStatus, createdAt, meetLikeCount);
     }
-
 }

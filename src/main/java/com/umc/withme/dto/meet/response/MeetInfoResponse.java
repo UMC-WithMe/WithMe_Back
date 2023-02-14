@@ -1,10 +1,12 @@
-package com.umc.withme.dto.meet;
+package com.umc.withme.dto.meet.response;
 
 import com.umc.withme.domain.constant.MeetCategory;
 import com.umc.withme.domain.constant.MeetStatus;
 import com.umc.withme.domain.constant.RecruitStatus;
+import com.umc.withme.dto.ImageFileDto;
 import com.umc.withme.dto.address.AddressDto;
-import com.umc.withme.dto.member.MemberShortInfoResponse;
+import com.umc.withme.dto.meet.MeetDto;
+import com.umc.withme.dto.member.response.MemberShortInfoResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,9 +23,11 @@ public class MeetInfoResponse {
     private Long meetId;
 
     @Schema(description = "모임을 생성한 사용자 정보 (모임의 리더 정보)")
-    private MemberShortInfoResponse leader;
+    private MemberShortInfoResponse leader;  // 이 모임의 리더
 
-    @Schema(description = "이 모임에 설정된 지역 리스트")
+    @Schema(description = "모임 대표 사진", example = "https://withme-s3-bucket.s3.ap-northeast-2.amazonaws.com/member/default-profile-image.jpeg")
+    private ImageFileDto meetImage;
+
     private List<AddressDto> addresses;
 
     @Schema(example = "STUDY", description = "모임의 카테고리")
@@ -68,6 +72,7 @@ public class MeetInfoResponse {
         return new MeetInfoResponse(
                 dto.getMeetId(),
                 MemberShortInfoResponse.from(dto.getLeader()),
+                dto.getMeetImage(),
                 dto.getAddresses(),
                 dto.getMeetCategory(),
                 dto.getRecruitStatus(),

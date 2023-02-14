@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageDto {
@@ -18,24 +20,24 @@ public class MessageDto {
     private MemberDto receiver;
     private MeetDto meet;
     private String content;
+    private LocalDateTime createdAt;
 
-    public static MessageDto of( MemberDto sender, MemberDto receiver, MeetDto meet, String content){
-        return MessageDto.of(null, sender, receiver, meet, content);
-    }
-    public static MessageDto of(Long messageId, MemberDto sender, MemberDto receiver, MeetDto meet, String content){
-        return new MessageDto(messageId, sender, receiver, meet, content);
+    public static MessageDto of(Long messageId, MemberDto sender, MemberDto receiver, MeetDto meet, String content, LocalDateTime createdAt) {
+        return new MessageDto(messageId, sender, receiver, meet, content, createdAt);
     }
 
-    public static MessageDto from(Message message){
-        return new MessageDto(
+    public static MessageDto from(Message message) {
+        return of(
                 message.getId(),
                 MemberDto.from(message.getSender()),
                 MemberDto.from(message.getReceiver()),
                 MeetDto.from(message.getMeet()),
-                message.getContent());
+                message.getContent(),
+                message.getCreatedAt()
+        );
     }
 
-    public Message toEntity(Member sender, Member receiver, Meet meet){
+    public Message toEntity(Member sender, Member receiver, Meet meet) {
         return Message.builder()
                 .sender(sender)
                 .receiver(receiver)

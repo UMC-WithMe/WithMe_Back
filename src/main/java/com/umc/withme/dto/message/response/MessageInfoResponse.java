@@ -1,6 +1,7 @@
-package com.umc.withme.dto.message;
+package com.umc.withme.dto.message.response;
 
-import com.umc.withme.dto.member.MemberShortInfoResponse;
+import com.umc.withme.dto.member.response.MemberShortInfoResponse;
+import com.umc.withme.dto.message.MessageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,5 +27,14 @@ public class MessageInfoResponse {
 
     public static MessageInfoResponse of(Long messageId, MemberShortInfoResponse memberShortInfoResponse, String content, LocalDateTime createdAt) {
         return new MessageInfoResponse(messageId, memberShortInfoResponse, content, createdAt);
+    }
+
+    public static MessageInfoResponse from(MessageDto messageDto) {
+        return of(
+                messageDto.getMessageId(),
+                MemberShortInfoResponse.from(messageDto.getSender()),
+                messageDto.getContent(),
+                null
+        );
     }
 }

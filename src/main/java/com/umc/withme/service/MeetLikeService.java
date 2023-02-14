@@ -3,9 +3,8 @@ package com.umc.withme.service;
 import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.MeetLike;
 import com.umc.withme.domain.Member;
-import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.meet.MeetShortInfoResponse;
-import com.umc.withme.dto.member.MemberDto;
+import com.umc.withme.dto.ImageFileDto;
+import com.umc.withme.dto.meet.response.MeetShortInfoResponse;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
@@ -77,7 +76,18 @@ public class MeetLikeService {
         List<MeetLike> meetLikeList = meetLikeRepository.findAllByMember_Id(memberId);
         for (MeetLike meetLike: meetLikeList) {
             Meet meet = meetLike.getMeet();
-            meetShortInfoResponseList.add(MeetShortInfoResponse.of(MeetDto.from(meet), MemberDto.from(member), meetLikeList.size()));
+            meetShortInfoResponseList.add(
+                    MeetShortInfoResponse.of(
+                            meet.getId(),
+                            ImageFileDto.from(meet.getMeetImage()),
+                            member.getNickname(),
+                            meet.getCategory(),
+                            meet.getTitle(),
+                            meet.getRecruitStatus(),
+                            meet.getCreatedAt(),
+                            meetLikeList.size()
+                    )
+            );
         }
 
         return meetShortInfoResponseList;

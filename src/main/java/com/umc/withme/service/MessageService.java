@@ -5,10 +5,10 @@ import com.umc.withme.domain.Meet;
 import com.umc.withme.domain.Member;
 import com.umc.withme.domain.Message;
 import com.umc.withme.dto.member.MemberDto;
-import com.umc.withme.dto.member.MemberShortInfoResponse;
+import com.umc.withme.dto.member.response.MemberShortInfoResponse;
 import com.umc.withme.dto.meet.MeetDto;
-import com.umc.withme.dto.message.MessageCreateRequest;
-import com.umc.withme.dto.message.MessageInfoResponse;
+import com.umc.withme.dto.message.request.MessageCreateRequest;
+import com.umc.withme.dto.message.response.MessageInfoResponse;
 import com.umc.withme.dto.message.MessageDto;
 import com.umc.withme.exception.chatroom.ChatroomIdNotFoundException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
@@ -54,24 +54,7 @@ public class MessageService {
         Member sender = memberRepository.findById(senderId).orElseThrow(() -> new MemberIdNotFoundException(senderId));
         Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new MemberIdNotFoundException(receiverId));
         Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
-        Member sender = memberRepository.findById(senderId).orElseThrow(() -> new MemberIdNotFoundException(senderId));
-        Member receiver = memberRepository.findById(receiverId).orElseThrow(() -> new MemberIdNotFoundException(receiverId));
-        Meet meet = meetRepository.findById(meetId).orElseThrow(() -> new MeetIdNotFoundException(meetId));
 
-        // 쪽지의 chatroom 설정
-        Long count1 = messageRepository.countBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId);
-        Long count2 = messageRepository.countBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId);
-        Chatroom chatroom;
-        if (count1.equals(0L) && count2.equals(0L)) { // 새로 채팅방을 생성할 경우
-            Chatroom newChatroom = new Chatroom();
-            chatroom = chatroomRepository.save(newChatroom);
-        } else if (count1.equals(0L)) {
-            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId)
-                    .getChatroom();
-        } else {
-            chatroom = messageRepository.findTopBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId)
-                    .getChatroom();
-        }
         // 쪽지의 chatroom 설정
         Boolean exists1 = messageRepository.existsBySender_IdAndReceiver_IdAndMeet_Id(senderId, receiverId, meetId);
         Boolean exists2 = messageRepository.existsBySender_IdAndReceiver_IdAndMeet_Id(receiverId, senderId, meetId);

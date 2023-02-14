@@ -4,7 +4,7 @@ import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
 import com.umc.withme.dto.like.MeetLikeCreateRequest;
 import com.umc.withme.dto.like.MeetLikeDeleteRequest;
-import com.umc.withme.dto.meet.MeetShortInfoResponse;
+import com.umc.withme.dto.meet.response.MeetShortInfoResponse;
 import com.umc.withme.security.WithMeAppPrinciple;
 import com.umc.withme.service.MeetLikeService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,5 +1,6 @@
-package com.umc.withme.dto.message;
+package com.umc.withme.dto.message.response;
 
+import com.umc.withme.dto.message.MessageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,19 +18,17 @@ public class MessageInfoListGetResponse {
 
     @Schema(example = "1", description = "모임의 id")
     Long meetId;
-
     @Schema(example = "영어 스터디 같이 해요!", description = "모임 모집글의 제목")
     String meetTitle;
-
     @Schema(description = "조회한 쪽지 리스트")
-    List<MessageInfoGetResponse> messageInfoGetResponses;
+    List<MessageInfoResponse> messageInfoGetResponses;
 
     public static MessageInfoListGetResponse from(Long meetId, String meetTitle, List<MessageDto> messageDtos) {
         return new MessageInfoListGetResponse(
                 meetId,
                 meetTitle,
                 messageDtos.stream()
-                        .map(MessageInfoGetResponse::from)
+                        .map(MessageInfoResponse::from)
                         .collect(Collectors.toUnmodifiableList())
         );
     }
