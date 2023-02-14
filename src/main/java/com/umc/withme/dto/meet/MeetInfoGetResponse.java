@@ -58,6 +58,12 @@ public class MeetInfoGetResponse {
     @Schema(example = "2023-02-15", description = "모임 마감(종료) 날짜")
     private LocalDate endDate;
 
+    @Schema(example = "13", description = "이 모임 모집글의 좋아요 수")
+    private Long likeCount;
+
+    @Schema(example = "5", description = "이 모임에 현재 모집된 인원 수")
+    private Long membersCount;
+
     public static MeetInfoGetResponse from(MeetDto dto) {
 
         return new MeetInfoGetResponse(
@@ -73,6 +79,8 @@ public class MeetInfoGetResponse {
                 dto.getMinPeople(),
                 dto.getMaxPeople(),
                 dto.getStartDate(),
-                dto.getEndDate());
+                dto.getEndDate(),
+                dto.getLikeCount(),
+                dto.getMembersCount());
     }
 }

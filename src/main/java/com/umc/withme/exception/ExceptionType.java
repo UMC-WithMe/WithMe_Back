@@ -3,12 +3,15 @@ package com.umc.withme.exception;
 import com.umc.withme.exception.address.AddressNotFoundException;
 import com.umc.withme.exception.auth.KakaoOAuthUnauthorizedException;
 import com.umc.withme.exception.common.CustomException;
+import com.umc.withme.exception.file.MultipartFileNotReadableException;
+import com.umc.withme.exception.meet.MeetCompleteForbiddenException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.EmailNotFoundException;
-import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
+import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -54,9 +57,16 @@ public enum ExceptionType {
     MEET_ID_NOT_FOUND_EXCEPTION(2400, "해당 아이디(PK)를 가지는 모임이 없습니다.", MeetIdNotFoundException.class),
     MEET_DELETE_FORBIDDEN_EXCEPTION(2401, "해당 모임을 삭제할 권한이 없습니다.", MeetDeleteForbiddenException.class),
     MEET_UPDATE_FORBIDDEN_EXCEPTION(2402, "해당 모임을 수정할 권한이 없습니다.", MeetUpdateForbiddenException.class),
+    MEET_COMPLETE_FORBIDDEN_EXCEPTION(2403, "해당 모임을 해제할 권한이 없습니다.", MeetCompleteForbiddenException.class),
 
     // Address
-    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class);
+    ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
+
+    // File
+    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
+
+    //MeetLike
+    MEET_LIKE_CONFLICT_EXCEPTION(5400, "이미 찜한 모임입니다.", MeetLikeConflictException.class);
 
     private final int errorCode;
     private final String errorMessage;
