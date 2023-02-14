@@ -177,13 +177,13 @@ public class MeetController {
             security = @SecurityRequirement(name = "access-token")
     )
     @PatchMapping("/meets/{meetId}")
-    public ResponseEntity<DataResponse<MeetInfoGetResponse>> setMeetComplete(
+    public ResponseEntity<DataResponse<MeetInfoResponse>> setMeetComplete(
             @PathVariable Long meetId,
             @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
     ) {
         MeetDto meetDto = meetService.setMeetComplete(meetId, principle.getMemberId());
 
-        MeetInfoGetResponse response = MeetInfoGetResponse.from(meetDto);
+        MeetInfoResponse response = MeetInfoResponse.from(meetDto);
 
         return new ResponseEntity<>(
                 new DataResponse<>(response),
