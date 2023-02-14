@@ -88,4 +88,21 @@ public class MessageController {
                 .status(HttpStatus.OK)
                 .body(new DataResponse<>(response));
     }
+
+    @Operation(
+            summary = "특정 쪽지함과 쪽지 삭제",
+            description = "쪽지함의 아이디(<code>chatroomId</code>)를 가진 쪽지함과 쪽지를 삭제합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @DeleteMapping("/messages/{chatroomId}")
+    public ResponseEntity<BaseResponse> deleteChatroom (
+            @PathVariable Long chatroomId,
+            @Parameter(hidden = true) @AuthenticationPrincipal WithMeAppPrinciple principle
+    ) {
+        messageService.deleteChatroom(principle.getMemberId(), chatroomId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new BaseResponse(true));
+    }
 }

@@ -14,7 +14,6 @@ import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
 import com.umc.withme.exception.member.NicknameNotFoundException;
-import com.umc.withme.exception.message.MessageByChatroomIdNotFoundException;
 import com.umc.withme.exception.message.MessageGetForbiddenException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -73,7 +72,6 @@ public enum ExceptionType {
 
     // Message
     MESSAGE_GET_FORBIDDEN_EXCEPTION(6400, "해당 채팅방에 들어갈 권한이 없습니다.", MessageGetForbiddenException.class),
-    MESSAGE_CHATROOM_ID_NOT_FOUND_EXCEPTION(6401, "해당 채팅방 아이디(FK)를 가지는 쪽지가 없습니다.", MessageByChatroomIdNotFoundException.class),
 
     // Chatroom
     CHATROOM_ID_NOT_FOUND_EXCEPTION(7400, "해당 채팅방의 메세지 내역이 없습니다.", ChatroomIdNotFoundException.class);

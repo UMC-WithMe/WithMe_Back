@@ -13,7 +13,6 @@ import com.umc.withme.dto.message.MessageDto;
 import com.umc.withme.exception.chatroom.ChatroomIdNotFoundException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
-import com.umc.withme.exception.message.MessageByChatroomIdNotFoundException;
 import com.umc.withme.exception.message.MessageGetForbiddenException;
 import com.umc.withme.repository.ChatroomRepository;
 import com.umc.withme.repository.MeetRepository;
@@ -148,8 +147,29 @@ public class MessageService {
      * @return 조회한 모임 DTO
      */
     public MeetDto findMeetByChatroomId(Long chatroomId) {
-        Message message = messageRepository.findFirstByChatroom_Id(chatroomId)
-                .orElseThrow(() -> new MessageByChatroomIdNotFoundException(chatroomId));
+        Message message = messageRepository.findFirstByChatroom_Id(chatroomId);
         return MeetDto.from(message.getMeet());
+    }
+
+    /**
+     * 쪽지함과 쪽지함 내부의 쪽지들을 삭제한다.
+     *
+     * @param chatroomId 쪽지함 아이디
+     * @param loginMemberId 로그인된 사용자 아이디
+     */
+    @Transactional
+    public void deleteChatroom(Long loginMemberId, Long chatroomId) {
+
+        Member member = memberRepository.findById(loginMemberId).orElseThrow(() -> new MemberIdNotFoundException(loginMemberId));
+        Chatroom chatroom = chatroomRepository.findById(chatroomId).orElseThrow(() -> new ChatroomIdNotFoundException(chatroomId));
+        Message message = messageRepository.findFirstByChatroom_Id(chatroomId);
+
+        // 쪽지함에서 쪽지를 보낸 사용자나 받는 사용자가 아닐 시 접근 권한 없음
+        if (member != message.getSender() && member != message.getReceiver()) {
+            throw new MessageGetForbiddenException(chatroomId, loginMemberId);
+        }
+
+        messageRepository.deleteAllByChatroom_Id(chatroomId); // 쪽지함의 쪽지 삭제
+        chatroomRepository.delete(chatroom); // 쪽지함 삭제
     }
 }
