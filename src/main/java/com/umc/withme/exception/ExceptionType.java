@@ -8,6 +8,7 @@ import com.umc.withme.exception.meet.MeetCompleteForbiddenException;
 import com.umc.withme.exception.meet.MeetDeleteForbiddenException;
 import com.umc.withme.exception.meet.MeetIdNotFoundException;
 import com.umc.withme.exception.meet.MeetUpdateForbiddenException;
+import com.umc.withme.exception.meet_like.MeetLikeConflictException;
 import com.umc.withme.exception.member.EmailNotFoundException;
 import com.umc.withme.exception.member.MemberIdNotFoundException;
 import com.umc.withme.exception.member.NicknameDuplicateException;
@@ -62,7 +63,10 @@ public enum ExceptionType {
     ADDRESS_NOT_FOUND_EXCEPTION(3400, "일치하는 주소를 찾을 수 없습니다.", AddressNotFoundException.class),
 
     // File
-    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class);
+    MULTIPART_FILE_NOT_READABLE_EXCEPTION(4400, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
+
+    //MeetLike
+    MEET_LIKE_CONFLICT_EXCEPTION(5400, "이미 찜한 모임입니다.", MeetLikeConflictException.class);
 
     private final int errorCode;
     private final String errorMessage;
