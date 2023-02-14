@@ -2,7 +2,7 @@ package com.umc.withme.controller;
 
 import com.umc.withme.dto.common.BaseResponse;
 import com.umc.withme.dto.common.DataResponse;
-import com.umc.withme.dto.member.*;
+import com.umc.withme.dto.member.MemberDto;
 import com.umc.withme.dto.member.request.MemberAddressUpdateRequest;
 import com.umc.withme.dto.member.request.MemberNicknameUpdateRequest;
 import com.umc.withme.dto.member.request.MemberPhoneNumberUpdateRequest;
@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +33,7 @@ import javax.validation.constraints.NotBlank;
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
 @Validated
+@Tag(name = "사용자", description = "사용자 관련 api입니다.")
 public class MemberController {
 
     private final MemberService memberService;
